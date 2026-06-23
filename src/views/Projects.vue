@@ -1,40 +1,60 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import Navbar from "../components/Navbar.vue/Navbar.vue";
-import { useUserStore } from "../stores/userStore";
+import api from "../services/api";
 
-const user = useUserStore();
+const projects = ref([]);
 
 const title = ref("");
 const description = ref("");
 const github = ref("");
 
-function addProject() {
-  if (
-    title.value.trim() &&
-    description.value.trim()
-  ) {
-    user.addProject({
+async function loadProjects() {
+  const response = await api.get("/projects");
+  projects.value = response.data;
+}
+
+async function addProject() {
+ 
+
+  try {
+    const response = await api.post("/projects", {
       title: title.value,
       description: description.value,
       github: github.value,
     });
 
+    
+    console.log(response.data);
+
     title.value = "";
     description.value = "";
     github.value = "";
+
+    await loadProjects();
+
+  } catch (error) {
+    console.log("ERROR");
+    ;
   }
 }
 
-function deleteProject(index) {
-  user.deleteProject(index);
+async function deleteProject(id) {
+  await api.delete(`/projects/${id}`);
+  loadProjects();
 }
+
+onMounted(async () => {
+  await loadProjects();
+  console.log(projects.value);
+});
 </script>
 
 <template>
   <Navbar />
 
   <div class="container">
+  
     <h1>My Projects</h1>
 
     <div class="form">
@@ -61,8 +81,8 @@ function deleteProject(index) {
     <div class="projects-grid">
       <div
         class="project-card"
-        v-for="(project, index) in user.projects"
-        :key="index"
+        v-for="project in projects"
+        :key="project._id"
       >
         <h2>{{ project.title }}</h2>
 
@@ -77,7 +97,7 @@ function deleteProject(index) {
 
         <button
           class="delete-btn"
-          @click="deleteProject(index)"
+          @click="deleteProject(project._id)"
         >
           Delete
         </button>
@@ -127,8 +147,9 @@ function deleteProject(index) {
 
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
+  margin-top: 30px;
 }
 
 .project-card {
@@ -146,15 +167,6 @@ function deleteProject(index) {
   display: block;
   margin-top: 10px;
   text-decoration: none;
-}
-
-.delete-btn {
-  margin-top: 15px;
-  background: crimson;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
+  color: #2563eb;
 }
 </style>

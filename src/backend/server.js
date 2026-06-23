@@ -1,4 +1,3 @@
-
 console.log("HELLO");
 
 const express = require("express");
@@ -6,13 +5,12 @@ const cors = require("cors");
 const { MongoClient, ObjectId } = require("mongodb");
 require("dotenv").config();
 
-console.log("URI =", process.env.MONGO_URI);
-
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+console.log("URI =", process.env.MONGO_URI);
 console.log("Trying MongoDB...");
 
 const client = new MongoClient(process.env.MONGO_URI, {
@@ -28,6 +26,7 @@ async function startServer() {
     const db = client.db("careerbridge");
 
     const skillsCollection = db.collection("skills");
+    const projectsCollection = db.collection("projects");
 
     app.get("/", (req, res) => {
       res.send("CareerBridge Backend Working");
@@ -37,6 +36,10 @@ async function startServer() {
       const collections = await db.listCollections().toArray();
       res.json(collections);
     });
+
+    // =========================
+    // SKILLS
+    // =========================
 
     app.get("/skills", async (req, res) => {
       const skills = await skillsCollection.find().toArray();
@@ -55,6 +58,34 @@ async function startServer() {
 
       res.json(result);
     });
+
+    // =========================
+    // PROJECTS
+    // =========================
+
+    app.get("/projects", async (req, res) => {
+      const projects = await projectsCollection.find().toArray();
+      res.json(projects);
+    });
+
+    app.post("/projects", async (req, res) => {
+      const result = await projectsCollection.insertOne(req.body);
+      res.json(result);
+    });
+
+    app.delete("/projects/:id", async (req, res) => {
+      const result = await projectsCollection.deleteOne({
+        _id: new ObjectId(req.params.id),
+      });
+
+      res.json(result);
+    });
+
+app.get("/hello", (req, res) => {
+  res.send("HELLO PROJECT ROUTE");
+});
+
+
 
     app.listen(3000, () => {
       console.log("Server Running On Port 3000");
