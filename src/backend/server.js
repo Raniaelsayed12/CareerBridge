@@ -1,7 +1,12 @@
+
+console.log("HELLO");
+
 const express = require("express");
 const cors = require("cors");
 const { MongoClient, ObjectId } = require("mongodb");
 require("dotenv").config();
+
+console.log("URI =", process.env.MONGO_URI);
 
 const app = express();
 
@@ -33,19 +38,16 @@ async function startServer() {
       res.json(collections);
     });
 
-    // GET ALL SKILLS
     app.get("/skills", async (req, res) => {
       const skills = await skillsCollection.find().toArray();
       res.json(skills);
     });
 
-    // ADD SKILL
     app.post("/skills", async (req, res) => {
       const result = await skillsCollection.insertOne(req.body);
       res.json(result);
     });
 
-    // DELETE SKILL
     app.delete("/skills/:id", async (req, res) => {
       const result = await skillsCollection.deleteOne({
         _id: new ObjectId(req.params.id),
@@ -59,6 +61,7 @@ async function startServer() {
     });
 
   } catch (error) {
+    console.log("ERROR:");
     console.log(error);
   }
 }
