@@ -27,6 +27,7 @@ async function startServer() {
 
     const skillsCollection = db.collection("skills");
     const projectsCollection = db.collection("projects");
+    const certificatesCollection = db.collection("certificates");
 
     app.get("/", (req, res) => {
       res.send("CareerBridge Backend Working");
@@ -81,10 +82,55 @@ async function startServer() {
       res.json(result);
     });
 
+
+
+// =========================
+// CERTIFICATES
+// =========================
+
+app.get("/certificates", async (req, res) => {
+  const certificates = await certificatesCollection.find().toArray();
+  res.json(certificates);
+});
+
+app.post("/certificates", async (req, res) => {
+  const result = await certificatesCollection.insertOne(req.body);
+  res.json(result);
+});
+
+
+app.put("/projects/:id", async (req, res) => {
+  const result = await projectsCollection.updateOne(
+    { _id: new ObjectId(req.params.id) },
+    {
+      $set: {
+        title: req.body.title,
+        description: req.body.description,
+        github: req.body.github,
+      },
+    }
+  );
+
+  res.json(result);
+});
+
+
+
+
+
+
+
+app.delete("/certificates/:id", async (req, res) => {
+  const result = await certificatesCollection.deleteOne({
+    _id: new ObjectId(req.params.id),
+  });
+
+  res.json(result);
+});
+
 app.get("/hello", (req, res) => {
   res.send("HELLO PROJECT ROUTE");
 });
-
 
 
     app.listen(3000, () => {

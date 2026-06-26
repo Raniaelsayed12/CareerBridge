@@ -8,51 +8,127 @@ const user = useUserStore();
 <template>
   <Navbar />
 
-  <div class="profile">
-    <img
-      src="https://i.pravatar.cc/200"
-      alt="profile"
-    />
+  <div class="profile-container">
+    <div class="profile-card">
 
-    <h1>{{ user.name }}</h1>
+      <img
+        src="https://i.pravatar.cc/200"
+        alt="Profile"
+        class="profile-image"
+      />
 
-    <h3>{{ user.role }}</h3>
+      <h1>{{ user.name }}</h1>
 
-    <div class="info">
-      <p>📧 {{ user.email }}</p>
-      <p>📍 {{ user.city }}</p>
-      <p>🎓 Faculty of Computers & AI</p>
+      <h3>{{ user.role }}</h3>
+
+      <div class="info">
+
+        <div class="item">
+          <span>Name</span>
+          <p>{{ user.name }}</p>
+        </div>
+
+        <div class="item">
+          <span>Email</span>
+          <p>{{ user.email }}</p>
+        </div>
+
+        <div class="item">
+          <span>City</span>
+          <p>{{ user.city }}</p>
+        </div>
+
+        <div class="item">
+          <span>University</span>
+          <p>Faculty of Computers & AI</p>
+        </div>
+
+        <div class="item">
+          <span>Role</span>
+          <p>{{ user.role }}</p>
+        </div>
+
+      </div>
+
     </div>
   </div>
 </template>
 
-<style>
-.profile {
-  max-width: 600px;
-  margin: 60px auto;
-  text-align: center;
-  background: white;
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 0 20px #ddd;
+<style scoped>
+
+.profile-container{
+  display:flex;
+  justify-content:center;
+  padding:50px 20px;
 }
 
-.profile img {
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
+.profile-card{
+  width:100%;
+  max-width:700px;
+  background:#fff;
+  border-radius:20px;
+  padding:40px;
+  box-shadow:0 10px 25px rgba(0,0,0,.1);
+  text-align:center;
 }
 
-.profile h1 {
-  margin-top: 20px;
+.profile-image{
+  width:170px;
+  height:170px;
+  border-radius:50%;
+  object-fit:cover;
+  border:5px solid #2563eb;
+  margin-bottom:20px;
 }
 
-.profile h3 {
-  color: #2563eb;
+.profile-card h1{
+  margin:10px 0;
 }
 
-.info {
-  margin-top: 20px;
-  font-size: 18px;
+.profile-card h3{
+  color:#2563eb;
+  margin-bottom:30px;
 }
+
+.info{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:20px;
+}
+
+.item{
+  background:#f8f9fb;
+  border-radius:15px;
+  padding:20px;
+}
+
+.item span{
+  display:block;
+  color:#2563eb;
+  font-weight:bold;
+  margin-bottom:8px;
+}
+
+.item p{
+  margin:0;
+  color:#444;
+}
+
+@media(max-width:700px){
+
+.info{
+grid-template-columns:1fr;
+}
+
+.profile-card{
+padding:25px;
+}
+
+.profile-image{
+width:140px;
+height:140px;
+}
+
+}
+
 </style>

@@ -9,23 +9,30 @@ const title = ref("");
 const description = ref("");
 const github = ref("");
 
+const editingId = ref(null);
+
 async function loadProjects() {
   const response = await api.get("/projects");
   projects.value = response.data;
 }
 
 async function addProject() {
- 
-
   try {
-    const response = await api.post("/projects", {
-      title: title.value,
-      description: description.value,
-      github: github.value,
-    });
+    if (editingId.value) {
+      await api.put(`/projects/${editingId.value}`, {
+        title: title.value,
+        description: description.value,
+        github: github.value,
+      });
 
-    
-    console.log(response.data);
+      editingId.value = null;
+    } else {
+      await api.post("/projects", {
+        title: title.value,
+        description: description.value,
+        github: github.value,
+      });
+    }
 
     title.value = "";
     description.value = "";
@@ -34,19 +41,36 @@ async function addProject() {
     await loadProjects();
 
   } catch (error) {
-    console.log("ERROR");
-    ;
+    console.error(error);
   }
 }
 
-async function deleteProject(id) {
-  await api.delete(`/projects/${id}`);
-  loadProjects();
+function editProject(project) {
+  editingId.value = project._id;
+
+  title.value = project.title;
+  description.value = project.description;
+  github.value = project.github;
 }
 
-onMounted(async () => {
-  await loadProjects();
-  console.log(projects.value);
+async function deleteProject(id) {
+
+  const confirmDelete = confirm(
+    "Are you sure you want to delete this project?"
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+    await api.delete(`/projects/${id}`);
+    await loadProjects();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+onMounted(() => {
+  loadProjects();
 });
 </script>
 
@@ -54,10 +78,11 @@ onMounted(async () => {
   <Navbar />
 
   <div class="container">
-  
+
     <h1>My Projects</h1>
 
     <div class="form">
+
       <input
         v-model="title"
         placeholder="Project Name"
@@ -74,16 +99,19 @@ onMounted(async () => {
       ></textarea>
 
       <button @click="addProject">
-        Add Project
+        {{ editingId ? "Update Project" : "Add Project" }}
       </button>
+
     </div>
 
     <div class="projects-grid">
+
       <div
         class="project-card"
         v-for="project in projects"
         :key="project._id"
       >
+
         <h2>{{ project.title }}</h2>
 
         <p>{{ project.description }}</p>
@@ -95,14 +123,28 @@ onMounted(async () => {
           GitHub Repository
         </a>
 
-        <button
-          class="delete-btn"
-          @click="deleteProject(project._id)"
-        >
-          Delete
-        </button>
+        <div class="buttons">
+
+          <button
+            class="edit-btn"
+            @click="editProject(project)"
+          >
+            Edit
+          </button>
+
+          <button
+            class="delete-btn"
+            @click="deleteProject(project._id)"
+          >
+            Delete
+          </button>
+
+        </div>
+
       </div>
+
     </div>
+
   </div>
 </template>
 
@@ -143,6 +185,11 @@ onMounted(async () => {
   padding: 12px;
   border-radius: 10px;
   cursor: pointer;
+  transition: .3s;
+}
+
+.form button:hover {
+  background: #1d4ed8;
 }
 
 .projects-grid {
@@ -157,10 +204,19 @@ onMounted(async () => {
   padding: 25px;
   border-radius: 15px;
   box-shadow: 0 0 15px #ddd;
+  transition: .3s;
+}
+
+.project-card:hover {
+  transform: translateY(-6px);
 }
 
 .project-card h2 {
   color: #2563eb;
+}
+
+.project-card p {
+  margin: 15px 0;
 }
 
 .project-card a {
@@ -168,5 +224,54 @@ onMounted(async () => {
   margin-top: 10px;
   text-decoration: none;
   color: #2563eb;
+  word-break: break-all;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.edit-btn {
+  flex: 1;
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: .3s;
+}
+
+.edit-btn:hover {
+  background: #059669;
+}
+
+.delete-btn {
+  flex: 1;
+  background: crimson;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: .3s;
+}
+
+.delete-btn:hover {
+  background: #b91c1c;
+}
+
+@media(max-width:700px){
+
+.container{
+  padding:20px;
+}
+
+.buttons{
+  flex-direction:column;
+}
+
 }
 </style>
