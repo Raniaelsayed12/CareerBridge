@@ -2,8 +2,8 @@ import { defineStore } from "pinia";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
-    name: "Sara Ahmed",
-    email: "sara@gmail.com",
+    name: "Rania Abdelaal",
+    email: "raniaqwertyuio@gmail.com",
     city: "Cairo, Egypt",
     role: "Frontend Developer",
 

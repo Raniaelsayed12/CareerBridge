@@ -52,6 +52,19 @@ async function startServer() {
       res.json(result);
     });
 
+    app.put("/skills/:id", async (req, res) => {
+      const result = await skillsCollection.updateOne(
+        { _id: new ObjectId(req.params.id) },
+        {
+          $set: {
+            name: req.body.name,
+          },
+        }
+      );
+
+      res.json(result);
+    });
+
     app.delete("/skills/:id", async (req, res) => {
       const result = await skillsCollection.deleteOne({
         _id: new ObjectId(req.params.id),
@@ -74,6 +87,21 @@ async function startServer() {
       res.json(result);
     });
 
+    app.put("/projects/:id", async (req, res) => {
+      const result = await projectsCollection.updateOne(
+        { _id: new ObjectId(req.params.id) },
+        {
+          $set: {
+            title: req.body.title,
+            description: req.body.description,
+            github: req.body.github,
+          },
+        }
+      );
+
+      res.json(result);
+    });
+
     app.delete("/projects/:id", async (req, res) => {
       const result = await projectsCollection.deleteOne({
         _id: new ObjectId(req.params.id),
@@ -82,56 +110,50 @@ async function startServer() {
       res.json(result);
     });
 
+    // =========================
+    // CERTIFICATES
+    // =========================
 
+    app.get("/certificates", async (req, res) => {
+      const certificates =
+        await certificatesCollection.find().toArray();
 
-// =========================
-// CERTIFICATES
-// =========================
+      res.json(certificates);
+    });
 
-app.get("/certificates", async (req, res) => {
-  const certificates = await certificatesCollection.find().toArray();
-  res.json(certificates);
-});
+    app.post("/certificates", async (req, res) => {
+      const result =
+        await certificatesCollection.insertOne(req.body);
 
-app.post("/certificates", async (req, res) => {
-  const result = await certificatesCollection.insertOne(req.body);
-  res.json(result);
-});
+      res.json(result);
+    });
 
+    app.put("/certificates/:id", async (req, res) => {
+      const result = await certificatesCollection.updateOne(
+        { _id: new ObjectId(req.params.id) },
+        {
+          $set: {
+            name: req.body.name,
+            provider: req.body.provider,
+          },
+        }
+      );
 
-app.put("/projects/:id", async (req, res) => {
-  const result = await projectsCollection.updateOne(
-    { _id: new ObjectId(req.params.id) },
-    {
-      $set: {
-        title: req.body.title,
-        description: req.body.description,
-        github: req.body.github,
-      },
-    }
-  );
+      res.json(result);
+    });
 
-  res.json(result);
-});
+    app.delete("/certificates/:id", async (req, res) => {
+      const result =
+        await certificatesCollection.deleteOne({
+          _id: new ObjectId(req.params.id),
+        });
 
+      res.json(result);
+    });
 
-
-
-
-
-
-app.delete("/certificates/:id", async (req, res) => {
-  const result = await certificatesCollection.deleteOne({
-    _id: new ObjectId(req.params.id),
-  });
-
-  res.json(result);
-});
-
-app.get("/hello", (req, res) => {
-  res.send("HELLO PROJECT ROUTE");
-});
-
+    app.get("/hello", (req, res) => {
+      res.send("HELLO PROJECT ROUTE");
+    });
 
     app.listen(3000, () => {
       console.log("Server Running On Port 3000");
