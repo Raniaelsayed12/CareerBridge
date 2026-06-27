@@ -122,3 +122,26 @@ Remaining:
 ## License
 
 This project was developed for academic purposes.
+
+## Screenshots
+
+### Home
+![Home](Docs/Screenshots/Home.png)
+
+### Dashboard
+![Dashboard](Docs/Screenshots/Dashboard.png)
+
+### Skills
+![Skills](Docs/Screenshots/Skills.png)
+
+### Projects
+![Projects](Docs/Screenshots/Projekt.png)
+
+### Certificates
+![Certificates](Docs/Screenshots/Certificates.png)
+
+### Profile
+![Profile](Docs/Screenshots/Profile.png)
+
+### About
+![About](Docs/Screenshots/About.png)
