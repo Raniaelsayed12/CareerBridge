@@ -198,3 +198,25 @@ The team discussed the application structure together, implemented frontend and 
 - Final testing.
 - Presentation preparation.
 - Final GitHub update.
+
+## 03.07.2026 – Hania Alilat
+
+### Tasks
+- Cloned the CareerBridge repository.
+- Installed the project locally using npm.
+- Created a personal Git branch (hania-work).
+- Reviewed the project structure (views, router, components, stores and services).
+- Started working on the project on my local machine.
+
+### Challenges
+- Understanding the existing project structure because the project had already been started.
+
+### What I learned
+- How to clone a Git repository.
+- How to work with Git branches.
+- How the Vue project is organized.
+
+### Next Steps
+- Improve existing pages.
+- Add new features.
+- Commit my own work regularly.
