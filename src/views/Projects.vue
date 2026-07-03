@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { toast } from "vue3-toastify";
+import { ref, onMounted, computed } from "vue";
 import Navbar from "../components/Navbar.vue/Navbar.vue";
 import api from "../services/api";
 
@@ -10,6 +11,7 @@ const description = ref("");
 const github = ref("");
 
 const editingId = ref(null);
+const search = ref("");
 
 async function loadProjects() {
   const response = await api.get("/projects");
@@ -25,6 +27,7 @@ async function addProject() {
         github: github.value,
       });
 
+      toast.success("Project updated successfully!");
       editingId.value = null;
     } else {
       await api.post("/projects", {
@@ -32,6 +35,8 @@ async function addProject() {
         description: description.value,
         github: github.value,
       });
+
+      toast.success("Project added successfully!");
     }
 
     title.value = "";
@@ -39,9 +44,9 @@ async function addProject() {
     github.value = "";
 
     await loadProjects();
-
   } catch (error) {
     console.error(error);
+    toast.error("Something went wrong.");
   }
 }
 
@@ -54,7 +59,6 @@ function editProject(project) {
 }
 
 async function deleteProject(id) {
-
   const confirmDelete = confirm(
     "Are you sure you want to delete this project?"
   );
@@ -64,10 +68,20 @@ async function deleteProject(id) {
   try {
     await api.delete(`/projects/${id}`);
     await loadProjects();
+    toast.success("Project deleted successfully!");
   } catch (error) {
     console.error(error);
+    toast.error("Could not delete project.");
   }
 }
+
+const filteredProjects = computed(() => {
+  return projects.value.filter((project) =>
+    project.title.toLowerCase().includes(
+      search.value.toLowerCase()
+    )
+  );
+});
 
 onMounted(() => {
   loadProjects();
@@ -78,11 +92,9 @@ onMounted(() => {
   <Navbar />
 
   <div class="container">
-
     <h1>My Projects</h1>
 
     <div class="form">
-
       <input
         v-model="title"
         placeholder="Project Name"
@@ -101,17 +113,27 @@ onMounted(() => {
       <button @click="addProject">
         {{ editingId ? "Update Project" : "Add Project" }}
       </button>
-
     </div>
 
-    <div class="projects-grid">
+    <input
+      v-model="search"
+      class="search-input"
+      placeholder="Search Project..."
+    />
 
+    <p
+      v-if="filteredProjects.length === 0"
+      class="empty-text"
+    >
+      No projects found.
+    </p>
+
+    <div class="projects-grid">
       <div
         class="project-card"
-        v-for="project in projects"
+        v-for="project in filteredProjects"
         :key="project._id"
       >
-
         <h2>{{ project.title }}</h2>
 
         <p>{{ project.description }}</p>
@@ -124,7 +146,6 @@ onMounted(() => {
         </a>
 
         <div class="buttons">
-
           <button
             class="edit-btn"
             @click="editProject(project)"
@@ -138,13 +159,9 @@ onMounted(() => {
           >
             Delete
           </button>
-
         </div>
-
       </div>
-
     </div>
-
   </div>
 </template>
 
@@ -192,11 +209,25 @@ onMounted(() => {
   background: #1d4ed8;
 }
 
+.search-input {
+  width: 300px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  display: block;
+  margin: 0 auto 30px;
+}
+
+.empty-text {
+  text-align: center;
+  color: gray;
+  margin-bottom: 20px;
+}
+
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
-  margin-top: 30px;
 }
 
 .project-card {
@@ -241,7 +272,6 @@ onMounted(() => {
   padding: 10px;
   border-radius: 8px;
   cursor: pointer;
-  transition: .3s;
 }
 
 .edit-btn:hover {
@@ -256,22 +286,23 @@ onMounted(() => {
   padding: 10px;
   border-radius: 8px;
   cursor: pointer;
-  transition: .3s;
 }
 
 .delete-btn:hover {
   background: #b91c1c;
 }
 
-@media(max-width:700px){
+@media (max-width: 700px) {
+  .container {
+    padding: 20px;
+  }
 
-.container{
-  padding:20px;
-}
+  .buttons {
+    flex-direction: column;
+  }
 
-.buttons{
-  flex-direction:column;
-}
-
+  .search-input {
+    width: 100%;
+  }
 }
 </style>

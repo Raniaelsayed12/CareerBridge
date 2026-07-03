@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import api from "../services/api";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
@@ -9,30 +10,9 @@ export const useUserStore = defineStore("user", {
 
     loggedIn: true,
 
-    skills: [
-      "HTML",
-      "CSS",
-      "JavaScript",
-      "Vue.js",
-      "Git",
-      "Node.js",
-      "Express.js",
-      "MongoDB",
-    ],
-
-    projects: [
-      {
-        title: "Portfolio Website",
-        description: "Personal portfolio built with Vue.js",
-      },
-    ],
-
-    certificates: [
-      {
-        name: "Frontend Development",
-        provider: "Coursera",
-      },
-    ],
+    skills: [],
+    projects: [],
+    certificates: [],
   }),
 
   getters: {
@@ -43,7 +23,7 @@ export const useUserStore = defineStore("user", {
     certificatesCount: (state) => state.certificates.length,
 
     progress: (state) => {
-      let progress =
+      const progress =
         state.skills.length * 3 +
         state.projects.length * 8 +
         state.certificates.length * 4;
@@ -53,6 +33,20 @@ export const useUserStore = defineStore("user", {
   },
 
   actions: {
+    async loadStatistics() {
+      try {
+        const skills = await api.get("/skills");
+        const projects = await api.get("/projects");
+        const certificates = await api.get("/certificates");
+
+        this.skills = skills.data;
+        this.projects = projects.data;
+        this.certificates = certificates.data;
+      } catch (error) {
+        console.error("Error loading statistics:", error);
+      }
+    },
+
     login() {
       this.loggedIn = true;
     },
@@ -66,30 +60,6 @@ export const useUserStore = defineStore("user", {
       this.email = email;
       this.city = city;
       this.role = role;
-    },
-
-    addSkill(skill) {
-      this.skills.push(skill);
-    },
-
-    deleteSkill(index) {
-      this.skills.splice(index, 1);
-    },
-
-    addProject(project) {
-      this.projects.push(project);
-    },
-
-    deleteProject(index) {
-      this.projects.splice(index, 1);
-    },
-
-    addCertificate(certificate) {
-      this.certificates.push(certificate);
-    },
-
-    deleteCertificate(index) {
-      this.certificates.splice(index, 1);
     },
   },
 });

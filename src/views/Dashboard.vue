@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import Navbar from "../components/Navbar.vue/Navbar.vue";
 import { useUserStore } from "../stores/userStore";
 
@@ -25,6 +25,9 @@ ChartJS.register(
 );
 
 const user = useUserStore();
+onMounted(() => {
+  user.loadStatistics();
+});
 
 const stats = computed(() => [
   {
