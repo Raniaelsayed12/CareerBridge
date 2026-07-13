@@ -14,7 +14,8 @@ const demoProjects = [
     _id: "project-1",
     name: "CareerBridge",
     github: "https://github.com/Raniaelsayed12/CareerBridge",
-    description: "A platform for students to organize skills, projects and certificates.",
+    description:
+      "A platform for students to organize skills, projects and certificates.",
   },
   {
     _id: "project-2",
@@ -27,6 +28,26 @@ const demoProjects = [
 const demoCertificates = [
   { _id: "cert-1", name: "GitHub Introduction", provider: "GitHub Skills" },
   { _id: "cert-2", name: "Vue Basics", provider: "University Project" },
+];
+
+const demoTeamMembers = [
+  {
+    name: "Rania Abdelaal",
+    role: "Frontend Developer",
+    contribution:
+      "Started the CareerBridge project and implemented the first UI pages.",
+  },
+  {
+    name: "Hania Alilat",
+    role: "Master Informatik Student",
+    contribution:
+      "Improved the user store, added demo data and dashboard statistics.",
+  },
+  {
+    name: "Aly Elatrby",
+    role: "Team Member",
+    contribution: "Supported project planning and development.",
+  },
 ];
 
 export const useUserStore = defineStore("user", {
@@ -44,6 +65,7 @@ export const useUserStore = defineStore("user", {
     skills: demoSkills,
     projects: demoProjects,
     certificates: demoCertificates,
+    teamMembers: demoTeamMembers,
   }),
 
   getters: {
@@ -63,7 +85,9 @@ export const useUserStore = defineStore("user", {
       ];
 
       const completedFields = profileFields.filter(Boolean).length;
-      const profileProgress = Math.round((completedFields / profileFields.length) * 40);
+      const profileProgress = Math.round(
+        (completedFields / profileFields.length) * 40
+      );
 
       const activityProgress =
         state.skills.length * 5 +
@@ -81,8 +105,16 @@ export const useUserStore = defineStore("user", {
         const projects = await api.get("/projects");
         const certificates = await api.get("/certificates");
 
-        this.skills = Array.isArray(skills.data) && skills.data.length > 0 ? skills.data : demoSkills;
-        this.projects = Array.isArray(projects.data) && projects.data.length > 0 ? projects.data : demoProjects;
+        this.skills =
+          Array.isArray(skills.data) && skills.data.length > 0
+            ? skills.data
+            : demoSkills;
+
+        this.projects =
+          Array.isArray(projects.data) && projects.data.length > 0
+            ? projects.data
+            : demoProjects;
+
         this.certificates =
           Array.isArray(certificates.data) && certificates.data.length > 0
             ? certificates.data
