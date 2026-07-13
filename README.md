@@ -1,147 +1,80 @@
 # CareerBridge
 
-## Overview
+CareerBridge is a student career platform that helps users organize their skills, projects and certificates in one place.
 
-CareerBridge is a web application developed to help students organize and present their academic and professional achievements in one place.
+## Project Goal
 
-The application allows users to manage their skills, projects, certificates, and personal profile through a simple and modern interface.
+The goal of CareerBridge is to create a simple and modern web application where students can present and manage their career-related information.
 
----
-
-## Features
-
-* User Registration
-* User Login
-* Dashboard with Statistics
-* Skills Management
-* Projects Management
-* Certificates Management
-* User Profile
-* Responsive Design
-* MongoDB Database Integration
-* REST API using Express.js
-
----
-
-## Technologies
-
-### Frontend
-
-* Vue 3
-* Vue Router
-* Pinia
-* Axios
-* Chart.js
-
-### Backend
-
-* Node.js
-* Express.js
-* MongoDB Atlas
-
----
-
-## Project Structure
-
-```text
-src/
- ├── components
- ├── views
- ├── router
- ├── services
- └── stores
-
-backend/
- ├── server.js
- └── .env
-```
-
----
-
-## Installation
-
-### Clone the repository
-
-```bash
-git clone https://github.com/Raniaelsayed12/CareerBridge.git
-```
-
-### Install dependencies
-
-```bash
-npm install
-```
-
-### Start the frontend
-
-```bash
-npm run dev
-```
-
-### Start the backend
-
-```bash
-cd src/backend
-node server.js
-```
-
----
+The application helps students to:
+- manage their skills
+- organize their projects
+- list their certificates
+- view profile progress
+- present their career profile in a clear way
 
 ## Team Members
 
-* Rania Abdelaal
-* Aly Elatrby
-* Hania Allialt
+- Rania Abdelaal
+- Hania Alilat
+- Aly Elatrby
 
----
+## Technologies Used
+
+- Vue.js
+- Vite
+- Pinia
+- Vue Router
+- JavaScript
+- HTML
+- CSS
+- Git
+- GitHub
+
+## Main Features
+
+- Home page
+- Dashboard with statistics
+- Skills page
+- Projects page
+- Certificates page
+- Profile page
+- Editable profile form
+- About page with team members
+- Demo data for testing and presentation
+
+## Learning Focus
+
+This project focuses on:
+- component-based architecture
+- routing with Vue Router
+- state management with Pinia
+- dynamic rendering with v-for
+- conditional rendering with v-if
+- form handling with v-model
+- GitHub workflow with branches, commits and pull requests
+- continuous documentation with a Development Journal
+
+## How to Run the Project
+
+1. Install dependencies:
+
+npm install
+
+2. Start the development server:
+
+npm run dev
+
+3. Open the application:
+
+http://localhost:5173/
 
 ## Current Status
 
-The application is under active development.
+The project includes the main pages, demo data, profile editing, dashboard statistics and team information.
 
-Implemented:
-
-* Authentication
-* Dashboard
-* Skills
-* Projects
-* Certificates
-* Profile
-* About Page
-* Backend API
-* MongoDB Integration
-
-Remaining:
-
-* Final CRUD improvements
-* Final testing
-* Presentation
-
----
-
-## License
-
-This project was developed for academic purposes.
-
-## Screenshots
-
-### Home
-![Home](Docs/Screenshots/Home.png)
-
-### Dashboard
-![Dashboard](Docs/Screenshots/Dashboard.png)
-
-### Skills
-![Skills](Docs/Screenshots/Skills.png)
-
-### Projects
-![Projects](Docs/Screenshots/Projekt.png)
-
-### Certificates
-![Certificates](Docs/Screenshots/Certificates.png)
-
-### Profile
-![Profile](Docs/Screenshots/Profile.png)
-
-### About
-![About](Docs/Screenshots/About.png)
+Next steps:
+- improve the UI design
+- add more realistic test data
+- add screenshots for documentation
+- prepare the final presentation
