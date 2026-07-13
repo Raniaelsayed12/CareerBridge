@@ -351,3 +351,24 @@ The team discussed the application structure together, implemented frontend and 
 ### Next Steps
 - Add real screenshots of Home, Dashboard, Profile, About and other pages.
 - Use the screenshots in the final presentation.
+
+---
+
+## 13.07.2026 – Hania Alilat
+
+### Tasks
+- Added AI usage documentation.
+- Documented how ChatGPT supported the development process.
+- Explained that AI suggestions were reviewed and adapted before being used.
+
+### Challenges
+- It was important to show AI usage transparently.
+- The documentation needed to separate AI support from human project decisions.
+
+### What I learned
+- How to document generative AI usage in a university project.
+- How to explain AI assistance in a responsible way.
+
+### Next Steps
+- Review all documentation files before the final presentation.
+- Add real screenshots from the application.
