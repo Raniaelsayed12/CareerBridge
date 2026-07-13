@@ -282,3 +282,27 @@ The team discussed the application structure together, implemented frontend and 
 - Add screenshots for the presentation.
 - Improve the Profile page.
 - Test the application on different screen sizes.
+---
+
+## 13.07.2026 – Hania Alilat
+
+### Tasks
+- Improved the Profile page.
+- Added an Edit Profile form.
+- Added Save and Cancel functionality.
+- Displayed dynamic profile statistics from the Pinia user store.
+- Connected the Profile page with skills, projects, certificates and profile progress.
+
+### Challenges
+- The Profile page needed to use existing store data without breaking the rest of the application.
+- I had to separate display mode from edit mode.
+
+### What I learned
+- How to use ref in Vue.
+- How to bind input fields with v-model.
+- How to update Pinia state from a Vue component.
+- How to document my contribution in the Development Journal.
+
+### Next Steps
+- Test the Profile page on different screen sizes.
+- Add screenshots for the documentation and presentation.
