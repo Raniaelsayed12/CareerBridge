@@ -306,3 +306,27 @@ The team discussed the application structure together, implemented frontend and 
 ### Next Steps
 - Test the Profile page on different screen sizes.
 - Add screenshots for the documentation and presentation.
+
+---
+
+## 13.07.2026 – Hania Alilat
+
+### Tasks
+- Added seed data with 12 example users.
+- Created test users with different skills, projects and certificates.
+- Added users with long names, short names and missing optional fields.
+- Added documentation for the seed data.
+
+### Challenges
+- The application needs realistic data to avoid empty pages during testing.
+- The test data should include different user cases, not only perfect profiles.
+
+### What I learned
+- How seed data helps with development and presentation.
+- How to prepare test cases for different user profiles.
+- How to document test data clearly.
+
+### Next Steps
+- Connect the seed data more strongly with the UI.
+- Add screenshots for the final documentation.
+- Continue improving the presentation material.
