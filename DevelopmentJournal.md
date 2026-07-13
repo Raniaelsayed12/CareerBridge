@@ -330,3 +330,24 @@ The team discussed the application structure together, implemented frontend and 
 - Connect the seed data more strongly with the UI.
 - Add screenshots for the final documentation.
 - Continue improving the presentation material.
+
+---
+
+## 13.07.2026 – Hania Alilat
+
+### Tasks
+- Created a screenshots documentation file.
+- Prepared a screenshots folder for the application.
+- Listed the pages that should be documented for the final presentation.
+
+### Challenges
+- The project needs visual documentation, not only source code.
+- Screenshots help explain the current UI state clearly.
+
+### What I learned
+- How documentation supports the presentation.
+- How to organize project screenshots in a dedicated folder.
+
+### Next Steps
+- Add real screenshots of Home, Dashboard, Profile, About and other pages.
+- Use the screenshots in the final presentation.
