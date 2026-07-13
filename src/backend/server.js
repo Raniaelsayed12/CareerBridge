@@ -28,6 +28,7 @@ async function startServer() {
     const skillsCollection = db.collection("skills");
     const projectsCollection = db.collection("projects");
     const certificatesCollection = db.collection("certificates");
+    const usersCollection = db.collection("users");
 
     app.get("/", (req, res) => {
       res.send("CareerBridge Backend Working");
@@ -152,14 +153,92 @@ async function startServer() {
     });
 
     app.get("/hello", (req, res) => {
-      res.send("HELLO PROJECT ROUTE");
+  res.send("HELLO PROJECT ROUTE");
+});
+
+// =========================
+// USERS
+// =========================
+
+app.post("/register", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
+
+    const existingUser = await usersCollection.findOne({
+      email,
     });
 
-   const PORT = process.env.PORT || 3000;
+    if (existingUser) {
+      return res.status(400).json({
+        message: "Email already exists",
+      });
+    }
+
+    const result = await usersCollection.insertOne({
+      name,
+      email,
+      password,
+    });
+
+    res.status(201).json({
+      message: "User registered successfully",
+    });
+
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: "Server Error",
+    });
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await usersCollection.findOne({
+      email,
+      password,
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+      });
+    }
+
+    res.json({
+      message: "Login successful",
+      user,
+    });
+
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: "Server Error",
+    });
+  }
+});
+
+app.get("/users", async (req, res) => {
+  const users = await usersCollection.find().toArray();
+  res.json(users);
+});
+
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`Server Running On Port ${PORT}`);
 });
+
   } catch (error) {
     console.log("ERROR:");
     console.log(error);
