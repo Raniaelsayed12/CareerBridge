@@ -261,3 +261,24 @@ The team discussed the application structure together, implemented frontend and 
 - Add screenshots for the presentation.
 - Improve the Profile page.
 - Test the application on different screen sizes.
+## 13.07.2026 – Hania Alilat
+
+### Tasks
+- Improved the About page.
+- Added a team members section.
+- Added team data for Rania, Hania and Aly.
+- Separated the current user profile from the project team information.
+
+### Challenges
+- The previous demo data made the application look like it belonged to only one person.
+- I needed to keep Hania as the logged-in user while still showing all team members.
+
+### What I learned
+- How to store team data in Pinia.
+- How to display arrays in Vue using v-for.
+- How to document a real contribution in the Development Journal.
+
+### Next Steps
+- Add screenshots for the presentation.
+- Improve the Profile page.
+- Test the application on different screen sizes.
