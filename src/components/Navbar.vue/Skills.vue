@@ -5,6 +5,7 @@ import api from "../services/api";
 
 const skills = ref([]);
 const newSkill = ref("");
+const editingId = ref(null);
 const search = ref("");
 
 async function loadSkills() {
@@ -20,15 +21,28 @@ async function addSkill() {
   if (!newSkill.value.trim()) return;
 
   try {
-    await api.post("/skills", {
-      name: newSkill.value,
-    });
+    if (editingId.value) {
+      await api.put(`/skills/${editingId.value}`, {
+        name: newSkill.value,
+      });
+
+      editingId.value = null;
+    } else {
+      await api.post("/skills", {
+        name: newSkill.value,
+      });
+    }
 
     newSkill.value = "";
     await loadSkills();
   } catch (error) {
     console.error(error);
   }
+}
+
+function editSkill(skill) {
+  editingId.value = skill._id;
+  newSkill.value = skill.name;
 }
 
 async function removeSkill(id) {
@@ -48,9 +62,7 @@ async function removeSkill(id) {
 
 const filteredSkills = computed(() => {
   return skills.value.filter((skill) =>
-    skill.name.toLowerCase().includes(
-      search.value.toLowerCase()
-    )
+    skill.name.toLowerCase().includes(search.value.toLowerCase())
   );
 });
 
@@ -72,7 +84,7 @@ onMounted(() => {
       />
 
       <button @click="addSkill">
-        Add Skill
+        {{ editingId ? "Update Skill" : "Add Skill" }}
       </button>
     </div>
 
@@ -97,12 +109,21 @@ onMounted(() => {
       >
         <h3>{{ skill.name }}</h3>
 
-        <button
-          class="delete-btn"
-          @click="removeSkill(skill._id)"
-        >
-          Delete
-        </button>
+        <div class="buttons">
+          <button
+            class="edit-btn"
+            @click="editSkill(skill)"
+          >
+            Edit
+          </button>
+
+          <button
+            class="delete-btn"
+            @click="removeSkill(skill._id)"
+          >
+            Delete
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -175,12 +196,28 @@ onMounted(() => {
   transform: translateY(-6px);
 }
 
+.buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.edit-btn {
+  flex: 1;
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
 .delete-btn {
-  margin-top: 10px;
+  flex: 1;
   background: crimson;
   color: white;
   border: none;
-  padding: 8px 12px;
+  padding: 8px;
   border-radius: 8px;
   cursor: pointer;
 }
