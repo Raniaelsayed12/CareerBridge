@@ -2,8 +2,10 @@
 import { ref, onMounted, computed } from "vue";
 import Navbar from "../components/Navbar.vue/Navbar.vue";
 import api from "../services/api";
+import { toast } from "vue3-toastify";
 
 const certificates = ref([]);
+
 
 const certificateName = ref("");
 const providerName = ref("");
@@ -17,19 +19,23 @@ async function loadCertificates() {
 }
 
 async function addCertificate() {
-  if (
-    !certificateName.value.trim() ||
-    !providerName.value.trim()
-  ) {
-    return;
-  }
+if (
+  !certificateName.value.trim() ||
+  !providerName.value.trim()
+) {
+  toast.error("Please fill in all fields.");
+  return;
+}
 
   try {
     if (editingId.value) {
-      await api.put(`/certificates/${editingId.value}`, {
+      await api.put(`/certificates/${editingId.value}`,
+       {
         name: certificateName.value,
         provider: providerName.value,
-      });
+      })
+      ;
+      toast.success("Certificate updated successfully!");
 
       editingId.value = null;
     } else {
@@ -37,6 +43,7 @@ async function addCertificate() {
         name: certificateName.value,
         provider: providerName.value,
       });
+      toast.success("Certificate added successfully!");
     }
 
     certificateName.value = "";
@@ -44,6 +51,7 @@ async function addCertificate() {
 
     await loadCertificates();
   } catch (error) {
+    toast.error("Something went wrong.");
     console.error(error);
   }
 }
@@ -62,10 +70,18 @@ async function deleteCertificate(id) {
 
   if (!confirmDelete) return;
 
-  await api.delete(`/certificates/${id}`);
-  await loadCertificates();
-}
+  try {
+    await api.delete(`/certificates/${id}`);
 
+    toast.success("Certificate deleted successfully!");
+
+    await loadCertificates();
+
+  } catch (error) {
+    console.error(error);
+    toast.error("Could not delete certificate.");
+  }
+}
 const filteredCertificates = computed(() => {
   return certificates.value.filter((certificate) =>
     certificate.name.toLowerCase().includes(
@@ -143,7 +159,6 @@ onMounted(() => {
     </div>
   </div>
 </template>
-
 <style>
 .container {
   padding: 40px;
@@ -193,49 +208,81 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
-.cert-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+.cert-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:25px;
 }
 
-.cert-card {
-  background: white;
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0 0 15px #ddd;
+.cert-card{
+  background:#ffffff;
+  border-radius:18px;
+  padding:25px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+  transition:.3s;
 }
 
-.cert-card h3 {
-  color: #2563eb;
+.cert-card:hover{
+  transform:translateY(-5px);
 }
 
-.buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
+.cert-card h3{
+  color:#2563eb;
+  margin-bottom:10px;
 }
 
-.edit-btn {
-  flex: 1;
-  background: #10b981;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
+.cert-card p{
+  color:#555;
+  margin-bottom:25px;
 }
 
-.delete-btn {
-  flex: 1;
-  background: crimson;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
+.buttons{
+  display:flex;
+  gap:12px;
+  align-items:stretch;
 }
 
+.edit-btn,
+.delete-btn{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  height:48px;
+  margin:0;
+  padding:0;
+
+  border:none;
+  border-radius:10px;
+
+  font-size:15px;
+  font-weight:600;
+  color:#fff;
+
+  cursor:pointer;
+  box-sizing:border-box;
+}
+
+.edit-btn{
+  background:#2563eb;
+}
+
+.edit-btn:hover{
+  background:#1d4ed8;
+}
+
+.delete-btn{
+  background:#ef4444;
+}
+
+.delete-btn:hover{
+  background:#dc2626;
+}
+.delete-btn:hover{
+  background:#dc2626;
+
+}
 @media (max-width: 700px) {
   .container {
     padding: 20px;

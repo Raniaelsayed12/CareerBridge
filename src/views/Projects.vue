@@ -14,12 +14,23 @@ const editingId = ref(null);
 const search = ref("");
 
 async function loadProjects() {
-  const response = await api.get("/projects");
-  projects.value = response.data;
+  try {
+    const response = await api.get("/projects");
+    console.log(response.data);
+    projects.value = response.data;
+    console.log(projects.value);
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function addProject() {
   try {
+    if (!title.value.trim()) {
+      toast.error("Project title is required");
+      return;
+    }
+
     if (editingId.value) {
       await api.put(`/projects/${editingId.value}`, {
         title: title.value,
@@ -43,12 +54,14 @@ async function addProject() {
     description.value = "";
     github.value = "";
 
-    await loadProjects();
+    loadProjects();
+
   } catch (error) {
     console.error(error);
     toast.error("Something went wrong.");
   }
 }
+
 
 function editProject(project) {
   editingId.value = project._id;
@@ -67,8 +80,11 @@ async function deleteProject(id) {
 
   try {
     await api.delete(`/projects/${id}`);
-    await loadProjects();
+
     toast.success("Project deleted successfully!");
+
+    loadProjects();
+
   } catch (error) {
     console.error(error);
     toast.error("Could not delete project.");
@@ -87,7 +103,6 @@ onMounted(() => {
   loadProjects();
 });
 </script>
-
 <template>
   <Navbar />
 
@@ -129,11 +144,14 @@ onMounted(() => {
     </p>
 
     <div class="projects-grid">
+
       <div
         class="project-card"
         v-for="project in filteredProjects"
         :key="project._id"
       >
+
+        <div class="card-content">
         <h2>{{ project.title }}</h2>
 
         <p>{{ project.description }}</p>
@@ -144,8 +162,10 @@ onMounted(() => {
         >
           GitHub Repository
         </a>
+      </div>
 
         <div class="buttons">
+
           <button
             class="edit-btn"
             @click="editProject(project)"
@@ -159,150 +179,93 @@ onMounted(() => {
           >
             Delete
           </button>
+
         </div>
+
       </div>
+
     </div>
   </div>
 </template>
 
 <style>
-.container {
-  padding: 40px;
+.container{max-width:1200px;margin:auto;padding:40px 20px;}
+.container h1{text-align:center;margin-bottom:30px;}
+.form{max-width:650px;margin:0 auto 40px;display:flex;flex-direction:column;gap:15px;}
+.form input,.form textarea{padding:14px;border:1px solid #ddd;border-radius:12px;font-size:15px;}
+.form textarea{min-height:100px;resize:none;}
+.form button{background:#2563eb;color:#fff;border:none;padding:14px;border-radius:12px;cursor:pointer;}
+.search-input{width:320px;padding:12px;border:1px solid #ddd;border-radius:12px;display:block;margin:0 auto 35px;}
+.empty-text{text-align:center;color:#777;}
+.projects-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:25px;
+  align-items:stretch;
 }
 
-.container h1 {
-  text-align: center;
-  margin-bottom: 30px;
+.project-card{
+  background:#fff;
+  border-radius:18px;
+  padding:25px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+  display:flex;
+  flex-direction:column;
+  min-height:360px;
+  transition:.3s;
 }
 
-.form {
-  max-width: 600px;
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 40px;
+.project-card:hover{
+  transform:translateY(-6px);
 }
 
-.form input,
-.form textarea {
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
+.card-content{
+  flex:1;
+  display:flex;
+  flex-direction:column;
 }
 
-.form textarea {
-  min-height: 100px;
+.project-card h2{
+  color:#2563eb;
+  margin-bottom:12px;
+  min-height:56px;
 }
 
-.form button {
-  background: #2563eb;
-  color: white;
-  border: none;
-  padding: 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: .3s;
+.project-card p{
+  flex:1;
+  color:#555;
+  line-height:1.6;
+  margin-bottom:15px;
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
 }
 
-.form button:hover {
-  background: #1d4ed8;
+.project-card a{
+  color:#2563eb;
+  text-decoration:none;
+  font-weight:600;
+  word-break:break-word;
 }
 
-.search-input {
-  width: 300px;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  display: block;
-  margin: 0 auto 30px;
+.buttons{
+  display:flex;
+  gap:12px;
+  margin-top:20px;
 }
 
-.empty-text {
-  text-align: center;
-  color: gray;
-  margin-bottom: 20px;
+.edit-btn,
+.delete-btn{
+  flex:1;
+  height:45px;
+  border:none;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:600;
+  cursor:pointer;
 }
-
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.project-card {
-  background: white;
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0 0 15px #ddd;
-  transition: .3s;
-}
-
-.project-card:hover {
-  transform: translateY(-6px);
-}
-
-.project-card h2 {
-  color: #2563eb;
-}
-
-.project-card p {
-  margin: 15px 0;
-}
-
-.project-card a {
-  display: block;
-  margin-top: 10px;
-  text-decoration: none;
-  color: #2563eb;
-  word-break: break-all;
-}
-
-.buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.edit-btn {
-  flex: 1;
-  background: #10b981;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.edit-btn:hover {
-  background: #059669;
-}
-
-.delete-btn {
-  flex: 1;
-  background: crimson;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.delete-btn:hover {
-  background: #b91c1c;
-}
-
-@media (max-width: 700px) {
-  .container {
-    padding: 20px;
-  }
-
-  .buttons {
-    flex-direction: column;
-  }
-
-  .search-input {
-    width: 100%;
-  }
-}
+@media(max-width:700px){.container{padding:20px}.search-input{width:100%}.projects-grid{grid-template-columns:1fr}}
 </style>

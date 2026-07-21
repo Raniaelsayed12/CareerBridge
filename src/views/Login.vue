@@ -12,6 +12,7 @@ const email = ref("");
 const password = ref("");
 
 async function handleLogin() {
+   console.log("Login button clicked");
   if (!email.value || !password.value) {
     alert("Please fill all fields");
     return;
