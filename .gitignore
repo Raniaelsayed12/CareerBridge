@@ -1,22 +1,10 @@
-
-# dependencies
 node_modules/
-
-# production build
-dist/
-
-# environment variables
-.env
-src/backend/.env
-
-# VS Code
-.vscode/
-
-# logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# OS files
+backend/node_modules/
+src/backend/node_modules/
 .DS_Store
-Thumbs.db
+.env
+backend/.env
+src/backend/.env
+dist/
+local-db.json
+backend/local-db.json
