@@ -18,18 +18,51 @@ Die Anwendung unterstützt vollständige CRUD-Funktionalität und bietet eine ü
 
 - 👤 Benutzerregistrierung
 - 🔐 Benutzeranmeldung
-- 📊 Dashboard mit Statistiken
+- 📊 Dashboard mit Diagrammen und Fortschrittsanzeige
 - 💡 Skills verwalten (Create, Read, Update, Delete)
 - 🚀 Projekte verwalten
 - 🏆 Zertifikate verwalten
 - 👨‍🎓 Profil bearbeiten
-- ℹ️ About-Seite
+- ℹ️ About-Seite mit Teaminformationen
+- MongoDB Atlas (Cloud NoSQL Database)
 - 🔍 Suchfunktion
+- 📄 PDF-Lebenslauf exportieren
+  
 - 📱 Responsive Design
 
 ---
+# Architektur
+Vue 3 Frontend
+
+↓
+
+Axios
+
+↓
+
+Express REST API
+
+↓
+
+MongoDB Atlas
+
+
+
+
+# Future Improvements
+- 
+
+- Deployment
+
+- Mehrsprachigkeit
+
+- Benutzerprofil mit Bild-Upload
+
+- Erweiterte Such- und Filterfunktionen
 
 # 🛠 Verwendete Technologien
+
+
 
 ## Frontend
 
@@ -173,3 +206,9 @@ The project is organized into three main areas:
 - `src/` – Vue.js frontend
 - `backend/` – Express backend with local JSON data
 - `Docs/` – project documentation, screenshots and summaries
+
+# Einsatz von KI
+
+Während der Entwicklung wurde ChatGPT als unterstützendes Lernwerkzeug verwendet. Es half beim Verständnis von Vue.js, Pinia, Express, MongoDB sowie bei der Analyse von Fehlermeldungen und der Erstellung der Projektdokumentation. Alle Vorschläge wurden geprüft und an die Anforderungen des Projekts angepasst.
+
+هذا
