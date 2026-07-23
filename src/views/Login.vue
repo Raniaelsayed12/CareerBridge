@@ -1,13 +1,48 @@
 <script setup>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 import Navbar from "../components/Navbar.vue/Navbar.vue";
 import { useUserStore } from "../stores/userStore";
+import api from "../services/api";
 
+const router = useRouter();
 const user = useUserStore();
 
-function handleLogin() {
-  user.login();
+const email = ref("");
+const password = ref("");
 
-  alert("Login Successful!");
+async function handleLogin() {
+   console.log("Login button clicked");
+  if (!email.value || !password.value) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  try {
+    const response = await api.post("/login", {
+      email: email.value,
+      password: password.value,
+    });
+
+    user.login();
+
+    if (response.data.user) {
+      user.name = response.data.user.name;
+      user.email = response.data.user.email;
+    }
+
+    alert(response.data.message);
+
+    router.push("/dashboard");
+
+  } catch (err) {
+    if (err.response) {
+      alert(err.response.data.message);
+    } else {
+      alert("Cannot connect to server");
+      console.log(err);
+    }
+  }
 }
 </script>
 
@@ -19,11 +54,13 @@ function handleLogin() {
       <h1>Login</h1>
 
       <input
+        v-model="email"
         type="email"
         placeholder="Email"
       />
 
       <input
+        v-model="password"
         type="password"
         placeholder="Password"
       />
@@ -61,6 +98,7 @@ function handleLogin() {
   margin-bottom: 15px;
   border: 1px solid #ddd;
   border-radius: 10px;
+  box-sizing: border-box;
 }
 
 .login-card button {
@@ -72,5 +110,9 @@ function handleLogin() {
   border-radius: 10px;
   cursor: pointer;
   font-size: 16px;
+}
+
+.login-card button:hover {
+  background: #1d4ed8;
 }
 </style>

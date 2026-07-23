@@ -1,9 +1,15 @@
 <script setup>
+import { useRouter } from "vue-router";
 import { useUserStore } from "../../stores/userStore";
 
+const router = useRouter();
 const user = useUserStore();
-</script>
 
+function logout() {
+  user.logout();
+  router.push("/login");
+}
+</script>
 <template>
   <nav class="navbar">
     <h2>CareerBridge</h2>
@@ -48,6 +54,7 @@ const user = useUserStore();
       >
         Register
       </router-link>
+      <router-link to="/resume">Resume</router-link>
 
       <div
         v-if="user.loggedIn"
@@ -57,12 +64,12 @@ const user = useUserStore();
           👤 {{ user.name }}
         </span>
 
-        <button
-          class="logout-btn"
-          @click="user.logout()"
-        >
-          Logout
-        </button>
+       <button
+  class="logout-btn"
+  @click="logout"
+>
+  Logout
+</button>
       </div>
     </div>
   </nav>

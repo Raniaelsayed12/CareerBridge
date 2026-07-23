@@ -1,80 +1,167 @@
-# CareerBridge
+# 🚀 CareerBridge
 
-CareerBridge is a student career platform that helps users organize their skills, projects and certificates in one place.
+> **Web Development Project – Summer Semester 2026**
 
-## Project Goal
+CareerBridge ist eine moderne Webanwendung, die Studierenden dabei hilft, ihre beruflichen Informationen an einem Ort zu verwalten. Benutzer können ihre Skills, Projekte und Zertifikate organisieren und ihren persönlichen Fortschritt verfolgen.
 
-The goal of CareerBridge is to create a simple and modern web application where students can present and manage their career-related information.
+---
 
-The application helps students to:
-- manage their skills
-- organize their projects
-- list their certificates
-- view profile progress
-- present their career profile in a clear way
+# 📌 Projektübersicht
 
-## Team Members
+CareerBridge wurde mit modernen Webtechnologien entwickelt und besteht aus einem Frontend mit Vue 3 sowie einem Backend mit Express.js und MongoDB.
 
-- Rania Abdelaal
-- Hania Alilat
-- Aly Elatrby
+Die Anwendung unterstützt vollständige CRUD-Funktionalität und bietet eine übersichtliche Benutzeroberfläche.
 
-## Technologies Used
+---
 
-- Vue.js
+# ✨ Hauptfunktionen
+
+- 👤 Benutzerregistrierung
+- 🔐 Benutzeranmeldung
+- 📊 Dashboard mit Statistiken
+- 💡 Skills verwalten (Create, Read, Update, Delete)
+- 🚀 Projekte verwalten
+- 🏆 Zertifikate verwalten
+- 👨‍🎓 Profil bearbeiten
+- ℹ️ About-Seite
+- 🔍 Suchfunktion
+- 📱 Responsive Design
+
+---
+
+# 🛠 Verwendete Technologien
+
+## Frontend
+
+- Vue 3
 - Vite
-- Pinia
 - Vue Router
-- JavaScript
-- HTML
-- CSS
-- Git
-- GitHub
+- Pinia
+- Axios
+- Chart.js
+- HTML5
+- CSS3
+- JavaScript (ES6)
 
-## Main Features
+## Backend
 
-- Home page
-- Dashboard with statistics
-- Skills page
-- Projects page
-- Certificates page
-- Profile page
-- Editable profile form
-- About page with team members
-- Demo data for testing and presentation
+- Node.js
+- Express.js
+- MongoDB Atlas
 
-## Learning Focus
+---
 
-This project focuses on:
-- component-based architecture
-- routing with Vue Router
-- state management with Pinia
-- dynamic rendering with v-for
-- conditional rendering with v-if
-- form handling with v-model
-- GitHub workflow with branches, commits and pull requests
-- continuous documentation with a Development Journal
+# 📂 Projektstruktur
 
-## How to Run the Project
+```
+CareerBridge
+│
+├── src
+│   ├── assets
+│   ├── components
+│   ├── router
+│   ├── services
+│   ├── stores
+│   └── views
+│
+├── src/backend
+│   ├── server.js
+│   ├── package.json
+│   └── .env
+│
+└── README.md
+```
 
-1. Install dependencies:
+---
 
+# ⚙️ Installation
+
+## Frontend
+
+```bash
 npm install
-
-2. Start the development server:
-
 npm run dev
+```
 
-3. Open the application:
+## Backend
 
-http://localhost:5173/
+```bash
+cd src/backend
+npm install
+node server.js
+```
 
-## Current Status
+---
 
-The project includes the main pages, demo data, profile editing, dashboard statistics and team information.
+# 🗄 Datenbank
 
-Next steps:
-- improve the UI design
-- add more realistic test data
-- add screenshots for documentation
-- prepare the final presentation
+Die Anwendung verwendet **MongoDB Atlas** zur Speicherung von Benutzern, Skills, Projekten und Zertifikaten.
+
+---
+
+# 📄 Seiten der Anwendung
+
+- Home
+- Register
+- Login
+- Dashboard
+- Skills
+- Projects
+- Certificates
+- Profile
+- About
+
+---
+
+# 🎯 Projektziele
+
+- Entwicklung einer modernen Single-Page-Anwendung
+- Nutzung einer REST-API
+- Integration einer MongoDB-Datenbank
+- Umsetzung vollständiger CRUD-Funktionen
+- State Management mit Pinia
+- Navigation mit Vue Router
+- Responsive Benutzeroberfläche
+
+---
+
+# 👥 Teammitglieder
+
+- **Rania Abdelaal**
+- **Aly Elatrby**
+- **Hania Alilat**
+
+---
+
+# 📚 Modul
+
+**Web Development**
+
+**Sommersemester 2026**
+
+---
+
+# ✅ Projektstatus
+
+Das Projekt ist vollständig funktionsfähig.
+
+Folgende Funktionen wurden erfolgreich implementiert:
+
+- Benutzerregistrierung
+- Benutzeranmeldung
+- CRUD für Skills
+- CRUD für Projekte
+- CRUD für Zertifikate
+- Dashboard mit Diagrammen
+- Profilverwaltung
+- Responsive Benutzeroberfläche
+- REST-API mit Express.js
+- MongoDB-Datenbank
+
+---
+
+# 💻 Autorinnen
+
+Dieses Projekt wurde im Rahmen des Moduls **Web Development** entwickelt und dient ausschließlich zu Studienzwecken.
+
+Vielen Dank für Ihre Aufmerksamkeit.

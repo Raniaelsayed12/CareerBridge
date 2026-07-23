@@ -129,7 +129,7 @@ export const useUserStore = defineStore("user", {
     },
 
     login() {
-      this.loggedIn = true;
+      this.loggedIn = false;
     },
 
     logout() {

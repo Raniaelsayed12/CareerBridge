@@ -372,3 +372,98 @@ The team discussed the application structure together, implemented frontend and 
 ### Next Steps
 - Review all documentation files before the final presentation.
 - Add real screenshots from the application.
+
+
+14.07.2026 – Rania Abdelaal
+Aufgaben
+Die Skills-Seite erweitert und verbessert.
+Suchfunktion für Skills implementiert.
+Bearbeiten- und Löschen-Funktion überarbeitet.
+Die Benutzeroberfläche der Skills-Seite verbessert.
+Fehler im Frontend behoben und den Code bereinigt.
+Die Verbindung zwischen Frontend und Backend getestet.
+Herausforderungen
+
+Einige CRUD-Funktionen funktionierten zunächst nicht wie erwartet.
+Es war notwendig, Fehler bei der Kommunikation zwischen Frontend und Backend zu analysieren und zu beheben.
+Die korrekte Aktualisierung der Daten nach Änderungen musste sichergestellt werden.
+Was ich gelernt habe
+Wie REST-APIs mit Axios in Vue.js verwendet werden.
+Wie CRUD-Operationen in einer Vue-Anwendung umgesetzt werden.
+Wie man Fehler systematisch analysiert und behebt.
+Wie Frontend und Backend zusammenarbeiten.
+Nächste Schritte
+Abschließende Tests der Skills-Seite durchführen.
+Die Benutzeroberfläche weiter optimieren.
+Die Projektdokumentation aktualisieren.
+
+
+14.07.2026 – Rania Abdelaal
+Aufgaben
+Die Projects-Seite erweitert.
+Bearbeiten-, Löschen- und Suchfunktion verbessert.
+GitHub-Links für Projekte integriert.
+Das responsive Layout optimiert.
+Die Daten erfolgreich mit MongoDB verbunden.
+Herausforderungen
+Die Aktualisierung der Projektdaten musste korrekt umgesetzt werden.
+Die Bearbeitungsfunktion erforderte zusätzliche Tests.
+Was ich gelernt habe
+Wie komplexere CRUD-Funktionen umgesetzt werden.
+Wie Vue-Komponenten effizient wiederverwendet werden können.
+Wie man Formulare mit v-model verwaltet.
+Nächste Schritte
+Weitere Tests durchführen.
+Code optimieren.
+
+14.07.2026 – Rania Abdelaal
+Aufgaben
+Die Certificates-Seite erweitert.
+Such-, Bearbeiten- und Löschen-Funktionen implementiert.
+Das Layout verbessert.
+Fehler behoben.
+Herausforderungen
+Die Synchronisierung der Daten mit MongoDB musste überprüft werden.
+Was ich gelernt habe
+Wie mehrere CRUD-Seiten nach demselben Muster aufgebaut werden.
+Wie wiederverwendbarer Vue-Code geschrieben wird.
+Nächste Schritte
+Die gesamte Anwendung testen.
+Die Dokumentation ergänzen.
+
+14.07.2026 – Rania Abdelaal
+Aufgaben
+Das Dashboard verbessert.
+Statistik-Karten hinzugefügt.
+Ein Diagramm mit Chart.js integriert.
+Eine Fortschrittsanzeige für das Benutzerprofil erstellt.
+Quick-Action-Karten hinzugefügt.
+Herausforderungen
+Die Daten aus dem Pinia Store mussten korrekt im Dashboard angezeigt werden.
+Die Darstellung auf verschiedenen Bildschirmgrößen musste angepasst werden.
+Was ich gelernt habe
+Wie Chart.js in Vue integriert wird.
+Wie computed und Pinia zusammenarbeiten.
+Wie Dashboards mit dynamischen Daten erstellt werden.
+Nächste Schritte
+Das Dashboard weiter testen.
+Die Darstellung optimieren.
+
+14.07.2026 – Rania Abdelaal
+Aufgaben
+Die Dokumentation des Projekts überprüft.
+Das Projekt für die Abschlusspräsentation vorbereitet.
+Den Quellcode bereinigt.
+Das GitHub-Repository aktualisiert.
+Die finale Projektstruktur überprüft.
+Herausforderungen
+Alle Projektteile mussten vor der Präsentation vollständig getestet werden.
+Die Dokumentation musste vollständig und übersichtlich sein.
+Was ich gelernt habe
+Wie wichtig eine gute Projektdokumentation ist.
+Wie man ein Softwareprojekt für eine Präsentation vorbereitet.
+Wie Teamarbeit und Versionsverwaltung effektiv eingesetzt werden.
+Nächste Schritte
+Präsentation fertigstellen.
+Development Journal abschließen.
+Finale Präsentation halten.

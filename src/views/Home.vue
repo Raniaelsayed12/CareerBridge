@@ -38,54 +38,109 @@ import Navbar from "../components/Navbar.vue/Navbar.vue";
   </section>
 </template>
 
-<style>
-.hero {
-  text-align: center;
-  margin-top: 100px;
+<style scoped>
+body{
+  background:#f8fafc;
 }
 
-.hero h1 {
-  font-size: 60px;
-  color: #1e293b;
+.hero{
+  max-width:1100px;
+  margin:60px auto;
+  padding:90px 40px;
+  text-align:center;
+  border-radius:25px;
+  background:linear-gradient(135deg,#1d4ed8,#3b82f6);
+  color:white;
+  box-shadow:0 20px 40px rgba(222, 230, 231, 0.25);
 }
 
-.hero h2 {
-  color: #2563eb;
-  margin-top: 10px;
+.hero h1{
+  font-size:64px;
+  margin-bottom:15px;
+  color:#fff;
 }
 
-.hero p {
-  font-size: 20px;
-  margin: 20px;
+.hero h2{
+  font-size:30px;
+  color:#dbeafe;
+  margin-bottom:25px;
 }
 
-.hero button {
-  padding: 15px 30px;
-  border: none;
-  background: #2563eb;
-  color: white;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 16px;
+.hero p{
+  font-size:20px;
+  color:#eff6ff;
+  max-width:700px;
+  margin:0 auto 35px;
+  line-height:1.8;
 }
 
-.features {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  padding: 40px;
+.hero button{
+ background: #2563eb;
+  color:white;
+  border:none;
+  padding:16px 38px;
+  border-radius:12px;
+  font-size:17px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:.3s;
 }
 
-.feature-card {
-  background: white;
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0 0 15px #ddd;
-  text-align: center;
+.hero button:hover{
+  background: #1d4ed8;
+  transform:translateY(-2px);
 }
 
-.feature-card h3 {
-  color: #2563eb;
-  margin-bottom: 10px;
+.features{
+  max-width:1200px;
+  margin:50px auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:25px;
+  padding:0 20px 40px;
+}
+
+.feature-card{
+  background:white;
+  border-radius:18px;
+  padding:35px 25px;
+  text-align:center;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+  transition:.3s;
+}
+
+.feature-card:hover{
+  transform:translateY(-8px);
+}
+
+.feature-card h3{
+  color:#2563eb;
+  margin-bottom:15px;
+  font-size:24px;
+}
+
+.feature-card p{
+  color:#64748b;
+  line-height:1.6;
+}
+
+@media(max-width:768px){
+
+  .hero{
+    margin:30px 15px;
+    padding:60px 20px;
+  }
+
+  .hero h1{
+    font-size:42px;
+  }
+
+  .hero h2{
+    font-size:24px;
+  }
+
+  .hero p{
+    font-size:17px;
+  }
 }
 </style>
