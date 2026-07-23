@@ -165,3 +165,11 @@ Folgende Funktionen wurden erfolgreich implementiert:
 Dieses Projekt wurde im Rahmen des Moduls **Web Development** entwickelt und dient ausschließlich zu Studienzwecken.
 
 Vielen Dank für Ihre Aufmerksamkeit.
+
+## Folder Structure
+
+The project is organized into three main areas:
+
+- `src/` – Vue.js frontend
+- `backend/` – Express backend with local JSON data
+- `Docs/` – project documentation, screenshots and summaries

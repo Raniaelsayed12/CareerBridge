@@ -467,3 +467,25 @@ Nächste Schritte
 Präsentation fertigstellen.
 Development Journal abschließen.
 Finale Präsentation halten.
+
+---
+
+## 23.07.2026 – Hania Alilat
+
+### Tasks
+- Reorganized the project structure.
+- Moved the backend into a separate backend folder.
+- Added documentation for the project structure.
+- Updated the README with the folder overview.
+
+### Challenges
+- The project needed a clearer separation between frontend, backend and documentation.
+- The backend was previously inside the frontend source folder.
+
+### What I learned
+- How to organize a full-stack project more clearly.
+- How to document the folder structure for other team members and the professor.
+
+### Next Steps
+- Test frontend and backend after restructuring.
+- Continue improving the UI and documentation.
