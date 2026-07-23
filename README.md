@@ -24,7 +24,6 @@ Die Anwendung unterstützt vollständige CRUD-Funktionalität und bietet eine ü
 - 🏆 Zertifikate verwalten
 - 👨‍🎓 Profil bearbeiten
 - ℹ️ About-Seite mit Teaminformationen
-- MongoDB Atlas (Cloud NoSQL Database)
 - 🔍 Suchfunktion
 - 📄 PDF-Lebenslauf exportieren
   
@@ -32,20 +31,20 @@ Die Anwendung unterstützt vollständige CRUD-Funktionalität und bietet eine ü
 
 ---
 # Architektur
+# 🏗 Architektur
+
+```text
 Vue 3 Frontend
-
-↓
-
-Axios
-
-↓
-
+        │
+        ▼
+      Axios
+        │
+        ▼
 Express REST API
-
-↓
-
-MongoDB Atlas
-
+        │
+        ▼
+ MongoDB Atlas
+```
 
 
 
@@ -61,6 +60,10 @@ MongoDB Atlas
 - Erweiterte Such- und Filterfunktionen
 
 # 🛠 Verwendete Technologien
+
+- MongoDB Atlas (Cloud NoSQL Database)
+- - html2canvas
+- jsPDF
 
 
 
@@ -204,7 +207,7 @@ Vielen Dank für Ihre Aufmerksamkeit.
 The project is organized into three main areas:
 
 - `src/` – Vue.js frontend
-- `backend/` – Express backend with local JSON data
+- backend/ – Express.js backend with MongoDB Atlas
 - `Docs/` – project documentation, screenshots and summaries
 
 # Einsatz von KI
