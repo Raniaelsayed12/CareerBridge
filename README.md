@@ -146,7 +146,7 @@ Die Anwendung verwendet **MongoDB Atlas** zur Speicherung von Benutzern, Skills,
 - Certificates
 - Profile
 - About
-
+-Resume
 ---
 
 # 🎯 Projektziele
