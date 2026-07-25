@@ -27,9 +27,13 @@
         <p class="eyebrow blue">ALL ACCOUNTS</p>
         <h2>Users</h2>
 
+        <div class="admin-search">
+          <input v-model="userSearchQuery" placeholder="Search users..." />
+        </div>
+
         <div class="users-list">
           <div
-            v-for="user in users"
+            v-for="user in filteredUsers"
             :key="getUserKey(user)"
             class="user-card"
             :class="{ active: getUserKey(user) === selectedUserKey }"
@@ -210,6 +214,7 @@ const skills = ref([]);
 const projects = ref([]);
 const certificates = ref([]);
 const selectedUserKey = ref("");
+const userSearchQuery = ref("");
 
 const editingUserId = ref("");
 const editingSkillId = ref("");
@@ -261,6 +266,20 @@ function getUserProjects(user) {
 function getUserCertificates(user) {
   return certificates.value.filter((item) => belongsToUser(item, user));
 }
+
+const filteredUsers = computed(() => {
+  const query = userSearchQuery.value.toLowerCase().trim();
+
+  if (!query) return users.value;
+
+  return users.value.filter((user) => {
+    const name = (user.name || user.fullName || "").toLowerCase();
+    const email = (user.email || "").toLowerCase();
+    const role = (user.role || "").toLowerCase();
+
+    return name.includes(query) || email.includes(query) || role.includes(query);
+  });
+});
 
 const selectedUser = computed(() => {
   return users.value.find((user) => getUserKey(user) === selectedUserKey.value);
@@ -607,6 +626,18 @@ onMounted(loadAdminData);
   display: grid;
   grid-template-columns: 1fr 2fr;
   gap: 1.5rem;
+}
+
+.admin-search {
+  margin-bottom: 1rem;
+}
+
+.admin-search input {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid #dbe3ef;
+  font: inherit;
 }
 
 .users-list,
