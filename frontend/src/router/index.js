@@ -10,8 +10,10 @@ import Projects from "../views/Projects.vue";
 import Certificates from "../views/Certificates.vue";
 import About from "../views/About.vue";
 import Resume from "../views/Resume.vue";
+import Admin from "../views/Admin.vue";
 
 const routes = [
+  { path: "/admin", name: "Admin", component: Admin },
   {
     path: "/",
     name: "home",
