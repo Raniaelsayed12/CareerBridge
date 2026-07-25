@@ -1,810 +1,359 @@
 <script setup>
-import {computed, onMounted, ref} from "vue";
-import Navbar from "../components/Navbar.vue/Navbar.vue";
-import {useUserStore} from "../stores/userStore";
+import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import api from "../services/api";
+import { useUserStore } from "../stores/userStore";
 
+const router = useRouter();
 const userStore = useUserStore();
 
-const isLoading = ref(true);
+const currentUser = ref(null);
+const skills = ref([]);
+const projects = ref([]);
+const certificates = ref([]);
+const error = ref("");
 
-const firstName = computed(() => {
-  const name = userStore.name?.trim();
+const progress = computed(() => {
+  let score = 20;
 
-  if (!name) {
-    return "User";
-  }
+  score += Math.min(skills.value.length * 10, 25);
+  score += Math.min(projects.value.length * 15, 30);
+  score += Math.min(certificates.value.length * 10, 25);
 
-  return name.split(/\s+/)[0];
+  return Math.min(score, 100);
 });
 
-const currentDate = computed(() => {
-  return new Intl.DateTimeFormat("en-GB", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date());
+const recentItems = computed(() => {
+  return [
+    ...skills.value.slice(0, 2).map((item) => ({
+      title: item.name,
+      type: "Skill",
+    })),
+    ...projects.value.slice(0, 2).map((item) => ({
+      title: item.title || item.name,
+      type: "Project",
+    })),
+    ...certificates.value.slice(0, 2).map((item) => ({
+      title: item.name,
+      type: "Certificate",
+    })),
+  ];
 });
 
-const progressWidth = computed(() => {
-  return `${userStore.progress}%`;
-});
+async function resolveCurrentUser() {
+  const response = await api.get("/users");
 
-onMounted(async () => {
+  const email = (userStore.email || "").toLowerCase().trim();
+
+  currentUser.value = response.data.find(
+    (user) => user.email.toLowerCase().trim() === email
+  );
+}
+
+async function loadDashboard() {
   try {
-    await userStore.loadStatistics();
-  } finally {
-    isLoading.value = false;
+    await resolveCurrentUser();
+
+    if (!currentUser.value) {
+      error.value = "Current user could not be found.";
+      return;
+    }
+
+    const userId = currentUser.value._id;
+
+    const [skillsRes, projectsRes, certificatesRes] = await Promise.all([
+      api.get(`/skills?userId=${userId}`),
+      api.get(`/projects?userId=${userId}`),
+      api.get(`/certificates?userId=${userId}`),
+    ]);
+
+    skills.value = skillsRes.data || [];
+    projects.value = projectsRes.data || [];
+    certificates.value = certificatesRes.data || [];
+  } catch (err) {
+    error.value = "Dashboard data could not be loaded.";
   }
-});
+}
+
+function goTo(path) {
+  router.push(path);
+}
+
+onMounted(loadDashboard);
 </script>
 
 <template>
-  <Navbar/>
-
   <main class="dashboard-page">
-    <div class="dashboard-container">
-      <section class="welcome-section">
-        <div class="welcome-content">
-          <span class="welcome-label">
-            Career dashboard
-          </span>
+    <section class="hero">
+      <div>
+        <p class="tag">CAREER OVERVIEW</p>
+        <h1>Welcome back, {{ currentUser?.name || userStore.name }}</h1>
+        <p>
+          This dashboard shows only your own skills, projects and certificates.
+        </p>
+      </div>
 
-          <h1>
-            Welcome back, {{ firstName }}
-          </h1>
+      <button @click="loadDashboard">Refresh</button>
+    </section>
 
-          <p>
-            Track your progress, manage your achievements and continue building
-            your professional profile.
-          </p>
+    <p v-if="error" class="error">{{ error }}</p>
 
-          <span class="current-date">
-            {{ currentDate }}
-          </span>
-        </div>
+    <section class="stats-grid">
+      <article class="stat-card" @click="goTo('/skills')">
+        <span>S</span>
+        <h2>{{ skills.length }}</h2>
+        <p>Skills</p>
+      </article>
 
-        <div class="welcome-decoration">
-          <div class="decoration-card">
-            <span class="decoration-icon">↗</span>
+      <article class="stat-card" @click="goTo('/projects')">
+        <span>P</span>
+        <h2>{{ projects.length }}</h2>
+        <p>Projects</p>
+      </article>
 
-            <div>
-              <strong>{{ userStore.progress }}%</strong>
-              <span>Profile completed</span>
-            </div>
-          </div>
-        </div>
-      </section>
+      <article class="stat-card" @click="goTo('/certificates')">
+        <span>C</span>
+        <h2>{{ certificates.length }}</h2>
+        <p>Certificates</p>
+      </article>
+    </section>
 
-      <section class="section-header">
-        <div>
-          <span class="section-label">Overview</span>
-          <h2>Your career activity</h2>
-        </div>
+    <section class="progress-card">
+      <div>
+        <h2>Profile progress</h2>
+        <p>Progress is calculated from your personal data.</p>
+      </div>
 
-        <RouterLink
-            to="/profile"
-            class="profile-link"
-        >
-          View profile
-          <span>→</span>
-        </RouterLink>
-      </section>
+      <strong>{{ progress }}%</strong>
 
-      <section class="statistics-grid">
-        <article class="stat-card">
-          <div class="stat-icon skills-icon">
-            S
-          </div>
+      <div class="progress-bar">
+        <div :style="{ width: progress + '%' }"></div>
+      </div>
+    </section>
 
-          <div class="stat-content">
-            <span class="stat-title">Skills</span>
+    <section class="content-grid">
+      <article class="panel">
+        <h2>Your skills</h2>
 
-            <strong v-if="!isLoading">
-              {{ userStore.skillsCount }}
-            </strong>
+        <p v-if="skills.length === 0" class="empty">No skills yet.</p>
 
-            <span v-else class="loading-number"></span>
+        <ul>
+          <li v-for="skill in skills" :key="skill._id">
+            <strong>{{ skill.name }}</strong>
+            <span>{{ skill.category || "General" }}</span>
+          </li>
+        </ul>
 
-            <p>Technical and professional skills</p>
-          </div>
+        <button @click="goTo('/skills')">Manage skills</button>
+      </article>
 
-          <RouterLink
-              to="/skills"
-              class="card-link"
-              aria-label="Open skills"
-          >
-            →
-          </RouterLink>
-        </article>
+      <article class="panel">
+        <h2>Your projects</h2>
 
-        <article class="stat-card">
-          <div class="stat-icon projects-icon">
-            P
-          </div>
+        <p v-if="projects.length === 0" class="empty">No projects yet.</p>
 
-          <div class="stat-content">
-            <span class="stat-title">Projects</span>
+        <ul>
+          <li v-for="project in projects" :key="project._id">
+            <strong>{{ project.title || project.name }}</strong>
+            <span>{{ project.status || "Planned" }}</span>
+          </li>
+        </ul>
 
-            <strong v-if="!isLoading">
-              {{ userStore.projectsCount }}
-            </strong>
+        <button @click="goTo('/projects')">Manage projects</button>
+      </article>
 
-            <span v-else class="loading-number"></span>
+      <article class="panel">
+        <h2>Your certificates</h2>
 
-            <p>Projects added to your portfolio</p>
-          </div>
+        <p v-if="certificates.length === 0" class="empty">No certificates yet.</p>
 
-          <RouterLink
-              to="/projects"
-              class="card-link"
-              aria-label="Open projects"
-          >
-            →
-          </RouterLink>
-        </article>
+        <ul>
+          <li v-for="certificate in certificates" :key="certificate._id">
+            <strong>{{ certificate.name }}</strong>
+            <span>{{ certificate.provider || "No provider" }}</span>
+          </li>
+        </ul>
 
-        <article class="stat-card">
-          <div class="stat-icon certificates-icon">
-            C
-          </div>
+        <button @click="goTo('/certificates')">Manage certificates</button>
+      </article>
 
-          <div class="stat-content">
-            <span class="stat-title">Certificates</span>
+      <article class="panel">
+        <h2>Recent activity</h2>
 
-            <strong v-if="!isLoading">
-              {{ userStore.certificatesCount }}
-            </strong>
+        <p v-if="recentItems.length === 0" class="empty">No activity yet.</p>
 
-            <span v-else class="loading-number"></span>
+        <ul>
+          <li v-for="item in recentItems" :key="item.type + item.title">
+            <strong>{{ item.title }}</strong>
+            <span>{{ item.type }}</span>
+          </li>
+        </ul>
 
-            <p>Certificates and achievements</p>
-          </div>
-
-          <RouterLink
-              to="/certificates"
-              class="card-link"
-              aria-label="Open certificates"
-          >
-            →
-          </RouterLink>
-        </article>
-
-        <article class="stat-card">
-          <div class="stat-icon progress-icon">
-            %
-          </div>
-
-          <div class="stat-content">
-            <span class="stat-title">Progress</span>
-
-            <strong v-if="!isLoading">
-              {{ userStore.progress }}%
-            </strong>
-
-            <span v-else class="loading-number"></span>
-
-            <p>Overall profile completion</p>
-          </div>
-
-          <RouterLink
-              to="/profile"
-              class="card-link"
-              aria-label="Open profile"
-          >
-            →
-          </RouterLink>
-        </article>
-      </section>
-
-      <section class="dashboard-grid">
-        <article class="progress-card">
-          <div class="card-heading">
-            <div>
-              <span class="section-label">
-                Profile strength
-              </span>
-
-              <h2>Complete your profile</h2>
-            </div>
-
-            <strong class="progress-percentage">
-              {{ userStore.progress }}%
-            </strong>
-          </div>
-
-          <div class="progress-track">
-            <div
-                class="progress-value"
-                :style="{ width: progressWidth }"
-            ></div>
-          </div>
-
-          <div class="progress-information">
-            <p>
-              Add your skills, projects, certificates and personal information
-              to create a stronger professional profile.
-            </p>
-
-            <RouterLink
-                to="/profile"
-                class="primary-button"
-            >
-              Complete profile
-            </RouterLink>
-          </div>
-        </article>
-
-        <article class="quick-actions-card">
-          <div class="card-heading">
-            <div>
-              <span class="section-label">
-                Quick actions
-              </span>
-
-              <h2>Continue building</h2>
-            </div>
-          </div>
-
-          <div class="quick-actions">
-            <RouterLink
-                to="/skills"
-                class="quick-action"
-            >
-              <span class="quick-action-icon">+</span>
-
-              <span>
-                <strong>Add a skill</strong>
-                <small>Update your technical skills</small>
-              </span>
-
-              <span class="quick-action-arrow">→</span>
-            </RouterLink>
-
-            <RouterLink
-                to="/projects"
-                class="quick-action"
-            >
-              <span class="quick-action-icon">+</span>
-
-              <span>
-                <strong>Add a project</strong>
-                <small>Showcase your recent work</small>
-              </span>
-
-              <span class="quick-action-arrow">→</span>
-            </RouterLink>
-
-            <RouterLink
-                to="/certificates"
-                class="quick-action"
-            >
-              <span class="quick-action-icon">+</span>
-
-              <span>
-                <strong>Add a certificate</strong>
-                <small>Record a new achievement</small>
-              </span>
-
-              <span class="quick-action-arrow">→</span>
-            </RouterLink>
-          </div>
-        </article>
-      </section>
-    </div>
+        <button @click="goTo('/resume')">Open resume</button>
+      </article>
+    </section>
   </main>
 </template>
 
 <style scoped>
 .dashboard-page {
-  min-height: calc(100vh - 72px);
-  padding: 44px 24px 70px;
+  min-height: 100vh;
+  padding: 40px 7%;
+  background: #f8fafc;
   color: #0f172a;
-  background: radial-gradient(
-      circle at 5% 5%,
-      rgba(59, 130, 246, 0.12),
-      transparent 28%
-  ),
-  #f8fafc;
-  font-family: Inter,
-  Arial,
-  sans-serif;
 }
 
-.dashboard-container {
-  width: 100%;
-  max-width: 1240px;
-  margin: 0 auto;
-}
-
-.welcome-section {
-  position: relative;
-  min-height: 270px;
-  padding: 48px 52px;
-  box-sizing: border-box;
-  overflow: hidden;
+.hero {
+  background: linear-gradient(135deg, #172554, #4f46e5);
+  color: white;
+  border-radius: 24px;
+  padding: 38px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 40px;
-  color: #ffffff;
-  background: linear-gradient(
-      135deg,
-      #172554 0%,
-      #1d4ed8 58%,
-      #4f46e5 100%
-  );
-  border-radius: 28px;
-  box-shadow: 0 24px 55px rgba(30, 64, 175, 0.23);
-}
-
-.welcome-section::before {
-  position: absolute;
-  top: -120px;
-  right: -70px;
-  width: 330px;
-  height: 330px;
-  content: "";
-  background: rgba(255, 255, 255, 0.09);
-  border-radius: 50%;
-}
-
-.welcome-section::after {
-  position: absolute;
-  right: 220px;
-  bottom: -140px;
-  width: 250px;
-  height: 250px;
-  content: "";
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 50%;
-}
-
-.welcome-content,
-.welcome-decoration {
-  position: relative;
-  z-index: 1;
-}
-
-.welcome-content {
-  max-width: 690px;
-}
-
-.welcome-label,
-.section-label {
-  display: inline-block;
-  margin-bottom: 10px;
-  color: #93c5fd;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-
-.welcome-content h1 {
-  margin: 0 0 16px;
-  font-size: clamp(36px, 5vw, 55px);
-  line-height: 1.08;
-  letter-spacing: -1.6px;
-}
-
-.welcome-content p {
-  max-width: 650px;
-  margin: 0 0 22px;
-  color: #dbeafe;
-  font-size: 17px;
-  line-height: 1.7;
-}
-
-.current-date {
-  display: inline-flex;
-  padding: 9px 13px;
-  color: #e0e7ff;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.decoration-card {
-  min-width: 190px;
-  padding: 20px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 18px;
-  backdrop-filter: blur(10px);
-}
-
-.decoration-icon {
-  width: 44px;
-  height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #172554;
-  background: #dbeafe;
-  border-radius: 13px;
-  font-size: 22px;
-  font-weight: 900;
-}
-
-.decoration-card div {
-  display: flex;
-  flex-direction: column;
-}
-
-.decoration-card strong {
-  font-size: 26px;
-}
-
-.decoration-card span:last-child {
-  color: #dbeafe;
-  font-size: 12px;
-}
-
-.section-header {
-  margin: 44px 0 20px;
-  display: flex;
-  align-items: flex-end;
   justify-content: space-between;
   gap: 20px;
-}
-
-.section-header .section-label,
-.card-heading .section-label {
-  color: #2563eb;
-}
-
-.section-header h2,
-.card-heading h2 {
-  margin: 0;
-  color: #0f172a;
-  font-size: 24px;
-  letter-spacing: -0.5px;
-}
-
-.profile-link {
-  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  color: #2563eb;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 800;
+  margin-bottom: 28px;
 }
 
-.profile-link:hover {
+.tag {
+  letter-spacing: 3px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #bfdbfe;
+}
+
+.hero h1 {
+  font-size: 42px;
+  margin: 8px 0;
+}
+
+.hero button,
+.panel button {
+  border: none;
+  border-radius: 12px;
+  padding: 13px 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.hero button {
+  background: white;
   color: #1d4ed8;
 }
 
-.statistics-grid {
+.stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  margin-bottom: 24px;
+}
+
+.stat-card,
+.progress-card,
+.panel,
+.error {
+  background: white;
+  border-radius: 18px;
+  padding: 25px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
 .stat-card {
-  position: relative;
-  min-height: 190px;
-  padding: 24px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 19px;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
-  transition: transform 0.2s ease,
-  box-shadow 0.2s ease,
-  border-color 0.2s ease;
+  cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
 .stat-card:hover {
   transform: translateY(-3px);
-  border-color: #bfdbfe;
-  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.1);
 }
 
-.stat-icon {
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 14px;
-  font-size: 16px;
-  font-weight: 900;
-}
-
-.skills-icon {
-  color: #1d4ed8;
+.stat-card span {
   background: #dbeafe;
-}
-
-.projects-icon {
-  color: #6d28d9;
-  background: #ede9fe;
-}
-
-.certificates-icon {
-  color: #b45309;
-  background: #fef3c7;
-}
-
-.progress-icon {
-  color: #047857;
-  background: #d1fae5;
-}
-
-.stat-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-title {
-  margin-bottom: 8px;
-  color: #64748b;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.stat-content strong {
-  margin-bottom: 8px;
-  color: #0f172a;
-  font-size: 34px;
-  line-height: 1;
-}
-
-.stat-content p {
-  margin: 0;
-  color: #94a3b8;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.card-link {
-  position: absolute;
-  right: 18px;
-  bottom: 18px;
-  width: 34px;
-  height: 34px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #2563eb;
-  background: #eff6ff;
-  border-radius: 10px;
-  text-decoration: none;
+  color: #1d4ed8;
+  border-radius: 12px;
+  padding: 10px 14px;
   font-weight: 900;
 }
 
-.loading-number {
-  width: 55px;
-  height: 34px;
-  margin-bottom: 8px;
+.stat-card h2 {
+  color: #2563eb;
+  font-size: 36px;
+  margin: 18px 0 4px;
+}
+
+.progress-card {
+  margin-bottom: 24px;
+}
+
+.progress-card strong {
   display: block;
-  background: linear-gradient(
-      90deg,
-      #e2e8f0,
-      #f1f5f9,
-      #e2e8f0
-  );
-  border-radius: 8px;
-  background-size: 200% 100%;
-  animation: loading 1.2s infinite;
-}
-
-.dashboard-grid {
-  margin-top: 22px;
-  display: grid;
-  grid-template-columns: 1.25fr 0.75fr;
-  gap: 22px;
-}
-
-.progress-card,
-.quick-actions-card {
-  padding: 30px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 22px;
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
-}
-
-.card-heading {
-  margin-bottom: 28px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.progress-percentage {
   color: #2563eb;
   font-size: 30px;
+  margin: 14px 0;
 }
 
-.progress-track {
-  width: 100%;
+.progress-bar {
   height: 12px;
+  background: #e5e7eb;
+  border-radius: 999px;
   overflow: hidden;
-  background: #e2e8f0;
-  border-radius: 999px;
 }
 
-.progress-value {
+.progress-bar div {
   height: 100%;
-  background: linear-gradient(90deg, #2563eb, #4f46e5);
-  border-radius: 999px;
-  transition: width 0.5s ease;
-}
-
-.progress-information {
-  margin-top: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 28px;
-}
-
-.progress-information p {
-  max-width: 570px;
-  margin: 0;
-  color: #64748b;
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.primary-button {
-  flex-shrink: 0;
-  padding: 12px 17px;
-  color: #ffffff;
   background: linear-gradient(135deg, #2563eb, #4f46e5);
-  border-radius: 11px;
-  text-decoration: none;
-  font-size: 13px;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.panel h2 {
+  margin-bottom: 15px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+}
+
+li {
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+li span,
+.empty {
+  color: #64748b;
+}
+
+.panel button {
+  background: #2563eb;
+  color: white;
+}
+
+.error {
+  color: #b91c1c;
+  margin-bottom: 18px;
   font-weight: 800;
 }
 
-.quick-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 11px;
-}
-
-.quick-action {
-  padding: 13px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 12px;
-  color: #0f172a;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 13px;
-  text-decoration: none;
-  transition: background 0.2s ease,
-  border-color 0.2s ease,
-  transform 0.2s ease;
-}
-
-.quick-action:hover {
-  transform: translateX(2px);
-  background: #eff6ff;
-  border-color: #bfdbfe;
-}
-
-.quick-action-icon {
-  width: 34px;
-  height: 34px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  background: #2563eb;
-  border-radius: 10px;
-  font-size: 20px;
-}
-
-.quick-action span:nth-child(2) {
-  display: flex;
-  flex-direction: column;
-}
-
-.quick-action strong {
-  font-size: 13px;
-}
-
-.quick-action small {
-  margin-top: 3px;
-  color: #64748b;
-  font-size: 11px;
-}
-
-.quick-action-arrow {
-  color: #2563eb;
-  font-weight: 900;
-}
-
-@keyframes loading {
-  from {
-    background-position: 200% 0;
-  }
-
-  to {
-    background-position: -200% 0;
-  }
-}
-
-@media (max-width: 1050px) {
-  .statistics-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 760px) {
-  .dashboard-page {
-    padding: 28px 16px 55px;
-  }
-
-  .welcome-section {
-    min-height: auto;
-    padding: 38px 28px;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .welcome-decoration {
-    width: 100%;
-  }
-
-  .decoration-card {
-    box-sizing: border-box;
-  }
-
-  .section-header {
-    align-items: flex-start;
-  }
-
-  .progress-information {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-}
-
-@media (max-width: 560px) {
-  .statistics-grid {
+@media (max-width: 900px) {
+  .hero,
+  .stats-grid,
+  .content-grid {
     grid-template-columns: 1fr;
   }
 
-  .welcome-content h1 {
-    font-size: 34px;
-  }
-
-  .section-header {
+  .hero {
     flex-direction: column;
-  }
-
-  .stat-card {
-    min-height: 165px;
-  }
-
-  .progress-card,
-  .quick-actions-card {
-    padding: 23px;
-  }
-
-  .card-heading {
-    flex-direction: column;
+    align-items: flex-start;
   }
 }
 </style>

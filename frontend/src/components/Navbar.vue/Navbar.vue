@@ -11,7 +11,7 @@ const menuOpen = ref(false);
 const isAuthenticated = computed(() => userStore.loggedIn);
 
 const adminEmails = [
-  "haniaalilat24@gmail.com",
+  "admin@test.de",
 ];
 
 const isAdmin = computed(() => {
