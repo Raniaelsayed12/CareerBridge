@@ -46,13 +46,17 @@
       </form>
     </section>
 
+    <section class="search-panel">
+      <input v-model="searchQuery" placeholder="Search projects..." />
+    </section>
+
     <section class="projects-grid">
-      <article v-if="projects.length === 0" class="empty-card">
+      <article v-if="filteredProjects.length === 0" class="empty-card">
         No projects added yet. Start by adding your first project.
       </article>
 
       <article
-        v-for="project in projects"
+        v-for="project in filteredProjects"
         :key="getProjectId(project)"
         class="project-card"
       >
@@ -82,6 +86,7 @@ import api from "../services/api";
 const userStore = useUserStore();
 
 const projects = ref([]);
+const searchQuery = ref("");
 const editingId = ref("");
 
 const form = ref({
@@ -115,6 +120,19 @@ function belongsToCurrentUser(item) {
   return owners.some((owner) => keys.includes(owner));
 }
 
+
+const filteredProjects = computed(() => {
+  const query = searchQuery.value.toLowerCase().trim();
+
+  if (!query) return projects.value;
+
+  return projects.value.filter((project) => {
+    const title = (project.title || project.name || "").toLowerCase();
+    const description = (project.description || "").toLowerCase();
+    const status = (project.status || "").toLowerCase();
+    return title.includes(query) || description.includes(query) || status.includes(query);
+  });
+});
 
 function normalizeList(data) {
   if (Array.isArray(data)) return data;
@@ -287,6 +305,7 @@ onMounted(loadProjects);
 }
 
 .form-panel,
+.search-panel,
 .admin-info-card {
   margin: 2rem 0;
   padding: 2rem;

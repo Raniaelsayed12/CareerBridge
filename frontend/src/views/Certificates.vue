@@ -38,13 +38,17 @@
       </form>
     </section>
 
+    <section class="search-panel">
+      <input v-model="searchQuery" placeholder="Search certificates..." />
+    </section>
+
     <section class="certificates-grid">
-      <article v-if="certificates.length === 0" class="empty-card">
+      <article v-if="filteredCertificates.length === 0" class="empty-card">
         No certificates added yet. Start by adding your first certificate.
       </article>
 
       <article
-        v-for="certificate in certificates"
+        v-for="certificate in filteredCertificates"
         :key="getCertificateId(certificate)"
         class="certificate-card"
       >
@@ -77,6 +81,7 @@ import api from "../services/api";
 const userStore = useUserStore();
 
 const certificates = ref([]);
+const searchQuery = ref("");
 const editingId = ref("");
 
 const form = ref({
@@ -110,6 +115,19 @@ function belongsToCurrentUser(item) {
   return owners.some((owner) => keys.includes(owner));
 }
 
+
+const filteredCertificates = computed(() => {
+  const query = searchQuery.value.toLowerCase().trim();
+
+  if (!query) return certificates.value;
+
+  return certificates.value.filter((certificate) => {
+    const name = (certificate.name || certificate.title || "").toLowerCase();
+    const provider = (certificate.provider || "").toLowerCase();
+    const date = (certificate.date || "").toLowerCase();
+    return name.includes(query) || provider.includes(query) || date.includes(query);
+  });
+});
 
 function normalizeList(data) {
   if (Array.isArray(data)) return data;
@@ -283,6 +301,7 @@ onMounted(loadCertificates);
 }
 
 .form-panel,
+.search-panel,
 .admin-info-card {
   margin: 2rem 0;
   padding: 2rem;
