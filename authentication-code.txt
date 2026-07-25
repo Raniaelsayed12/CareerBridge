@@ -1,0 +1,822 @@
+===== USER STORE =====
+import { defineStore } from "pinia";
+import api from "../services/api";
+
+const demoSkills = [
+  { _id: "skill-1", name: "Vue.js", level: "Intermediate" },
+  { _id: "skill-2", name: "JavaScript", level: "Intermediate" },
+  { _id: "skill-3", name: "Git & GitHub", level: "Basic" },
+  { _id: "skill-4", name: "HTML/CSS", level: "Intermediate" },
+  { _id: "skill-5", name: "MongoDB", level: "Basic" },
+];
+
+const demoProjects = [
+  {
+    _id: "project-1",
+    name: "CareerBridge",
+    github: "https://github.com/Raniaelsayed12/CareerBridge",
+    description:
+      "A platform for students to organize skills, projects and certificates.",
+  },
+  {
+    _id: "project-2",
+    name: "Portfolio Website",
+    github: "https://github.com/haniaalo",
+    description: "A personal portfolio to present projects and skills.",
+  },
+];
+
+const demoCertificates = [
+  { _id: "cert-1", name: "GitHub Introduction", provider: "GitHub Skills" },
+  { _id: "cert-2", name: "Vue Basics", provider: "University Project" },
+];
+
+const demoTeamMembers = [
+  {
+    name: "Rania Abdelaal",
+    role: "Frontend Developer",
+    contribution:
+      "Started the CareerBridge project and implemented the first UI pages.",
+  },
+  {
+    name: "Hania Alilat",
+    role: "Master Informatik Student",
+    contribution:
+      "Improved the user store, added demo data and dashboard statistics.",
+  },
+  {
+    name: "Aly Elatrby",
+    role: "Team Member",
+    contribution: "Supported project planning and development.",
+  },
+];
+
+export const useUserStore = defineStore("user", {
+  state: () => ({
+    name: "Hania Alilat",
+    email: "hania.alilat@studmail.w-hs.de",
+    city: "Bochum / Gelsenkirchen, Germany",
+    role: "Master Informatik Student",
+    university: "Westfälische Hochschule",
+    bio: "Master student working on CareerBridge with Vue, Vite, Pinia and GitHub.",
+    github: "https://github.com/haniaalo",
+
+    loggedIn: true,
+
+    skills: demoSkills,
+    projects: demoProjects,
+    certificates: demoCertificates,
+    teamMembers: demoTeamMembers,
+  }),
+
+  getters: {
+    skillsCount: (state) => state.skills.length,
+    projectsCount: (state) => state.projects.length,
+    certificatesCount: (state) => state.certificates.length,
+
+    progress: (state) => {
+      const profileFields = [
+        state.name,
+        state.email,
+        state.city,
+        state.role,
+        state.university,
+        state.bio,
+        state.github,
+      ];
+
+      const completedFields = profileFields.filter(Boolean).length;
+      const profileProgress = Math.round(
+        (completedFields / profileFields.length) * 40
+      );
+
+      const activityProgress =
+        state.skills.length * 5 +
+        state.projects.length * 10 +
+        state.certificates.length * 8;
+
+      return Math.min(profileProgress + activityProgress, 100);
+    },
+  },
+
+  actions: {
+    async loadStatistics() {
+      try {
+        const skills = await api.get("/skills");
+        const projects = await api.get("/projects");
+        const certificates = await api.get("/certificates");
+
+        this.skills =
+          Array.isArray(skills.data) && skills.data.length > 0
+            ? skills.data
+            : demoSkills;
+
+        this.projects =
+          Array.isArray(projects.data) && projects.data.length > 0
+            ? projects.data
+            : demoProjects;
+
+        this.certificates =
+          Array.isArray(certificates.data) && certificates.data.length > 0
+            ? certificates.data
+            : demoCertificates;
+      } catch (error) {
+        console.error("Error loading statistics, using demo data:", error);
+
+        this.skills = demoSkills;
+        this.projects = demoProjects;
+        this.certificates = demoCertificates;
+      }
+    },
+
+    login() {
+      this.loggedIn = false;
+    },
+
+    logout() {
+      this.loggedIn = false;
+    },
+
+    updateProfile(name, email, city, role) {
+      this.name = name;
+      this.email = email;
+      this.city = city;
+      this.role = role;
+    },
+  },
+});
+===== LOGIN =====
+<script setup>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import Navbar from "../components/Navbar.vue/Navbar.vue";
+import { useUserStore } from "../stores/userStore";
+import api from "../services/api";
+
+const router = useRouter();
+const user = useUserStore();
+
+const email = ref("");
+const password = ref("");
+
+async function handleLogin() {
+   console.log("Login button clicked");
+  if (!email.value || !password.value) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  try {
+    const response = await api.post("/login", {
+      email: email.value,
+      password: password.value,
+    });
+
+    user.login();
+
+    if (response.data.user) {
+      user.name = response.data.user.name;
+      user.email = response.data.user.email;
+    }
+
+    alert(response.data.message);
+
+    router.push("/dashboard");
+
+  } catch (err) {
+    if (err.response) {
+      alert(err.response.data.message);
+    } else {
+      alert("Cannot connect to server");
+      console.log(err);
+    }
+  }
+}
+</script>
+
+<template>
+  <Navbar />
+
+  <div class="login-container">
+    <div class="login-card">
+      <h1>Login</h1>
+
+      <input
+        v-model="email"
+        type="email"
+        placeholder="Email"
+      />
+
+      <input
+        v-model="password"
+        type="password"
+        placeholder="Password"
+      />
+
+      <button @click="handleLogin">
+        Login
+      </button>
+    </div>
+  </div>
+</template>
+
+<style>
+.login-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 80px;
+}
+
+.login-card {
+  width: 400px;
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px #ddd;
+}
+
+.login-card h1 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.login-card button {
+  width: 100%;
+  padding: 12px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.login-card button:hover {
+  background: #1d4ed8;
+}
+</style>
+===== NAVBAR =====
+
+===== ROUTER =====
+import { createRouter, createWebHistory } from "vue-router";
+import Resume from "../views/Resume.vue";
+import Home from "../views/Home.vue";
+import Login from "../views/Login.vue";
+import Register from "../views/Register.vue";
+import Dashboard from "../views/Dashboard.vue";
+import Profile from "../views/Profile.vue";
+import Skills from "../views/Skills.vue";
+import Projects from "../views/Projects.vue";
+import Certificates from "../views/Certificates.vue";
+import About from "../views/About.vue";
+
+const routes = [
+  { path: "/", component: Home },
+  { path: "/login", component: Login },
+  { path: "/register", component: Register },
+  { path: "/dashboard", component: Dashboard },
+  { path: "/profile", component: Profile },
+  { path: "/skills", component: Skills },
+  { path: "/projects", component: Projects },
+  { path: "/certificates", component: Certificates },
+  { path: "/about", component: About },
+  {
+  path: "/resume",
+  component: Resume,
+},
+];
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+});
+
+export default router;
+===== PROFILE =====
+<script setup>
+import { ref } from "vue";
+import Navbar from "../components/Navbar.vue/Navbar.vue";
+import { useUserStore } from "../stores/userStore";
+
+const user = useUserStore();
+
+const isEditing = ref(false);
+
+const form = ref({
+  name: user.name,
+  email: user.email,
+  city: user.city,
+  role: user.role,
+});
+
+function startEdit() {
+  form.value = {
+    name: user.name,
+    email: user.email,
+    city: user.city,
+    role: user.role,
+  };
+  isEditing.value = true;
+}
+
+function cancelEdit() {
+  isEditing.value = false;
+}
+
+function saveProfile() {
+  user.updateProfile(
+    form.value.name,
+    form.value.email,
+    form.value.city,
+    form.value.role
+  );
+  isEditing.value = false;
+}
+</script>
+
+<template>
+  <Navbar />
+
+  <main class="profile-page">
+    <section class="profile-card">
+      <div class="avatar">
+        {{ user.name.charAt(0) }}
+      </div>
+
+      <div v-if="!isEditing" class="profile-info">
+        <h1>{{ user.name }}</h1>
+        <p class="role">{{ user.role }}</p>
+
+        <div class="details">
+          <p><strong>Email:</strong> {{ user.email }}</p>
+          <p><strong>City:</strong> {{ user.city }}</p>
+          <p><strong>University:</strong> {{ user.university }}</p>
+          <p><strong>GitHub:</strong> <a :href="user.github" target="_blank">{{ user.github }}</a></p>
+        </div>
+
+        <p class="bio">{{ user.bio }}</p>
+
+        <button class="primary-btn" @click="startEdit">
+          Edit Profile
+        </button>
+      </div>
+
+      <form v-else class="edit-form" @submit.prevent="saveProfile">
+        <h1>Edit Profile</h1>
+
+        <label>Name</label>
+        <input v-model="form.name" type="text" />
+
+        <label>Email</label>
+        <input v-model="form.email" type="email" />
+
+        <label>City</label>
+        <input v-model="form.city" type="text" />
+
+        <label>Role</label>
+        <input v-model="form.role" type="text" />
+
+        <div class="buttons">
+          <button class="primary-btn" type="submit">Save Changes</button>
+          <button class="secondary-btn" type="button" @click="cancelEdit">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section class="summary-grid">
+      <div class="summary-card">
+        <h2>{{ user.skillsCount }}</h2>
+        <p>Skills</p>
+      </div>
+
+      <div class="summary-card">
+        <h2>{{ user.projectsCount }}</h2>
+        <p>Projects</p>
+      </div>
+
+      <div class="summary-card">
+        <h2>{{ user.certificatesCount }}</h2>
+        <p>Certificates</p>
+      </div>
+
+      <div class="summary-card">
+        <h2>{{ user.progress }}%</h2>
+        <p>Profile Progress</p>
+      </div>
+    </section>
+  </main>
+</template>
+
+<style scoped>
+.profile-page {
+  padding: 60px 8%;
+  background: #f4f7fb;
+  min-height: 100vh;
+  color: #1f2937;
+}
+
+.profile-card {
+  background: white;
+  border-radius: 22px;
+  padding: 40px;
+  display: flex;
+  gap: 35px;
+  align-items: flex-start;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+  margin-bottom: 35px;
+}
+
+.avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: white;
+  font-size: 48px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profile-info h1,
+.edit-form h1 {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+
+.role {
+  color: #2563eb;
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 25px;
+}
+
+.details p {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+.details a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.bio {
+  margin: 25px 0;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+.edit-form {
+  width: 100%;
+}
+
+.edit-form label {
+  display: block;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.edit-form input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+.buttons {
+  margin-top: 25px;
+  display: flex;
+  gap: 12px;
+}
+
+.primary-btn,
+.secondary-btn {
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.primary-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.secondary-btn {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+}
+
+.summary-card {
+  background: white;
+  border-radius: 18px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+}
+
+.summary-card h2 {
+  color: #2563eb;
+  font-size: 34px;
+  margin-bottom: 8px;
+}
+
+.summary-card p {
+  color: #4b5563;
+  font-weight: bold;
+}
+
+@media (max-width: 900px) {
+  .profile-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+===== API =====
+import axios from "axios";
+
+export default axios.create({
+  baseURL: "http://localhost:3000",
+});
+===== BACKEND =====
+const express = require("express");
+const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+const dataFile = path.join(__dirname, "local-db.json");
+
+const defaultData = {
+  skills: [
+    { _id: "skill-1", name: "Vue.js" },
+    { _id: "skill-2", name: "JavaScript" },
+    { _id: "skill-3", name: "Git & GitHub" }
+  ],
+
+  projects: [
+    {
+      _id: "project-1",
+      title: "CareerBridge",
+      description: "A platform for students to organize skills, projects and certificates.",
+      github: "https://github.com/Raniaelsayed12/CareerBridge"
+    }
+  ],
+
+  certificates: [
+    {
+      _id: "certificate-1",
+      name: "Vue Basics",
+      provider: "University Project"
+    }
+  ],
+
+  users: [
+    {
+      _id: "user-1",
+      name: "Hania Alilat",
+      email: "hania.alilat@studmail.w-hs.de",
+      password: "123456"
+    }
+  ]
+};
+
+function loadData() {
+  if (!fs.existsSync(dataFile)) {
+    fs.writeFileSync(dataFile, JSON.stringify(defaultData, null, 2));
+  }
+
+  return JSON.parse(fs.readFileSync(dataFile, "utf-8"));
+}
+
+function saveData(data) {
+  fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+}
+
+function createId(prefix) {
+  return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+let db = loadData();
+
+app.get("/", (req, res) => {
+  res.send("CareerBridge Local Backend Working");
+});
+
+app.get("/test-db", (req, res) => {
+  res.json({
+    message: "Local JSON database is working",
+    collections: Object.keys(db)
+  });
+});
+
+// SKILLS
+app.get("/skills", (req, res) => {
+  res.json(db.skills);
+});
+
+app.post("/skills", (req, res) => {
+  const newSkill = {
+    _id: createId("skill"),
+    name: req.body.name
+  };
+
+  db.skills.push(newSkill);
+  saveData(db);
+
+  res.json(newSkill);
+});
+
+app.put("/skills/:id", (req, res) => {
+  const skill = db.skills.find((item) => item._id === req.params.id);
+
+  if (!skill) {
+    return res.status(404).json({ message: "Skill not found" });
+  }
+
+  skill.name = req.body.name;
+  saveData(db);
+
+  res.json(skill);
+});
+
+app.delete("/skills/:id", (req, res) => {
+  db.skills = db.skills.filter((item) => item._id !== req.params.id);
+  saveData(db);
+
+  res.json({ message: "Skill deleted" });
+});
+
+// PROJECTS
+app.get("/projects", (req, res) => {
+  res.json(db.projects);
+});
+
+app.post("/projects", (req, res) => {
+  const newProject = {
+    _id: createId("project"),
+    title: req.body.title,
+    description: req.body.description,
+    github: req.body.github
+  };
+
+  db.projects.push(newProject);
+  saveData(db);
+
+  res.json(newProject);
+});
+
+app.put("/projects/:id", (req, res) => {
+  const project = db.projects.find((item) => item._id === req.params.id);
+
+  if (!project) {
+    return res.status(404).json({ message: "Project not found" });
+  }
+
+  project.title = req.body.title;
+  project.description = req.body.description;
+  project.github = req.body.github;
+  saveData(db);
+
+  res.json(project);
+});
+
+app.delete("/projects/:id", (req, res) => {
+  db.projects = db.projects.filter((item) => item._id !== req.params.id);
+  saveData(db);
+
+  res.json({ message: "Project deleted" });
+});
+
+// CERTIFICATES
+app.get("/certificates", (req, res) => {
+  res.json(db.certificates);
+});
+
+app.post("/certificates", (req, res) => {
+  const newCertificate = {
+    _id: createId("certificate"),
+    name: req.body.name,
+    provider: req.body.provider
+  };
+
+  db.certificates.push(newCertificate);
+  saveData(db);
+
+  res.json(newCertificate);
+});
+
+app.put("/certificates/:id", (req, res) => {
+  const certificate = db.certificates.find((item) => item._id === req.params.id);
+
+  if (!certificate) {
+    return res.status(404).json({ message: "Certificate not found" });
+  }
+
+  certificate.name = req.body.name;
+  certificate.provider = req.body.provider;
+  saveData(db);
+
+  res.json(certificate);
+});
+
+app.delete("/certificates/:id", (req, res) => {
+  db.certificates = db.certificates.filter((item) => item._id !== req.params.id);
+  saveData(db);
+
+  res.json({ message: "Certificate deleted" });
+});
+
+// USERS
+app.post("/register", (req, res) => {
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  const existingUser = db.users.find((user) => user.email === email);
+
+  if (existingUser) {
+    return res.status(400).json({ message: "Email already exists" });
+  }
+
+  const newUser = {
+    _id: createId("user"),
+    name,
+    email,
+    password
+  };
+
+  db.users.push(newUser);
+  saveData(db);
+
+  res.status(201).json({ message: "User registered successfully" });
+});
+
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
+
+  const user = db.users.find(
+    (item) => item.email === email && item.password === password
+  );
+
+  if (!user) {
+    return res.status(401).json({ message: "Invalid email or password" });
+  }
+
+  res.json({
+    message: "Login successful",
+    user
+  });
+});
+
+app.get("/users", (req, res) => {
+  res.json(db.users);
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`CareerBridge local backend running on port ${PORT}`);
+});
