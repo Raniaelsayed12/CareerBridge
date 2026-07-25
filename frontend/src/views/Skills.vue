@@ -230,7 +230,7 @@ onMounted(loadSkills);
   padding: 3rem;
   border-radius: 28px;
   color: white;
-  background: linear-gradient(135deg, #14264f, #3447f5);
+  background: linear-gradient(135deg, #064e3b, #10b981);
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
 }
 
@@ -250,7 +250,7 @@ onMounted(loadSkills);
 }
 
 .blue {
-  color: #2563eb;
+  color: #059669;
 }
 
 .skills-hero .eyebrow {
@@ -294,11 +294,11 @@ onMounted(loadSkills);
 
 .btn.light {
   background: white;
-  color: #1d4ed8;
+  color: #047857;
 }
 
 .btn.primary {
-  background: #2563eb;
+  background: #10b981;
   color: white;
 }
 
@@ -405,7 +405,7 @@ input {
 
 .edit-btn {
   background: #dbeafe;
-  color: #1d4ed8;
+  color: #047857;
 }
 
 .delete-btn {
