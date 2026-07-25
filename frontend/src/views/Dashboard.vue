@@ -60,7 +60,7 @@ async function loadDashboard() {
     }
 
     if (currentUser.value.role === "admin") {
-      router.push("/admin");
+      router.push("/dashboard");
       return;
     }
 
