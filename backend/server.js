@@ -15,8 +15,8 @@ const defaultData = {
     {
       _id: "user-1",
       name: "Hania Alilat",
-      email: "hania@test.com",
-      password: "123456",
+      email: "haniaalilat24@gmail.com",
+      password: "admin12345",
       role: "admin"
     }
   ],
@@ -116,7 +116,25 @@ app.post("/users", (req, res) => {
 
   res.status(201).json(user);
 });
+app.put("/users/:id", (req, res) => {
+  const user = db.users.find((item) => item._id === req.params.id);
 
+  if (!user) {
+    return res.status(404).json({ message: "User not found." });
+  }
+
+  user.name = req.body.name || user.name;
+  user.email = req.body.email || user.email;
+  user.role = req.body.role || user.role;
+
+  if (req.body.password) {
+    user.password = req.body.password;
+  }
+
+  saveData(db);
+
+  res.json(user);
+});
 app.delete("/users/:id", (req, res) => {
   const user = db.users.find((item) => item._id === req.params.id);
 
