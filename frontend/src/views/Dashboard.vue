@@ -129,6 +129,8 @@ const currentUserId = computed(() => {
 });
 
 const profileProgress = computed(() => {
+  if (currentUser.value?.role === "admin") return 0;
+
   const savedProgress = Number(currentUser.value?.profileProgress);
 
   if (!Number.isNaN(savedProgress) && savedProgress >= 0) {
