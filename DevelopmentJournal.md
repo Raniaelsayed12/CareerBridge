@@ -286,7 +286,6 @@ ChatGPT-Unterstützung
 
 Unterstützung bei der Erstellung der Projektdokumentation.
 Hilfe beim Formulieren technischer Inhalte.
-Unterstützung bei der Vorbereitung der Präsentation und möglicher Prüfungsfragen.
 Alle Vorschläge wurden geprüft und bei Bedarf manuell angepasst.
 
 
