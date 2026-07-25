@@ -1,50 +1,53 @@
 # Project Structure
 
-CareerBridge is organized into three main parts:
+CareerBridge is separated into a frontend and a backend.
 
-## 1. Frontend
+## Backend
 
-The frontend is located in:
+The backend is built with Node.js and Express.
 
-src/
+Main files:
 
-It contains the Vue.js application.
+- `backend/server.js`: contains the API routes
+- `backend/local-db.json`: local JSON database used for demo data
 
-Important folders:
-- src/views: application pages
-- src/components: reusable components
-- src/router: Vue Router configuration
-- src/stores: Pinia stores
-- src/services: API connection
+The backend provides API endpoints for:
 
-## 2. Backend
+- users
+- login
+- skills
+- projects
+- certificates
+- documentation files
 
-The backend is located in:
+## Frontend
 
-backend/
+The frontend is built with Vue.js and Vite.
 
-It contains the Express server and the local JSON backend.
+Main folders:
 
-Important files:
-- backend/server.js: backend server
-- backend/local-db.json: local JSON database
-- backend/package.json: backend dependencies
+- `src/components`: reusable components such as the navigation bar
+- `src/views`: application pages
+- `src/router`: route configuration
+- `src/stores`: Pinia user store
+- `src/services`: API connection with Axios
 
-## 3. Documentation
+## Important Pages
 
-The documentation is located in:
+- Home
+- Login
+- Dashboard
+- Skills
+- Projects
+- Certificates
+- Profile
+- Resume
+- Admin
+- Docs
 
-Docs/
+## Data Flow
 
-It contains:
-- screenshots
-- seed data documentation
-- AI usage documentation
-- final project summary
-- presentation draft
-
-## Why This Structure?
-
-This structure separates frontend, backend and documentation clearly.
-
-It makes the project easier to understand for the team and for the professor.
+Users log in with an email and password.  
+After login, the frontend stores the current user in the Pinia store.  
+The dashboard and management pages load only the data that belongs to the current user.  
+The admin page can access and manage all user data.

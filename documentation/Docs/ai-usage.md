@@ -1,56 +1,41 @@
-# AI Usage Documentation
+# AI Usage
 
-This document describes how generative AI tools were used during the CareerBridge project.
+AI tools were used as support during the development of CareerBridge.
 
-## AI Tools Used
+## How AI Was Used
 
-- ChatGPT
+AI was used for:
 
-## Purpose of AI Usage
+- understanding errors
+- improving Vue components
+- improving routing
+- improving the admin panel
+- creating documentation drafts
+- checking project structure
+- improving explanations for the presentation
 
-Generative AI was used as a support tool during the development process.
+## Human Work
 
-It helped with:
-- understanding Vue.js concepts
-- explaining Pinia state management
-- preparing Git and GitHub commands
-- improving documentation structure
-- creating draft texts for README and Development Journal
-- suggesting ideas for demo data and test cases
-- improving presentation structure
+The project was still reviewed, tested and adapted manually.
 
-## Human Contribution
+Important decisions were made by the team, for example:
 
-All generated suggestions were reviewed and adapted by the team before being added to the project.
+- project topic
+- page structure
+- account logic
+- admin functionality
+- final testing
+- GitHub workflow
 
-The team members were responsible for:
-- selecting useful suggestions
-- testing code changes
-- committing changes to GitHub
-- creating pull requests
-- reviewing the application in the browser
-- deciding which features to keep
+## Reflection
 
-## Examples of AI Support
+Using AI helped to work faster and understand technical problems better.  
+However, the generated code still needed manual testing and correction.
 
-AI was used to help create:
-- README documentation
-- Development Journal entries
-- seed data documentation
-- presentation draft structure
-- explanations for Vue features such as v-for, v-if and v-model
+Examples of problems that required manual testing:
 
-## Limitations
-
-AI suggestions were not used blindly.
-
-The team checked:
-- whether the code works
-- whether the documentation matches the project
-- whether the project structure is still correct
-- whether the final result fits the course requirements
-
-## Conclusion
-
-AI was used as a learning and support tool.  
-The final implementation, testing and project decisions were done by the team.
+- login flow
+- user-specific data
+- admin access
+- route protection
+- frontend build errors

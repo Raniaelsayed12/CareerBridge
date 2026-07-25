@@ -1,33 +1,55 @@
-# Seed Data Documentation
+# Seed Data
 
-This file documents the test users created for CareerBridge.
+The project uses a local JSON database for demo and testing.
 
-The seed data contains 12 example users with different profiles.  
-The goal is to test the application with realistic and different data cases.
+File:
 
-## Test Cases Included
+`backend/local-db.json`
 
-- users with many skills
-- users with only one skill
-- users without projects
-- users without certificates
-- users with long names
-- users with short names
-- users with missing optional fields, for example empty city
-- users with different roles such as frontend, backend, AI, UX and data science
+## Test Accounts
 
-## Purpose
+### Admin
 
-The seed data helps the team test the application without using empty lists.
+Email: admin@test.de  
+Password: Admin2026!Test  
+Role: admin
 
-It also makes the demo and presentation easier because the application already contains realistic example users.
+### Hania
 
-## Relation to Project Requirements
+Email: hania@test.com  
+Password: Hania2026!Test  
+Role: user
 
-The project uses demo and seed data to test:
+### Rania
+
+Email: rania@test.com  
+Password: Rania2026!Test  
+Role: user
+
+### Aly
+
+Email: aly@test.com  
+Password: Aly2026!Test  
+Role: user
+
+## Purpose of Seed Data
+
+The seed data makes it possible to test the application without creating new accounts manually.
+
+It is used to test:
+
+- login
+- user-specific dashboards
 - skills
 - projects
 - certificates
-- profile information
-- dashboard statistics
-- different user cases
+- admin management
+- profile data
+- resume data
+
+## Data Separation
+
+Each skill, project and certificate belongs to a specific user.
+
+This is important because every normal user should only see their own data.  
+The admin can view and manage data from all users.

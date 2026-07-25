@@ -1,55 +1,89 @@
-# CareerBridge – Presentation Draft
+# Presentation Draft
 
-## 1. Project Idea
-CareerBridge is a student career platform for managing skills, projects and certificates.
+## 1. Introduction
+
+CareerBridge is a web application for students and young professionals.
+
+The goal is to help users organize their career-related information in one place.
+
+Users can manage:
+
+- skills
+- projects
+- certificates
+- profile information
+- resume data
 
 ## 2. Motivation
-Students need one place to organize and present their career profile.
+
+Students often need to present their skills and projects for internships, jobs or university applications.
+
+CareerBridge provides a simple digital workspace for this purpose.
 
 ## 3. Technologies
+
+The project uses:
+
 - Vue.js
 - Vite
-- Pinia
 - Vue Router
-- GitHub
-- JavaScript
-- HTML/CSS
+- Pinia
+- Node.js
+- Express
+- Local JSON database
 
 ## 4. Main Features
-- Dashboard statistics
-- Skills management
-- Projects management
-- Certificates management
-- Editable profile page
-- About page with team members
-- Demo and seed data
 
-## 5. Hania Contribution
-- Created Git branch and Pull Requests
-- Updated Development Journal
-- Added demo data
-- Improved user store
-- Added team section
-- Added editable profile page
-- Added README and documentation
-- Added seed data documentation
+CareerBridge includes:
 
-## 6. Challenges
-- Understanding existing project structure
-- Working with Git branches and PRs
-- Separating current user profile from team information
-- Avoiding empty demo pages
+- multi-user login
+- user-specific dashboard
+- skills management
+- projects management
+- certificates management
+- profile editing
+- resume page
+- admin panel
+- markdown documentation viewer
 
-## 7. Lessons Learned
-- Vue component structure
-- Pinia state management
-- v-model form binding
-- v-for rendering
-- GitHub collaboration workflow
-- Continuous documentation
+## 5. User Role
 
-## 8. Next Steps
-- Add real screenshots
-- Improve UI design
-- Test responsive layout
-- Prepare final presentation
+A normal user can only manage their own data.
+
+For example, Rania can only see Rania's skills, projects and certificates.
+
+## 6. Admin Role
+
+The admin can:
+
+- view all accounts
+- add accounts
+- edit accounts
+- delete accounts
+- manage data for each user
+
+## 7. Challenges
+
+During development, several challenges appeared:
+
+- login handling
+- routing protection
+- keeping user data separated
+- making the admin panel manage different accounts
+- avoiding automatic login into the wrong user
+- keeping the project clean for GitHub
+
+## 8. What We Learned
+
+We learned:
+
+- how to build a Vue application
+- how to use Vue Router
+- how to manage state with Pinia
+- how to connect frontend and backend
+- how to use GitHub branches and pull requests
+- how to structure and document a project
+
+## 9. Conclusion
+
+CareerBridge is a complete learning project that demonstrates frontend development, backend communication, routing, state management, documentation and GitHub workflow.
