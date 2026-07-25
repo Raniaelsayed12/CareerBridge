@@ -257,6 +257,31 @@ Lösungen
 Dokumentation überarbeitet.
 Letzte Fehler behoben.
 
+
+KW 9 – Abschlussphase und Projektverbesserungen
+
+Abgeschlossene Aufgaben
+
+Die Projektstruktur wurde neu organisiert und in Frontend und Backend getrennt.
+Das Dashboard wurde mit benutzerspezifischen Statistiken verbessert.
+Eine benutzerspezifische Dokumentationsseite wurde hinzugefügt.
+Die Funktionen Drucken und Als PDF speichern wurden implementiert.
+Das Design und die Benutzeroberfläche wurden auf allen Seiten vereinheitlicht.
+Probleme bei der Authentifizierung und beim Routing wurden behoben.
+Abschließende Tests und Fehlerbehebungen wurden durchgeführt.
+Das finale GitHub-Repository wurde vorbereitet und aktualisiert.
+
+Herausforderungen
+
+Merge-Konflikte nach der Umstrukturierung des Projekts lösen.
+Frontend und Backend nach der Trennung erfolgreich synchronisieren.
+Sicherstellen, dass jeder Benutzer ausschließlich auf seine eigenen Daten zugreifen kann.
+
+Ergebnis
+
+Die finale Version von CareerBridge wurde erfolgreich fertiggestellt.
+Die Anwendung wurde für die Präsentation und die Abgabe vorbereitet.
+
 ChatGPT-Unterstützung
 
 Unterstützung bei der Erstellung der Projektdokumentation.
