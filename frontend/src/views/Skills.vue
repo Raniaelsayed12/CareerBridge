@@ -5,30 +5,29 @@
         <p class="eyebrow">SKILLS</p>
         <h1>Manage your skills</h1>
         <p>Add, edit and organize your technical and professional skills.</p>
-      </div>
-
-      <div class="hero-side">
-        <div class="hero-count">
-          <strong>{{ skills.length }}</strong>
-          <span>skills</span>
-        </div>
 
         <div class="hero-actions">
           <RouterLink to="/" class="btn light">Home</RouterLink>
           <RouterLink to="/dashboard" class="btn light">Dashboard</RouterLink>
         </div>
       </div>
+
+      <div class="hero-count">
+        <strong>{{ skills.length }}</strong>
+        <span>skills</span>
+      </div>
     </section>
 
     <section class="form-panel">
-      <h2>{{ editingId ? "Edit Skill" : "Add Skill" }}</h2>
+      <p class="eyebrow blue">NEW SKILL</p>
+      <h2>{{ editingId ? "Edit skill" : "Add a skill" }}</h2>
 
       <form @submit.prevent="saveSkill" class="skill-form">
         <input v-model="form.name" placeholder="Skill name" required />
         <input v-model="form.category" placeholder="Category" required />
 
         <button type="submit" class="btn primary">
-          {{ editingId ? "Update" : "Add Skill" }}
+          {{ editingId ? "Update skill" : "Add skill" }}
         </button>
 
         <button
@@ -93,30 +92,11 @@ const form = ref({
   category: "",
 });
 
+const currentUser = computed(() => userStore.user);
+
 const currentUserId = computed(() => {
-  return userStore.user?._id || userStore.user?.id || userStore.user?.email;
+  return currentUser.value?._id || currentUser.value?.id || currentUser.value?.email;
 });
-
-function belongsToCurrentUser(item) {
-  const keys = [
-    currentUserId.value,
-    userStore.user?._id,
-    userStore.user?.id,
-    userStore.user?.email,
-  ].filter(Boolean);
-
-  const owners = [
-    item?.userId,
-    item?.ownerId,
-    item?.accountId,
-    item?.userEmail,
-    item?.email,
-    item?.createdBy,
-  ].filter(Boolean);
-
-  return owners.some((owner) => keys.includes(owner));
-}
-
 
 const filteredSkills = computed(() => {
   const query = searchQuery.value.toLowerCase().trim();
@@ -135,6 +115,26 @@ function normalizeList(data) {
   if (Array.isArray(data?.skills)) return data.skills;
   if (Array.isArray(data?.data)) return data.data;
   return [];
+}
+
+function belongsToCurrentUser(item) {
+  const keys = [
+    currentUserId.value,
+    currentUser.value?._id,
+    currentUser.value?.id,
+    currentUser.value?.email,
+  ].filter(Boolean);
+
+  const owners = [
+    item?.userId,
+    item?.ownerId,
+    item?.accountId,
+    item?.userEmail,
+    item?.email,
+    item?.createdBy,
+  ].filter(Boolean);
+
+  return owners.some((owner) => keys.includes(owner));
 }
 
 function getSkillId(skill) {
@@ -215,8 +215,7 @@ onMounted(loadSkills);
 </script>
 
 <style scoped>
-.skills-page,
-.admin-info-page {
+.skills-page {
   min-height: 100vh;
   padding: 3rem 7%;
   background: #f4f7fb;
@@ -240,23 +239,29 @@ onMounted(loadSkills);
   font-size: clamp(2.2rem, 5vw, 4rem);
 }
 
+.skills-hero p {
+  max-width: 750px;
+}
+
 .eyebrow {
   margin: 0;
-  color: #2563eb;
   letter-spacing: 0.3em;
   font-weight: 900;
+}
+
+.blue {
+  color: #2563eb;
 }
 
 .skills-hero .eyebrow {
   color: #dbeafe;
 }
 
-.hero-side {
+.hero-actions {
   display: flex;
-  align-items: center;
-  gap: 1.2rem;
+  gap: 0.8rem;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  margin-top: 1.5rem;
 }
 
 .hero-count {
@@ -276,12 +281,6 @@ onMounted(loadSkills);
 .hero-count span {
   color: white;
   font-weight: 800;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 0.8rem;
-  flex-wrap: wrap;
 }
 
 .btn {
@@ -309,8 +308,7 @@ onMounted(loadSkills);
 }
 
 .form-panel,
-.search-panel,
-.admin-info-card {
+.search-panel {
   margin: 2rem 0;
   padding: 2rem;
   border-radius: 24px;
@@ -318,10 +316,16 @@ onMounted(loadSkills);
   box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
 }
 
+.form-panel h2 {
+  margin: 0.8rem 0 1.2rem;
+  font-size: 2rem;
+}
+
 .skill-form {
   display: grid;
   grid-template-columns: 1fr 1fr auto auto;
-  gap: 0.8rem;
+  gap: 0.9rem;
+  align-items: center;
 }
 
 input {
@@ -409,45 +413,10 @@ input {
   color: #b91c1c;
 }
 
-.admin-info-page {
-  display: grid;
-  place-items: center;
-}
-
-.admin-info-card {
-  width: min(850px, 100%);
-  margin: 0;
-}
-
-.admin-info-card h1 {
-  font-size: clamp(2rem, 5vw, 4rem);
-  margin: 1rem 0;
-}
-
-.admin-info-card p {
-  color: #64748b;
-  line-height: 1.7;
-}
-
-.admin-info-btn {
-  display: inline-flex;
-  margin-top: 1.5rem;
-  padding: 1rem 1.3rem;
-  border-radius: 14px;
-  background: #2563eb;
-  color: white;
-  font-weight: 900;
-  text-decoration: none;
-}
-
 @media (max-width: 950px) {
   .skills-hero {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .hero-side {
-    justify-content: flex-start;
   }
 
   .skill-form,
