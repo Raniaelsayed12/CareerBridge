@@ -358,3 +358,81 @@ body,
 .progress-fill {
   background: linear-gradient(135deg, var(--cb-blue), #4f46e5) !important;
 }
+
+/* Final compact navbar fix */
+.navbar {
+  width: 100% !important;
+  min-height: 86px !important;
+  padding: 0.75rem 4.5% !important;
+  gap: 1rem !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+}
+
+.brand {
+  font-size: 1.85rem !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.nav-links {
+  flex: 1 !important;
+  min-width: 0 !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 0.28rem !important;
+  flex-wrap: nowrap !important;
+}
+
+.nav-links a {
+  font-size: 0.98rem !important;
+  padding: 0.62rem 0.68rem !important;
+  border-radius: 15px !important;
+  white-space: nowrap !important;
+}
+
+.user-badge {
+  max-width: 155px !important;
+  padding: 0.58rem 0.75rem !important;
+  border-radius: 16px !important;
+  flex-shrink: 0 !important;
+}
+
+.user-badge strong {
+  font-size: 0.92rem !important;
+}
+
+.user-badge span {
+  font-size: 0.74rem !important;
+}
+
+.logout-btn {
+  font-size: 0.95rem !important;
+  padding: 0.7rem 0.9rem !important;
+  border-radius: 16px !important;
+  flex-shrink: 0 !important;
+}
+
+@media (max-width: 1250px) {
+  .navbar {
+    padding: 0.7rem 3% !important;
+  }
+
+  .brand {
+    font-size: 1.65rem !important;
+  }
+
+  .nav-links a {
+    font-size: 0.9rem !important;
+    padding: 0.55rem 0.55rem !important;
+  }
+
+  .user-badge {
+    max-width: 135px !important;
+  }
+
+  .logout-btn {
+    padding: 0.6rem 0.75rem !important;
+  }
+}
