@@ -6,15 +6,15 @@
         <h1>Welcome back, {{ userName }}</h1>
         <p>
           This is your personal CareerBridge overview. Here you can see your own
-          skills, projects and certificates.
+          skills, projects, certificates and profile progress.
         </p>
       </div>
 
       <div class="hero-actions">
-        <RouterLink to="/" class="btn secondary">Home</RouterLink>
-        <RouterLink to="/skills" class="btn">Skills</RouterLink>
-        <RouterLink to="/projects" class="btn">Projects</RouterLink>
-        <RouterLink to="/certificates" class="btn">Certificates</RouterLink>
+        <RouterLink to="/" class="btn light">Home</RouterLink>
+        <RouterLink to="/skills" class="btn light">Skills</RouterLink>
+        <RouterLink to="/projects" class="btn light">Projects</RouterLink>
+        <RouterLink to="/certificates" class="btn light">Certificates</RouterLink>
       </div>
     </section>
 
@@ -34,15 +34,19 @@
         <span>Certificates</span>
       </article>
 
-      <article class="stat-card">
+      <article class="stat-card progress-card">
         <strong>{{ profileProgress }}%</strong>
         <span>Profile progress</span>
+
+        <div class="progress-track">
+          <div class="progress-fill" :style="{ width: profileProgress + '%' }"></div>
+        </div>
       </article>
     </section>
 
     <section class="dashboard-grid">
       <article class="panel">
-        <p class="eyebrow">QUICK ACTIONS</p>
+        <p class="eyebrow blue">QUICK ACTIONS</p>
         <h2>Manage your career profile</h2>
 
         <div class="quick-actions">
@@ -69,10 +73,21 @@
       </article>
 
       <article class="panel">
-        <p class="eyebrow">CURRENT USER</p>
+        <p class="eyebrow blue">CURRENT USER</p>
         <h2>{{ userName }}</h2>
         <p>{{ currentUser?.email }}</p>
         <p class="role-text">Role: {{ currentUser?.role || "user" }}</p>
+
+        <div class="profile-box">
+          <div class="profile-head">
+            <strong>Profile completion</strong>
+            <span>{{ profileProgress }}%</span>
+          </div>
+
+          <div class="progress-track">
+            <div class="progress-fill" :style="{ width: profileProgress + '%' }"></div>
+          </div>
+        </div>
 
         <RouterLink
           v-if="currentUser?.role === 'admin'"
@@ -110,7 +125,7 @@ const userName = computed(() => {
 });
 
 const currentUserId = computed(() => {
-  return currentUser.value?.id || currentUser.value?._id || currentUser.value?.email;
+  return currentUser.value?._id || currentUser.value?.id || currentUser.value?.email;
 });
 
 const profileProgress = computed(() => {
@@ -124,7 +139,7 @@ const profileProgress = computed(() => {
     currentUser.value?.name || currentUser.value?.fullName,
     currentUser.value?.email,
     currentUser.value?.city,
-    currentUser.value?.title || currentUser.value?.professionalTitle || currentUser.value?.professionalRole,
+    currentUser.value?.professionalRole,
     currentUser.value?.university,
   ];
 
@@ -132,19 +147,69 @@ const profileProgress = computed(() => {
   return Math.round((filled / fields.length) * 100);
 });
 
+function normalizeList(data, key) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.[key])) return data[key];
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+}
+
+function belongsToCurrentUser(item) {
+  const keys = [
+    currentUserId.value,
+    currentUser.value?._id,
+    currentUser.value?.id,
+    currentUser.value?.email,
+  ].filter(Boolean);
+
+  const owners = [
+    item?.userId,
+    item?.ownerId,
+    item?.accountId,
+    item?.userEmail,
+    item?.email,
+    item?.createdBy,
+  ].filter(Boolean);
+
+  return owners.some((owner) => keys.includes(owner));
+}
+
+async function refreshCurrentUser() {
+  try {
+    const response = await api.get("/users");
+    const users = normalizeList(response.data, "users");
+
+    const freshUser = users.find((user) => {
+      return (
+        user.email === currentUser.value?.email ||
+        user._id === currentUser.value?._id ||
+        user.id === currentUser.value?.id
+      );
+    });
+
+    if (freshUser) {
+      userStore.setUser(freshUser);
+    }
+  } catch (error) {
+    console.error("Current user could not be refreshed:", error);
+  }
+}
+
 async function loadDashboardData() {
   if (!currentUserId.value) return;
 
   try {
+    await refreshCurrentUser();
+
     const [skillsRes, projectsRes, certificatesRes] = await Promise.all([
       api.get(`/skills?userId=${currentUserId.value}`),
       api.get(`/projects?userId=${currentUserId.value}`),
       api.get(`/certificates?userId=${currentUserId.value}`),
     ]);
 
-    skills.value = Array.isArray(skillsRes.data) ? skillsRes.data : [];
-    projects.value = Array.isArray(projectsRes.data) ? projectsRes.data : [];
-    certificates.value = Array.isArray(certificatesRes.data) ? certificatesRes.data : [];
+    skills.value = normalizeList(skillsRes.data, "skills").filter(belongsToCurrentUser);
+    projects.value = normalizeList(projectsRes.data, "projects").filter(belongsToCurrentUser);
+    certificates.value = normalizeList(certificatesRes.data, "certificates").filter(belongsToCurrentUser);
   } catch (error) {
     console.error("Dashboard data could not be loaded:", error);
   }
@@ -158,7 +223,7 @@ onMounted(loadDashboardData);
   min-height: 100vh;
   padding: 3rem 7%;
   background: #f4f7fb;
-  color: #101827;
+  color: #0f172a;
 }
 
 .dashboard-hero {
@@ -179,7 +244,7 @@ onMounted(loadDashboardData);
 }
 
 .dashboard-hero p {
-  max-width: 680px;
+  max-width: 720px;
   line-height: 1.7;
 }
 
@@ -187,7 +252,10 @@ onMounted(loadDashboardData);
   margin: 0;
   font-size: 0.85rem;
   letter-spacing: 0.35em;
-  font-weight: 800;
+  font-weight: 900;
+}
+
+.blue {
   color: #2563eb;
 }
 
@@ -203,21 +271,17 @@ onMounted(loadDashboardData);
 }
 
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 110px;
+  border: none;
   padding: 0.9rem 1.2rem;
   border-radius: 14px;
-  background: white;
-  color: #1d4ed8;
-  font-weight: 800;
+  font-weight: 900;
+  cursor: pointer;
   text-decoration: none;
 }
 
-.btn.secondary {
-  background: #dbeafe;
-  color: #0f172a;
+.btn.light {
+  background: white;
+  color: #1d4ed8;
 }
 
 .stats-grid {
@@ -243,7 +307,31 @@ onMounted(loadDashboardData);
 }
 
 .stat-card span {
-  font-weight: 700;
+  font-weight: 800;
+}
+
+.progress-card {
+  text-align: left;
+}
+
+.progress-card strong,
+.progress-card span {
+  text-align: center;
+}
+
+.progress-track {
+  width: 100%;
+  height: 12px;
+  margin-top: 1rem;
+  border-radius: 999px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
 }
 
 .dashboard-grid {
@@ -292,7 +380,26 @@ onMounted(loadDashboardData);
 
 .role-text {
   margin-top: 1rem;
-  font-weight: 800;
+  font-weight: 900;
+  color: #2563eb;
+}
+
+.profile-box {
+  margin-top: 1.5rem;
+  padding: 1.2rem;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.profile-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-weight: 900;
+}
+
+.profile-head span {
   color: #2563eb;
 }
 
@@ -303,11 +410,11 @@ onMounted(loadDashboardData);
   border-radius: 14px;
   background: #fee2e2;
   color: #991b1b;
-  font-weight: 800;
+  font-weight: 900;
   text-decoration: none;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 950px) {
   .dashboard-hero,
   .dashboard-grid {
     grid-template-columns: 1fr;
