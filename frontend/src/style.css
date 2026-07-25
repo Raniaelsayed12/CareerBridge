@@ -248,3 +248,113 @@
     display: none !important;
   }
 }
+
+/* CareerBridge blue-white final theme */
+:root {
+  --cb-blue-dark: #14264f;
+  --cb-blue: #2563eb;
+  --cb-blue-light: #dbeafe;
+  --cb-white: #ffffff;
+  --cb-bg: #f4f7fb;
+  --cb-text: #0f172a;
+}
+
+body,
+.app-shell,
+.home-page,
+.about-page,
+.dashboard-page,
+.skills-page,
+.projects-page,
+.certificates-page,
+.resume-page,
+.docs-page,
+.admin-page,
+.profile-page,
+.login-page {
+  background: var(--cb-bg) !important;
+  color: var(--cb-text) !important;
+}
+
+.dashboard-hero,
+.skills-hero,
+.projects-hero,
+.certificates-hero,
+.docs-hero,
+.admin-hero,
+.about-hero,
+.resume-hero,
+.login-info {
+  background: linear-gradient(135deg, var(--cb-blue-dark), var(--cb-blue)) !important;
+  color: var(--cb-white) !important;
+}
+
+.form-panel,
+.search-panel,
+.panel,
+.stat-card,
+.skill-card,
+.project-card,
+.certificate-card,
+.doc-paper,
+.docs-sidebar,
+.resume-sheet,
+.profile-hero,
+.form-panel,
+.login-card,
+.about-grid article,
+.empty-card {
+  background: var(--cb-white) !important;
+}
+
+.btn.primary,
+.submit-btn,
+.admin-info-btn,
+.register-link {
+  background: var(--cb-blue) !important;
+  color: var(--cb-white) !important;
+}
+
+.btn.light,
+.edit-btn {
+  background: var(--cb-white) !important;
+  color: var(--cb-blue) !important;
+}
+
+.nav-links a.router-link-active,
+.login-link,
+.skill-initials,
+.tag,
+.status {
+  background: var(--cb-blue-light) !important;
+  color: var(--cb-blue) !important;
+  border-color: var(--cb-blue) !important;
+}
+
+.skill-category {
+  color: var(--cb-blue) !important;
+  border-color: var(--cb-blue) !important;
+}
+
+.eyebrow,
+.blue,
+.role-text,
+.profile-head span,
+.stat-card strong {
+  color: var(--cb-blue) !important;
+}
+
+.dashboard-hero .eyebrow,
+.skills-hero .eyebrow,
+.projects-hero .eyebrow,
+.certificates-hero .eyebrow,
+.docs-hero .eyebrow,
+.admin-hero .eyebrow,
+.about-hero .eyebrow,
+.resume-hero .eyebrow {
+  color: var(--cb-blue-light) !important;
+}
+
+.progress-fill {
+  background: linear-gradient(135deg, var(--cb-blue), #4f46e5) !important;
+}
