@@ -174,33 +174,10 @@ function belongsToCurrentUser(item) {
   return owners.some((owner) => keys.includes(owner));
 }
 
-async function refreshCurrentUser() {
-  try {
-    const response = await api.get("/users");
-    const users = normalizeList(response.data, "users");
-
-    const freshUser = users.find((user) => {
-      return (
-        user.email === currentUser.value?.email ||
-        user._id === currentUser.value?._id ||
-        user.id === currentUser.value?.id
-      );
-    });
-
-    if (freshUser) {
-      userStore.setUser(freshUser);
-    }
-  } catch (error) {
-    console.error("Current user could not be refreshed:", error);
-  }
-}
-
 async function loadDashboardData() {
   if (!currentUserId.value) return;
 
   try {
-    await refreshCurrentUser();
-
     const [skillsRes, projectsRes, certificatesRes] = await Promise.all([
       api.get(`/skills?userId=${currentUserId.value}`),
       api.get(`/projects?userId=${currentUserId.value}`),

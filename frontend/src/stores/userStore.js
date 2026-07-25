@@ -23,12 +23,14 @@ export const useUserStore = defineStore("user", {
     setUser(user) {
       this.user = user;
       sessionStorage.setItem("careerbridgeUser", JSON.stringify(user));
+      sessionStorage.setItem("activeUserEmail", user.email);
       localStorage.removeItem("careerbridgeUser");
     },
 
     logout() {
       this.user = null;
       sessionStorage.removeItem("careerbridgeUser");
+      sessionStorage.removeItem("activeUserEmail");
       localStorage.removeItem("careerbridgeUser");
     },
   },

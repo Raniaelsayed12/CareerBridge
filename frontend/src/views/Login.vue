@@ -51,11 +51,9 @@
 
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
 import { useUserStore } from "../stores/userStore";
 import api from "../services/api";
 
-const router = useRouter();
 const userStore = useUserStore();
 
 const email = ref("");
@@ -76,39 +74,40 @@ function fillDemo(account) {
   password.value = demoAccounts[account].password;
 }
 
+function normalizeUsers(data) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.users)) return data.users;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+}
+
 async function handleLogin() {
-  userStore.logout();
-  sessionStorage.clear();
-  localStorage.clear();
-
-  userStore.logout();
-  sessionStorage.clear();
-  localStorage.clear();
-
   loading.value = true;
   errorMessage.value = "";
 
+  userStore.logout();
+  sessionStorage.clear();
+  localStorage.clear();
+
   try {
-    const response = await api.post("/login", {
-      email: email.value,
-      password: password.value,
+    const response = await api.get("/users");
+    const users = normalizeUsers(response.data);
+
+    const typedEmail = email.value.trim().toLowerCase();
+    const typedPassword = password.value;
+
+    const matchedUser = users.find((user) => {
+      return (
+        String(user.email || "").toLowerCase() === typedEmail &&
+        String(user.password || "") === typedPassword
+      );
     });
 
-    const loginData = response.data;
-    const user = loginData.user || loginData.account || loginData;
-
-    if (!user || !user.email) {
-      throw new Error("No valid user returned by backend.");
+    if (!matchedUser) {
+      throw new Error("Invalid email or password.");
     }
 
-    if (user.email?.toLowerCase() !== email.value.toLowerCase()) {
-      throw new Error("Wrong user returned by backend.");
-    }
-
-    userStore.setUser(user);
-
-    sessionStorage.setItem("careerbridgeUser", JSON.stringify(user));
-
+    userStore.setUser(matchedUser);
     window.location.href = "/dashboard";
   } catch (error) {
     console.error("Login failed:", error);
@@ -150,7 +149,7 @@ async function handleLogin() {
   margin: 0;
   font-size: 0.85rem;
   letter-spacing: 0.35em;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .login-info h1 {
@@ -171,7 +170,7 @@ async function handleLogin() {
 label {
   display: grid;
   gap: 0.45rem;
-  font-weight: 800;
+  font-weight: 900;
   color: #0f172a;
 }
 
@@ -193,7 +192,7 @@ input {
   border: none;
   border-radius: 12px;
   padding: 0.8rem 1rem;
-  font-weight: 800;
+  font-weight: 900;
   cursor: pointer;
 }
 
@@ -208,14 +207,9 @@ input {
   cursor: pointer;
 }
 
-.submit-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
 .error {
   color: #b91c1c;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .demo-box {
@@ -232,7 +226,7 @@ input {
 .demo-box p {
   width: 100%;
   margin: 0 0 0.3rem;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .demo-box button {
