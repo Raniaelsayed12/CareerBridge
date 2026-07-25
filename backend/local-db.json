@@ -1,0 +1,170 @@
+{
+  "users": [
+    {
+      "_id": "user-admin",
+      "name": "System Admin",
+      "email": "admin@test.de",
+      "password": "admin12345",
+      "role": "admin"
+    },
+    {
+      "_id": "user-hania",
+      "name": "Hania Alilat",
+      "email": "hania@test.com",
+      "password": "hania12345",
+      "role": "user"
+    },
+    {
+      "_id": "user-rania",
+      "name": "Rania Abdelaal",
+      "email": "rania@test.com",
+      "password": "rania12345",
+      "role": "user"
+    },
+    {
+      "_id": "user-aly",
+      "name": "Aly Elatrby",
+      "email": "aly@test.com",
+      "password": "aly12345",
+      "role": "user"
+    }
+  ],
+  "skills": [
+    {
+      "_id": "skill-hania-1",
+      "userId": "user-hania",
+      "name": "Vue.js",
+      "category": "Frontend"
+    },
+    {
+      "_id": "skill-hania-2",
+      "userId": "user-hania",
+      "name": "Git & GitHub",
+      "category": "Tools"
+    },
+    {
+      "_id": "skill-rania-1",
+      "userId": "user-rania",
+      "name": "JavaScript",
+      "category": "Programming"
+    },
+    {
+      "_id": "skill-rania-2",
+      "userId": "user-rania",
+      "name": "CSS Design",
+      "category": "Frontend"
+    },
+    {
+      "_id": "skill-aly-1",
+      "userId": "user-aly",
+      "name": "Node.js",
+      "category": "Backend"
+    },
+    {
+      "_id": "skill-aly-2",
+      "userId": "user-aly",
+      "name": "Express.js",
+      "category": "Backend"
+    }
+  ],
+  "projects": [
+    {
+      "_id": "project-hania-1",
+      "userId": "user-hania",
+      "title": "CareerBridge",
+      "description": "Student career platform for skills, projects, certificates and resume management.",
+      "github": "https://github.com/Raniaelsayed12/CareerBridge",
+      "status": "In Progress"
+    },
+    {
+      "_id": "project-hania-2",
+      "userId": "user-hania",
+      "title": "Portfolio Website",
+      "description": "Personal portfolio to present student profile and projects.",
+      "github": "https://github.com/haniaalo",
+      "status": "Planned"
+    },
+    {
+      "_id": "project-rania-1",
+      "userId": "user-rania",
+      "title": "Dashboard UI",
+      "description": "Frontend dashboard for skills, projects and certificates.",
+      "github": "https://github.com/Raniaelsayed12/CareerBridge",
+      "status": "In Progress"
+    },
+    {
+      "_id": "project-rania-2",
+      "userId": "user-rania",
+      "title": "Authentication Pages",
+      "description": "Login and register pages for CareerBridge users.",
+      "github": "https://github.com/Raniaelsayed12/CareerBridge",
+      "status": "Completed"
+    },
+    {
+      "_id": "project-aly-1",
+      "userId": "user-aly",
+      "title": "Backend API",
+      "description": "Express backend with local JSON database for demo testing.",
+      "github": "https://github.com/Raniaelsayed12/CareerBridge",
+      "status": "In Progress"
+    },
+    {
+      "_id": "project-aly-2",
+      "userId": "user-aly",
+      "title": "Data Management",
+      "description": "API routes for users, skills, projects and certificates.",
+      "github": "https://github.com/Raniaelsayed12/CareerBridge",
+      "status": "Planned"
+    }
+  ],
+  "certificates": [
+    {
+      "_id": "certificate-hania-1",
+      "userId": "user-hania",
+      "name": "Vue Basics",
+      "provider": "Westfälische Hochschule",
+      "date": "2026-07-25",
+      "link": ""
+    },
+    {
+      "_id": "certificate-hania-2",
+      "userId": "user-hania",
+      "name": "GitHub Workflow",
+      "provider": "GitHub Skills",
+      "date": "2026-07-25",
+      "link": ""
+    },
+    {
+      "_id": "certificate-rania-1",
+      "userId": "user-rania",
+      "name": "Frontend Development",
+      "provider": "CareerBridge Project",
+      "date": "2026-07-25",
+      "link": ""
+    },
+    {
+      "_id": "certificate-rania-2",
+      "userId": "user-rania",
+      "name": "UI Design Basics",
+      "provider": "University Project",
+      "date": "2026-07-25",
+      "link": ""
+    },
+    {
+      "_id": "certificate-aly-1",
+      "userId": "user-aly",
+      "name": "Node.js Backend",
+      "provider": "CareerBridge Project",
+      "date": "2026-07-25",
+      "link": ""
+    },
+    {
+      "_id": "certificate-aly-2",
+      "userId": "user-aly",
+      "name": "API Development",
+      "provider": "University Project",
+      "date": "2026-07-25",
+      "link": ""
+    }
+  ]
+}

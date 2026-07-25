@@ -10,14 +10,23 @@ const menuOpen = ref(false);
 
 const isAuthenticated = computed(() => userStore.loggedIn);
 
+const adminEmails = [
+  "admin@test.de",
+];
+
+const isAdmin = computed(() => {
+  return (
+    isAuthenticated.value &&
+    adminEmails.includes((userStore.email || "").toLowerCase().trim())
+  );
+});
+
 const displayName = computed(() => {
   return userStore.name || "User";
 });
 
 const initials = computed(() => {
-  return userStore.name
-      ? userStore.name.charAt(0).toUpperCase()
-      : "U";
+  return userStore.name ? userStore.name.charAt(0).toUpperCase() : "U";
 });
 
 function closeMenu() {
@@ -27,7 +36,6 @@ function closeMenu() {
 function handleLogout() {
   userStore.logout();
   menuOpen.value = false;
-
   router.push("/login");
 }
 </script>
@@ -35,11 +43,7 @@ function handleLogout() {
 <template>
   <header class="navbar">
     <div class="navbar-container">
-      <RouterLink
-          to="/"
-          class="brand"
-          @click="closeMenu"
-      >
+      <RouterLink to="/" class="brand" @click="closeMenu">
         <span class="brand-icon">CB</span>
 
         <span class="brand-text">
@@ -48,11 +52,11 @@ function handleLogout() {
       </RouterLink>
 
       <button
-          class="menu-button"
-          type="button"
-          :aria-expanded="menuOpen"
-          aria-label="Open navigation menu"
-          @click="menuOpen = !menuOpen"
+        class="menu-button"
+        type="button"
+        :aria-expanded="menuOpen"
+        aria-label="Open navigation menu"
+        @click="menuOpen = !menuOpen"
       >
         <span></span>
         <span></span>
@@ -61,106 +65,81 @@ function handleLogout() {
 
       <nav :class="['navigation', { open: menuOpen }]">
         <div class="navigation-links">
-          <RouterLink
-              to="/"
-              class="navigation-link"
-              @click="closeMenu"
-          >
+          <RouterLink to="/" class="navigation-link" @click="closeMenu">
             Home
           </RouterLink>
 
           <RouterLink
-              v-if="isAuthenticated"
-              to="/dashboard"
-              class="navigation-link"
-              @click="closeMenu"
+            v-if="isAuthenticated"
+            to="/dashboard"
+            class="navigation-link"
+            @click="closeMenu"
           >
             Dashboard
           </RouterLink>
 
           <RouterLink
-              v-if="isAuthenticated"
-              to="/skills"
-              class="navigation-link"
-              @click="closeMenu"
+            v-if="isAuthenticated"
+            to="/skills"
+            class="navigation-link"
+            @click="closeMenu"
           >
             Skills
           </RouterLink>
 
           <RouterLink
-              v-if="isAuthenticated"
-              to="/projects"
-              class="navigation-link"
-              @click="closeMenu"
+            v-if="isAuthenticated"
+            to="/projects"
+            class="navigation-link"
+            @click="closeMenu"
           >
             Projects
           </RouterLink>
 
           <RouterLink
-              v-if="isAuthenticated"
-              to="/certificates"
-              class="navigation-link"
-              @click="closeMenu"
+            v-if="isAuthenticated"
+            to="/certificates"
+            class="navigation-link"
+            @click="closeMenu"
           >
             Certificates
           </RouterLink>
 
           <RouterLink
-              v-if="isAuthenticated"
-              to="/resume"
-              class="navigation-link"
-              @click="closeMenu"
+            v-if="isAuthenticated"
+            to="/resume"
+            class="navigation-link"
+            @click="closeMenu"
           >
             Resume
           </RouterLink>
 
-          <RouterLink
-              to="/about"
-              class="navigation-link"
-              @click="closeMenu"
-          >
+          <RouterLink to="/about" class="navigation-link" @click="closeMenu">
             About
           </RouterLink>
-        
-          <RouterLink
-             v-if="isAuthenticated"
-               to="/admin"
-              class="navigation-link"
-              @click="closeMenu"
-          >
-             Admin
-            </RouterLink>
 
-        <div
-            v-if="!isAuthenticated"
-            class="guest-actions"
-        >
           <RouterLink
-              to="/login"
-              class="login-link"
-              @click="closeMenu"
+            v-if="isAdmin"
+            to="/admin"
+            class="navigation-link"
+            @click="closeMenu"
           >
+            Admin
+          </RouterLink>
+        </div>
+
+        <div v-if="!isAuthenticated" class="guest-actions">
+          <RouterLink to="/login" class="login-link" @click="closeMenu">
             Sign in
           </RouterLink>
 
-          <RouterLink
-              to="/register"
-              class="register-button"
-              @click="closeMenu"
-          >
+          <RouterLink to="/register" class="register-button" @click="closeMenu">
             Create account
           </RouterLink>
         </div>
 
-        <div
-            v-else
-            class="user-actions"
-        >
-          <RouterLink
-              to="/profile"
-              class="user-profile"
-              @click="closeMenu"
-          >
+        <div v-else class="user-actions">
+          <RouterLink to="/profile" class="user-profile" @click="closeMenu">
             <span class="user-avatar">
               {{ initials }}
             </span>
@@ -176,11 +155,7 @@ function handleLogout() {
             </span>
           </RouterLink>
 
-          <button
-              class="logout-button"
-              type="button"
-              @click="handleLogout"
-          >
+          <button class="logout-button" type="button" @click="handleLogout">
             Logout
           </button>
         </div>
@@ -199,9 +174,9 @@ function handleLogout() {
   border-bottom: 1px solid rgba(148, 163, 184, 0.14);
   backdrop-filter: blur(18px);
   font-family:
-      Inter,
-      Arial,
-      sans-serif;
+    Inter,
+    Arial,
+    sans-serif;
 }
 
 .navbar-container {
@@ -270,8 +245,8 @@ function handleLogout() {
   font-size: 14px;
   font-weight: 600;
   transition:
-      color 0.2s ease,
-      background 0.2s ease;
+    color 0.2s ease,
+    background 0.2s ease;
 }
 
 .navigation-link:hover {
@@ -313,8 +288,8 @@ function handleLogout() {
   font-weight: 700;
   box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
   transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .register-button:hover {
@@ -332,8 +307,8 @@ function handleLogout() {
   border-radius: 12px;
   text-decoration: none;
   transition:
-      background 0.2s ease,
-      border-color 0.2s ease;
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .user-profile:hover {
@@ -386,9 +361,9 @@ function handleLogout() {
   font-size: 13px;
   font-weight: 700;
   transition:
-      color 0.2s ease,
-      background 0.2s ease,
-      border-color 0.2s ease;
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .logout-button:hover {
@@ -463,9 +438,9 @@ function handleLogout() {
     opacity: 0;
     visibility: hidden;
     transition:
-        max-height 0.3s ease,
-        padding 0.3s ease,
-        opacity 0.2s ease;
+      max-height 0.3s ease,
+      padding 0.3s ease,
+      opacity 0.2s ease;
   }
 
   .navigation.open {

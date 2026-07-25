@@ -4,7 +4,6 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 
@@ -13,31 +12,70 @@ const dataFile = path.join(__dirname, "local-db.json");
 const defaultData = {
   users: [
     {
-      _id: "user-1",
+      _id: "user-admin",
+      name: "System Admin",
+      email: "admin@test.de",
+      password: "admin12345",
+      role: "admin"
+    },
+    {
+      _id: "user-hania",
       name: "Hania Alilat",
       email: "hania@test.com",
-      password: "123456",
-      role: "admin"
+      password: "hania12345",
+      role: "user"
+    },
+    {
+      _id: "user-rania",
+      name: "Rania Abdelaal",
+      email: "rania@test.com",
+      password: "rania12345",
+      role: "user"
+    },
+    {
+      _id: "user-aly",
+      name: "Aly Elatrby",
+      email: "aly@test.com",
+      password: "aly12345",
+      role: "user"
     }
   ],
   skills: [
-    { _id: "skill-1", name: "Vue.js", category: "Frontend" },
-    { _id: "skill-2", name: "JavaScript", category: "Programming" }
+    { _id: "skill-1", userId: "user-hania", name: "Vue.js", category: "Frontend" },
+    { _id: "skill-2", userId: "user-rania", name: "Git & GitHub", category: "Tools" }
   ],
   projects: [
     {
       _id: "project-1",
+      userId: "user-hania",
       title: "CareerBridge",
-      description: "Student career platform",
+      description: "Student career platform for skills, projects, certificates and resume management.",
       github: "https://github.com/Raniaelsayed12/CareerBridge",
       status: "In Progress"
+    },
+    {
+      _id: "project-2",
+      userId: "user-aly",
+      title: "Personal Portfolio",
+      description: "Portfolio page for student projects and skills.",
+      github: "https://github.com/haniaalo",
+      status: "Planned"
     }
   ],
   certificates: [
     {
       _id: "certificate-1",
+      userId: "user-hania",
       name: "Vue Basics",
-      provider: "University Project",
+      provider: "Westfälische Hochschule",
+      date: "2026-07-25",
+      link: ""
+    },
+    {
+      _id: "certificate-2",
+      userId: "user-rania",
+      name: "GitHub Workflow",
+      provider: "GitHub Skills",
       date: "2026-07-25",
       link: ""
     }
@@ -50,7 +88,6 @@ function loadData() {
   }
 
   const data = JSON.parse(fs.readFileSync(dataFile, "utf-8"));
-
   data.users = data.users || [];
   data.skills = data.skills || [];
   data.projects = data.projects || [];
@@ -70,19 +107,57 @@ function createId(prefix) {
 let db = loadData();
 
 app.get("/", (req, res) => {
-  res.json({
-    message: "CareerBridge backend is running",
-    database: "local JSON"
-  });
+  res.json({ message: "CareerBridge backend is running", database: "local JSON" });
 });
 
 app.get("/health", (req, res) => {
-  res.json({
-    status: "ok",
-    message: "CareerBridge backend is running",
-    database: "local JSON",
-    time: new Date().toISOString()
-  });
+  res.json({ status: "ok", message: "CareerBridge backend is running" });
+});
+
+/* AUTH */
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
+
+  const user = db.users.find(
+    (item) =>
+      item.email.toLowerCase() === String(email).toLowerCase().trim() &&
+      item.password === password
+  );
+
+  if (!user) {
+    return res.status(401).json({ message: "Invalid email or password." });
+  }
+
+  res.json({ message: "Login successful", user });
+});
+
+app.post("/register", (req, res) => {
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
+
+  const exists = db.users.find(
+    (user) => user.email.toLowerCase() === email.toLowerCase()
+  );
+
+  if (exists) {
+    return res.status(400).json({ message: "Email already exists." });
+  }
+
+  const user = {
+    _id: createId("user"),
+    name,
+    email,
+    password,
+    role: "user"
+  };
+
+  db.users.push(user);
+  saveData(db);
+
+  res.status(201).json({ message: "User registered successfully.", user });
 });
 
 /* USERS */
@@ -97,9 +172,11 @@ app.post("/users", (req, res) => {
     return res.status(400).json({ message: "Name, email and password are required." });
   }
 
-  const existingUser = db.users.find((user) => user.email === email);
+  const exists = db.users.find(
+    (user) => user.email.toLowerCase() === email.toLowerCase()
+  );
 
-  if (existingUser) {
+  if (exists) {
     return res.status(400).json({ message: "Email already exists." });
   }
 
@@ -117,6 +194,25 @@ app.post("/users", (req, res) => {
   res.status(201).json(user);
 });
 
+app.put("/users/:id", (req, res) => {
+  const user = db.users.find((item) => item._id === req.params.id);
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found." });
+  }
+
+  user.name = req.body.name || user.name;
+  user.email = req.body.email || user.email;
+  user.role = req.body.role || user.role;
+
+  if (req.body.password) {
+    user.password = req.body.password;
+  }
+
+  saveData(db);
+  res.json(user);
+});
+
 app.delete("/users/:id", (req, res) => {
   const user = db.users.find((item) => item._id === req.params.id);
 
@@ -124,75 +220,36 @@ app.delete("/users/:id", (req, res) => {
     return res.status(404).json({ message: "User not found." });
   }
 
+  if (user.email === "admin@test.de") {
+    return res.status(400).json({ message: "Admin account cannot be deleted." });
+  }
+
   db.users = db.users.filter((item) => item._id !== req.params.id);
+  db.skills = db.skills.filter((item) => item.userId !== req.params.id);
+  db.projects = db.projects.filter((item) => item.userId !== req.params.id);
+  db.certificates = db.certificates.filter((item) => item.userId !== req.params.id);
+
   saveData(db);
-
-  res.json({ message: "User deleted successfully." });
-});
-
-/* AUTH */
-app.post("/register", (req, res) => {
-  const { name, email, password } = req.body;
-
-  if (!name || !email || !password) {
-    return res.status(400).json({ message: "All fields are required." });
-  }
-
-  const existingUser = db.users.find((user) => user.email === email);
-
-  if (existingUser) {
-    return res.status(400).json({ message: "Email already exists." });
-  }
-
-  const user = {
-    _id: createId("user"),
-    name,
-    email,
-    password,
-    role: "user"
-  };
-
-  db.users.push(user);
-  saveData(db);
-
-  res.status(201).json({
-    message: "User registered successfully.",
-    user
-  });
-});
-
-app.post("/login", (req, res) => {
-  const { email, password } = req.body;
-
-  const user = db.users.find(
-    (item) => item.email === email && item.password === password
-  );
-
-  if (!user) {
-    return res.status(401).json({ message: "Invalid email or password." });
-  }
-
-  res.json({
-    message: "Login successful",
-    user
-  });
+  res.json({ message: "User and related data deleted successfully." });
 });
 
 /* SKILLS */
 app.get("/skills", (req, res) => {
-  res.json(db.skills);
+  const { userId } = req.query;
+  res.json(userId ? db.skills.filter((item) => item.userId === userId) : db.skills);
 });
 
 app.post("/skills", (req, res) => {
-  const { name, category } = req.body;
+  const { userId, name, category } = req.body;
 
-  if (!name || !name.trim()) {
-    return res.status(400).json({ message: "Skill name is required." });
+  if (!userId || !name) {
+    return res.status(400).json({ message: "User and skill name are required." });
   }
 
   const skill = {
     _id: createId("skill"),
-    name: name.trim(),
+    userId,
+    name,
     category: category || "General"
   };
 
@@ -209,42 +266,37 @@ app.put("/skills/:id", (req, res) => {
     return res.status(404).json({ message: "Skill not found." });
   }
 
+  skill.userId = req.body.userId || skill.userId;
   skill.name = req.body.name || skill.name;
   skill.category = req.body.category || skill.category;
 
   saveData(db);
-
   res.json(skill);
 });
 
 app.delete("/skills/:id", (req, res) => {
-  const skill = db.skills.find((item) => item._id === req.params.id);
-
-  if (!skill) {
-    return res.status(404).json({ message: "Skill not found." });
-  }
-
   db.skills = db.skills.filter((item) => item._id !== req.params.id);
   saveData(db);
-
   res.json({ message: "Skill deleted successfully." });
 });
 
 /* PROJECTS */
 app.get("/projects", (req, res) => {
-  res.json(db.projects);
+  const { userId } = req.query;
+  res.json(userId ? db.projects.filter((item) => item.userId === userId) : db.projects);
 });
 
 app.post("/projects", (req, res) => {
-  const { title, description, github, status } = req.body;
+  const { userId, title, description, github, status } = req.body;
 
-  if (!title || !title.trim()) {
-    return res.status(400).json({ message: "Project title is required." });
+  if (!userId || !title) {
+    return res.status(400).json({ message: "User and project title are required." });
   }
 
   const project = {
     _id: createId("project"),
-    title: title.trim(),
+    userId,
+    title,
     description: description || "",
     github: github || "",
     status: status || "Planned"
@@ -263,44 +315,39 @@ app.put("/projects/:id", (req, res) => {
     return res.status(404).json({ message: "Project not found." });
   }
 
+  project.userId = req.body.userId || project.userId;
   project.title = req.body.title || project.title;
   project.description = req.body.description || project.description;
   project.github = req.body.github || project.github;
   project.status = req.body.status || project.status;
 
   saveData(db);
-
   res.json(project);
 });
 
 app.delete("/projects/:id", (req, res) => {
-  const project = db.projects.find((item) => item._id === req.params.id);
-
-  if (!project) {
-    return res.status(404).json({ message: "Project not found." });
-  }
-
   db.projects = db.projects.filter((item) => item._id !== req.params.id);
   saveData(db);
-
   res.json({ message: "Project deleted successfully." });
 });
 
 /* CERTIFICATES */
 app.get("/certificates", (req, res) => {
-  res.json(db.certificates);
+  const { userId } = req.query;
+  res.json(userId ? db.certificates.filter((item) => item.userId === userId) : db.certificates);
 });
 
 app.post("/certificates", (req, res) => {
-  const { name, provider, date, link } = req.body;
+  const { userId, name, provider, date, link } = req.body;
 
-  if (!name || !name.trim()) {
-    return res.status(400).json({ message: "Certificate name is required." });
+  if (!userId || !name) {
+    return res.status(400).json({ message: "User and certificate name are required." });
   }
 
   const certificate = {
     _id: createId("certificate"),
-    name: name.trim(),
+    userId,
+    name,
     provider: provider || "",
     date: date || "",
     link: link || ""
@@ -313,39 +360,25 @@ app.post("/certificates", (req, res) => {
 });
 
 app.put("/certificates/:id", (req, res) => {
-  const certificate = db.certificates.find(
-    (item) => item._id === req.params.id
-  );
+  const certificate = db.certificates.find((item) => item._id === req.params.id);
 
   if (!certificate) {
     return res.status(404).json({ message: "Certificate not found." });
   }
 
+  certificate.userId = req.body.userId || certificate.userId;
   certificate.name = req.body.name || certificate.name;
   certificate.provider = req.body.provider || certificate.provider;
   certificate.date = req.body.date || certificate.date;
   certificate.link = req.body.link || certificate.link;
 
   saveData(db);
-
   res.json(certificate);
 });
 
 app.delete("/certificates/:id", (req, res) => {
-  const certificate = db.certificates.find(
-    (item) => item._id === req.params.id
-  );
-
-  if (!certificate) {
-    return res.status(404).json({ message: "Certificate not found." });
-  }
-
-  db.certificates = db.certificates.filter(
-    (item) => item._id !== req.params.id
-  );
-
+  db.certificates = db.certificates.filter((item) => item._id !== req.params.id);
   saveData(db);
-
   res.json({ message: "Certificate deleted successfully." });
 });
 
