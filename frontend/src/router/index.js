@@ -38,18 +38,13 @@ const router = createRouter({
 
 router.beforeEach((to) => {
   const userStore = useUserStore();
-  const loggedIn = !!userStore.user;
 
-  if (to.meta.requiresAuth && !loggedIn) {
+  if (to.meta.requiresAuth && !userStore.user) {
     return "/login";
   }
 
   if (to.meta.requiresAdmin && userStore.user?.role !== "admin") {
     return "/dashboard";
-  }
-
-  if ((to.path === "/login" || to.path === "/register") && loggedIn) {
-    return "/";
   }
 
   return true;

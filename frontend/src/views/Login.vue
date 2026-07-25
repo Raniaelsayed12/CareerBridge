@@ -77,6 +77,14 @@ function fillDemo(account) {
 }
 
 async function handleLogin() {
+  userStore.logout();
+  sessionStorage.clear();
+  localStorage.clear();
+
+  userStore.logout();
+  sessionStorage.clear();
+  localStorage.clear();
+
   loading.value = true;
   errorMessage.value = "";
 
@@ -93,11 +101,15 @@ async function handleLogin() {
       throw new Error("No valid user returned by backend.");
     }
 
+    if (user.email?.toLowerCase() !== email.value.toLowerCase()) {
+      throw new Error("Wrong user returned by backend.");
+    }
+
     userStore.setUser(user);
 
     sessionStorage.setItem("careerbridgeUser", JSON.stringify(user));
 
-    window.location.href = "/";
+    window.location.href = "/dashboard";
   } catch (error) {
     console.error("Login failed:", error);
     errorMessage.value = "Login failed. Please check email and password.";
