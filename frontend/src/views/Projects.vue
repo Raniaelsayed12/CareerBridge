@@ -1,19 +1,5 @@
 <template>
-  <main v-if="isAdmin" class="admin-info-page">
-    <section class="admin-info-card">
-      <p class="eyebrow">ADMIN ACCOUNT</p>
-      <h1>Projects are managed from the Admin Panel</h1>
-      <p>
-        The admin account is used to manage all users. To view the projects of
-        Hania, Rania or Aly, open the Admin Panel and select a user.
-      </p>
-      <RouterLink to="/admin" class="admin-info-btn">
-        Open Admin Panel
-      </RouterLink>
-    </section>
-  </main>
-
-  <main v-else class="projects-page">
+  <main class="projects-page">
     <section class="projects-hero">
       <div>
         <p class="eyebrow">PROJECT PORTFOLIO</p>
@@ -105,11 +91,30 @@ const form = ref({
   status: "Planned",
 });
 
-const isAdmin = computed(() => userStore.user?.role === "admin");
-
 const currentUserId = computed(() => {
   return userStore.user?._id || userStore.user?.id || userStore.user?.email;
 });
+
+function belongsToCurrentUser(item) {
+  const keys = [
+    currentUserId.value,
+    userStore.user?._id,
+    userStore.user?.id,
+    userStore.user?.email,
+  ].filter(Boolean);
+
+  const owners = [
+    item?.userId,
+    item?.ownerId,
+    item?.accountId,
+    item?.userEmail,
+    item?.email,
+    item?.createdBy,
+  ].filter(Boolean);
+
+  return owners.some((owner) => keys.includes(owner));
+}
+
 
 function normalizeList(data) {
   if (Array.isArray(data)) return data;
@@ -123,11 +128,11 @@ function getProjectId(project) {
 }
 
 async function loadProjects() {
-  if (!currentUserId.value || isAdmin.value) return;
+  if (!currentUserId.value) return;
 
   try {
     const response = await api.get(`/projects?userId=${currentUserId.value}`);
-    projects.value = normalizeList(response.data);
+    projects.value = normalizeList(response.data).filter(belongsToCurrentUser);
   } catch (error) {
     console.error("Projects could not be loaded:", error);
   }

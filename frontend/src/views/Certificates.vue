@@ -1,19 +1,5 @@
 <template>
-  <main v-if="isAdmin" class="admin-info-page">
-    <section class="admin-info-card">
-      <p class="eyebrow">ADMIN ACCOUNT</p>
-      <h1>Certificates are managed from the Admin Panel</h1>
-      <p>
-        The admin account is used to manage all users. To view the certificates
-        of Hania, Rania or Aly, open the Admin Panel and select a user.
-      </p>
-      <RouterLink to="/admin" class="admin-info-btn">
-        Open Admin Panel
-      </RouterLink>
-    </section>
-  </main>
-
-  <main v-else class="certificates-page">
+  <main class="certificates-page">
     <section class="certificates-hero">
       <div>
         <p class="eyebrow">PROFESSIONAL ACHIEVEMENTS</p>
@@ -100,11 +86,30 @@ const form = ref({
   link: "",
 });
 
-const isAdmin = computed(() => userStore.user?.role === "admin");
-
 const currentUserId = computed(() => {
   return userStore.user?._id || userStore.user?.id || userStore.user?.email;
 });
+
+function belongsToCurrentUser(item) {
+  const keys = [
+    currentUserId.value,
+    userStore.user?._id,
+    userStore.user?.id,
+    userStore.user?.email,
+  ].filter(Boolean);
+
+  const owners = [
+    item?.userId,
+    item?.ownerId,
+    item?.accountId,
+    item?.userEmail,
+    item?.email,
+    item?.createdBy,
+  ].filter(Boolean);
+
+  return owners.some((owner) => keys.includes(owner));
+}
+
 
 function normalizeList(data) {
   if (Array.isArray(data)) return data;
@@ -118,11 +123,11 @@ function getCertificateId(certificate) {
 }
 
 async function loadCertificates() {
-  if (!currentUserId.value || isAdmin.value) return;
+  if (!currentUserId.value) return;
 
   try {
     const response = await api.get(`/certificates?userId=${currentUserId.value}`);
-    certificates.value = normalizeList(response.data);
+    certificates.value = normalizeList(response.data).filter(belongsToCurrentUser);
   } catch (error) {
     console.error("Certificates could not be loaded:", error);
   }

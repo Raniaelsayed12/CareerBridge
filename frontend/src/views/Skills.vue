@@ -1,19 +1,5 @@
 <template>
-  <main v-if="isAdmin" class="admin-info-page">
-    <section class="admin-info-card">
-      <p class="eyebrow">ADMIN ACCOUNT</p>
-      <h1>Skills are managed from the Admin Panel</h1>
-      <p>
-        The admin account is used to manage all users. To view the skills of
-        Hania, Rania or Aly, open the Admin Panel and select a user.
-      </p>
-      <RouterLink to="/admin" class="admin-info-btn">
-        Open Admin Panel
-      </RouterLink>
-    </section>
-  </main>
-
-  <main v-else class="skills-page">
+  <main class="skills-page">
     <section class="skills-hero">
       <div>
         <p class="eyebrow">SKILLS</p>
@@ -100,11 +86,30 @@ const form = ref({
   category: "",
 });
 
-const isAdmin = computed(() => userStore.user?.role === "admin");
-
 const currentUserId = computed(() => {
   return userStore.user?._id || userStore.user?.id || userStore.user?.email;
 });
+
+function belongsToCurrentUser(item) {
+  const keys = [
+    currentUserId.value,
+    userStore.user?._id,
+    userStore.user?.id,
+    userStore.user?.email,
+  ].filter(Boolean);
+
+  const owners = [
+    item?.userId,
+    item?.ownerId,
+    item?.accountId,
+    item?.userEmail,
+    item?.email,
+    item?.createdBy,
+  ].filter(Boolean);
+
+  return owners.some((owner) => keys.includes(owner));
+}
+
 
 const filteredSkills = computed(() => {
   const query = searchQuery.value.toLowerCase().trim();
@@ -140,11 +145,11 @@ function getInitials(text = "SK") {
 }
 
 async function loadSkills() {
-  if (!currentUserId.value || isAdmin.value) return;
+  if (!currentUserId.value) return;
 
   try {
     const response = await api.get(`/skills?userId=${currentUserId.value}`);
-    skills.value = normalizeList(response.data);
+    skills.value = normalizeList(response.data).filter(belongsToCurrentUser);
   } catch (error) {
     console.error("Skills could not be loaded:", error);
   }

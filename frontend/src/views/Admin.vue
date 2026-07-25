@@ -1,855 +1,720 @@
-<script setup>
-import { ref, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import api from "../services/api";
-import { useUserStore } from "../stores/userStore";
+<template>
+  <main class="admin-page">
+    <section class="admin-hero">
+      <div>
+        <p class="eyebrow">ADMIN AREA</p>
+        <h1>CareerBridge Admin Panel</h1>
+        <p>Manage all accounts and the data that belongs to each user.</p>
+      </div>
 
-const router = useRouter();
+      <div class="hero-actions">
+        <RouterLink to="/" class="btn light">Home</RouterLink>
+        <RouterLink to="/dashboard" class="btn light">Dashboard</RouterLink>
+        <button class="btn light" @click="loadAdminData">Refresh</button>
+        <button class="btn logout" @click="logout">Logout</button>
+      </div>
+    </section>
+
+    <section class="stats-grid">
+      <article><strong>{{ users.length }}</strong><span>Accounts</span></article>
+      <article><strong>{{ skills.length }}</strong><span>Skills</span></article>
+      <article><strong>{{ projects.length }}</strong><span>Projects</span></article>
+      <article><strong>{{ certificates.length }}</strong><span>Certificates</span></article>
+    </section>
+
+    <section class="admin-layout">
+      <aside class="panel">
+        <p class="eyebrow blue">ALL ACCOUNTS</p>
+        <h2>Users</h2>
+
+        <div class="users-list">
+          <div
+            v-for="user in users"
+            :key="getUserKey(user)"
+            class="user-card"
+            :class="{ active: getUserKey(user) === selectedUserKey }"
+            @click="selectUser(user)"
+          >
+            <div>
+              <strong>{{ user.name || user.fullName || user.email }}</strong>
+              <span>{{ user.email }}</span>
+              <small>Role: {{ user.role || "user" }}</small>
+            </div>
+
+            <div class="mini-counts">
+              <span>{{ getUserSkills(user).length }} S</span>
+              <span>{{ getUserProjects(user).length }} P</span>
+              <span>{{ getUserCertificates(user).length }} C</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="panel">
+        <p class="eyebrow blue">ACCOUNT FORM</p>
+        <h2>{{ editingUserId ? "Edit account" : "Add account" }}</h2>
+
+        <form class="grid-form" @submit.prevent="saveUser">
+          <input v-model="userForm.name" placeholder="Full name" required />
+          <input v-model="userForm.email" type="email" placeholder="Email" required />
+          <input v-model="userForm.password" placeholder="Password" required />
+
+          <select v-model="userForm.role">
+            <option value="user">user</option>
+            <option value="admin">admin</option>
+          </select>
+
+          <button class="btn primary" type="submit">
+            {{ editingUserId ? "Update account" : "Add account" }}
+          </button>
+
+          <button v-if="editingUserId" class="btn danger" type="button" @click="cancelUserEdit">
+            Cancel
+          </button>
+        </form>
+
+        <div v-if="selectedUser" class="selected-box">
+          <p class="eyebrow blue">SELECTED USER</p>
+          <h2>{{ selectedUser.name || selectedUser.email }}</h2>
+          <p>{{ selectedUser.email }} — {{ selectedUser.role || "user" }}</p>
+
+          <div class="selected-actions">
+            <button class="btn light bordered" @click="editUser(selectedUser)">Edit account</button>
+            <button class="btn danger" @click="deleteUser(selectedUser)">Delete account</button>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section v-if="selectedUser" class="data-sections">
+      <article class="panel">
+        <p class="eyebrow blue">SKILLS OF {{ selectedUser.name || selectedUser.email }}</p>
+        <h2>{{ editingSkillId ? "Edit skill" : "Add skill for selected user" }}</h2>
+
+        <form class="grid-form" @submit.prevent="saveSkill">
+          <input v-model="skillForm.name" placeholder="Skill name" required />
+          <input v-model="skillForm.category" placeholder="Category" required />
+
+          <button class="btn primary" type="submit">
+            {{ editingSkillId ? "Update skill" : "Add skill" }}
+          </button>
+
+          <button v-if="editingSkillId" class="btn danger" type="button" @click="cancelSkillEdit">
+            Cancel
+          </button>
+        </form>
+
+        <div class="items-grid">
+          <div v-for="skill in selectedSkills" :key="getId(skill)" class="item-card">
+            <strong>{{ skill.name || skill.title }}</strong>
+            <span>{{ skill.category || "Skill" }}</span>
+
+            <div class="card-actions">
+              <button @click="editSkill(skill)">Edit</button>
+              <button class="delete" @click="deleteSkill(skill)">Delete</button>
+            </div>
+          </div>
+
+          <p v-if="selectedSkills.length === 0" class="empty">No skills for this user.</p>
+        </div>
+      </article>
+
+      <article class="panel">
+        <p class="eyebrow blue">PROJECTS OF {{ selectedUser.name || selectedUser.email }}</p>
+        <h2>{{ editingProjectId ? "Edit project" : "Add project for selected user" }}</h2>
+
+        <form class="grid-form" @submit.prevent="saveProject">
+          <input v-model="projectForm.title" placeholder="Project title" required />
+          <input v-model="projectForm.description" placeholder="Description" required />
+          <input v-model="projectForm.github" placeholder="GitHub link" />
+
+          <select v-model="projectForm.status">
+            <option>Planned</option>
+            <option>In Progress</option>
+            <option>Completed</option>
+          </select>
+
+          <button class="btn primary" type="submit">
+            {{ editingProjectId ? "Update project" : "Add project" }}
+          </button>
+
+          <button v-if="editingProjectId" class="btn danger" type="button" @click="cancelProjectEdit">
+            Cancel
+          </button>
+        </form>
+
+        <div class="items-grid">
+          <div v-for="project in selectedProjects" :key="getId(project)" class="item-card">
+            <strong>{{ project.title || project.name }}</strong>
+            <span>{{ project.status || "Project" }}</span>
+            <p>{{ project.description }}</p>
+
+            <div class="card-actions">
+              <button @click="editProject(project)">Edit</button>
+              <button class="delete" @click="deleteProject(project)">Delete</button>
+            </div>
+          </div>
+
+          <p v-if="selectedProjects.length === 0" class="empty">No projects for this user.</p>
+        </div>
+      </article>
+
+      <article class="panel">
+        <p class="eyebrow blue">CERTIFICATES OF {{ selectedUser.name || selectedUser.email }}</p>
+        <h2>{{ editingCertificateId ? "Edit certificate" : "Add certificate for selected user" }}</h2>
+
+        <form class="grid-form" @submit.prevent="saveCertificate">
+          <input v-model="certificateForm.name" placeholder="Certificate name" required />
+          <input v-model="certificateForm.provider" placeholder="Provider" required />
+          <input v-model="certificateForm.date" type="date" />
+          <input v-model="certificateForm.link" placeholder="Certificate link" />
+
+          <button class="btn primary" type="submit">
+            {{ editingCertificateId ? "Update certificate" : "Add certificate" }}
+          </button>
+
+          <button v-if="editingCertificateId" class="btn danger" type="button" @click="cancelCertificateEdit">
+            Cancel
+          </button>
+        </form>
+
+        <div class="items-grid">
+          <div v-for="certificate in selectedCertificates" :key="getId(certificate)" class="item-card">
+            <strong>{{ certificate.name || certificate.title }}</strong>
+            <span>{{ certificate.provider }}</span>
+            <p v-if="certificate.date">Date: {{ certificate.date }}</p>
+
+            <div class="card-actions">
+              <button @click="editCertificate(certificate)">Edit</button>
+              <button class="delete" @click="deleteCertificate(certificate)">Delete</button>
+            </div>
+          </div>
+
+          <p v-if="selectedCertificates.length === 0" class="empty">No certificates for this user.</p>
+        </div>
+      </article>
+    </section>
+  </main>
+</template>
+
+<script setup>
+import { computed, onMounted, ref } from "vue";
+import { RouterLink } from "vue-router";
+import { useUserStore } from "../stores/userStore";
+import api from "../services/api";
+
 const userStore = useUserStore();
-const adminEmail = "admin@test.de";
 
 const users = ref([]);
 const skills = ref([]);
 const projects = ref([]);
 const certificates = ref([]);
+const selectedUserKey = ref("");
 
-const selectedUserId = ref("");
-const loading = ref(false);
-const message = ref("");
-const error = ref("");
+const editingUserId = ref("");
+const editingSkillId = ref("");
+const editingProjectId = ref("");
+const editingCertificateId = ref("");
 
 const userForm = ref({ name: "", email: "", password: "", role: "user" });
-const skillForm = ref({ userId: "", name: "", category: "" });
-const projectForm = ref({
-  userId: "",
-  title: "",
-  description: "",
-  github: "",
-  status: "Planned",
-});
-const certificateForm = ref({
-  userId: "",
-  name: "",
-  provider: "",
-  date: "",
-  link: "",
-});
+const skillForm = ref({ name: "", category: "" });
+const projectForm = ref({ title: "", description: "", github: "", status: "Planned" });
+const certificateForm = ref({ name: "", provider: "", date: "", link: "" });
 
-const editing = ref({ type: "", id: "" });
-const editForm = ref({
-  userId: "",
-  name: "",
-  email: "",
-  password: "",
-  role: "user",
-  category: "",
-  title: "",
-  description: "",
-  github: "",
-  status: "Planned",
-  provider: "",
-  date: "",
-  link: "",
-});
+function normalizeList(data, key) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.[key])) return data[key];
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+}
+
+function getId(item) {
+  return item?._id || item?.id;
+}
+
+function getUserKey(user) {
+  return user?._id || user?.id || user?.email || "";
+}
+
+function belongsToUser(item, user) {
+  const userKeys = [user?._id, user?.id, user?.email].filter(Boolean);
+  const owners = [
+    item?.userId,
+    item?.ownerId,
+    item?.accountId,
+    item?.userEmail,
+    item?.email,
+    item?.createdBy,
+  ].filter(Boolean);
+
+  return owners.some((owner) => userKeys.includes(owner));
+}
+
+function getUserSkills(user) {
+  return skills.value.filter((item) => belongsToUser(item, user));
+}
+
+function getUserProjects(user) {
+  return projects.value.filter((item) => belongsToUser(item, user));
+}
+
+function getUserCertificates(user) {
+  return certificates.value.filter((item) => belongsToUser(item, user));
+}
 
 const selectedUser = computed(() => {
-  return users.value.find((user) => user._id === selectedUserId.value);
+  return users.value.find((user) => getUserKey(user) === selectedUserKey.value);
 });
 
-const selectedSkills = computed(() => {
-  return skills.value.filter((item) => item.userId === selectedUserId.value);
-});
+const selectedSkills = computed(() => selectedUser.value ? getUserSkills(selectedUser.value) : []);
+const selectedProjects = computed(() => selectedUser.value ? getUserProjects(selectedUser.value) : []);
+const selectedCertificates = computed(() => selectedUser.value ? getUserCertificates(selectedUser.value) : []);
 
-const selectedProjects = computed(() => {
-  return projects.value.filter((item) => item.userId === selectedUserId.value);
-});
-
-const selectedCertificates = computed(() => {
-  return certificates.value.filter((item) => item.userId === selectedUserId.value);
-});
-
-const stats = computed(() => [
-  { label: "Accounts", value: users.value.length },
-  { label: "Skills", value: skills.value.length },
-  { label: "Projects", value: projects.value.length },
-  { label: "Certificates", value: certificates.value.length },
-]);
-
-function ownerName(userId) {
-  const user = users.value.find((item) => item._id === userId);
-  return user ? user.name : "Unknown user";
+function selectUser(user) {
+  selectedUserKey.value = getUserKey(user);
 }
 
-function showMessage(text) {
-  message.value = text;
-  error.value = "";
+async function loadAdminData() {
+  try {
+    const [usersRes, skillsRes, projectsRes, certificatesRes] = await Promise.all([
+      api.get("/users"),
+      api.get("/skills"),
+      api.get("/projects"),
+      api.get("/certificates"),
+    ]);
+
+    users.value = normalizeList(usersRes.data, "users");
+    skills.value = normalizeList(skillsRes.data, "skills");
+    projects.value = normalizeList(projectsRes.data, "projects");
+    certificates.value = normalizeList(certificatesRes.data, "certificates");
+
+    if (!selectedUserKey.value && users.value.length) {
+      const firstNormalUser = users.value.find((user) => user.role !== "admin");
+      selectedUserKey.value = getUserKey(firstNormalUser || users.value[0]);
+    }
+  } catch (error) {
+    console.error("Admin data could not be loaded:", error);
+  }
 }
 
-function showError(text) {
-  error.value = text;
-  message.value = "";
+async function saveUser() {
+  try {
+    const payload = { ...userForm.value };
+
+    if (editingUserId.value) {
+      await api.put(`/users/${editingUserId.value}`, payload);
+    } else {
+      await api.post("/users", payload);
+    }
+
+    cancelUserEdit();
+    await loadAdminData();
+  } catch (error) {
+    console.error("User could not be saved:", error);
+  }
 }
 
-function isCurrentUserAdmin() {
-  return (userStore.email || "").toLowerCase().trim() === adminEmail;
+function editUser(user) {
+  editingUserId.value = getUserKey(user);
+  userForm.value = {
+    name: user.name || user.fullName || "",
+    email: user.email || "",
+    password: user.password || "",
+    role: user.role || "user",
+  };
 }
 
-function goHome() {
-  router.push("/");
+function cancelUserEdit() {
+  editingUserId.value = "";
+  userForm.value = { name: "", email: "", password: "", role: "user" };
 }
 
-function goDashboard() {
-  router.push("/dashboard");
+async function deleteUser(user) {
+  const id = getUserKey(user);
+  if (!id) return;
+
+  try {
+    await api.delete(`/users/${id}`);
+    if (selectedUserKey.value === id) selectedUserKey.value = "";
+    await loadAdminData();
+  } catch (error) {
+    console.error("User could not be deleted:", error);
+  }
+}
+
+async function saveSkill() {
+  if (!selectedUser.value) return;
+
+  const payload = {
+    ...skillForm.value,
+    userId: getUserKey(selectedUser.value),
+  };
+
+  try {
+    if (editingSkillId.value) {
+      await api.put(`/skills/${editingSkillId.value}`, payload);
+    } else {
+      await api.post("/skills", payload);
+    }
+
+    cancelSkillEdit();
+    await loadAdminData();
+  } catch (error) {
+    console.error("Skill could not be saved:", error);
+  }
+}
+
+function editSkill(skill) {
+  editingSkillId.value = getId(skill);
+  skillForm.value = {
+    name: skill.name || skill.title || "",
+    category: skill.category || "",
+  };
+}
+
+function cancelSkillEdit() {
+  editingSkillId.value = "";
+  skillForm.value = { name: "", category: "" };
+}
+
+async function deleteSkill(skill) {
+  const id = getId(skill);
+  if (!id) return;
+
+  try {
+    await api.delete(`/skills/${id}`);
+    await loadAdminData();
+  } catch (error) {
+    console.error("Skill could not be deleted:", error);
+  }
+}
+
+async function saveProject() {
+  if (!selectedUser.value) return;
+
+  const payload = {
+    ...projectForm.value,
+    userId: getUserKey(selectedUser.value),
+  };
+
+  try {
+    if (editingProjectId.value) {
+      await api.put(`/projects/${editingProjectId.value}`, payload);
+    } else {
+      await api.post("/projects", payload);
+    }
+
+    cancelProjectEdit();
+    await loadAdminData();
+  } catch (error) {
+    console.error("Project could not be saved:", error);
+  }
+}
+
+function editProject(project) {
+  editingProjectId.value = getId(project);
+  projectForm.value = {
+    title: project.title || project.name || "",
+    description: project.description || "",
+    github: project.github || project.link || "",
+    status: project.status || "Planned",
+  };
+}
+
+function cancelProjectEdit() {
+  editingProjectId.value = "";
+  projectForm.value = { title: "", description: "", github: "", status: "Planned" };
+}
+
+async function deleteProject(project) {
+  const id = getId(project);
+  if (!id) return;
+
+  try {
+    await api.delete(`/projects/${id}`);
+    await loadAdminData();
+  } catch (error) {
+    console.error("Project could not be deleted:", error);
+  }
+}
+
+async function saveCertificate() {
+  if (!selectedUser.value) return;
+
+  const payload = {
+    ...certificateForm.value,
+    userId: getUserKey(selectedUser.value),
+  };
+
+  try {
+    if (editingCertificateId.value) {
+      await api.put(`/certificates/${editingCertificateId.value}`, payload);
+    } else {
+      await api.post("/certificates", payload);
+    }
+
+    cancelCertificateEdit();
+    await loadAdminData();
+  } catch (error) {
+    console.error("Certificate could not be saved:", error);
+  }
+}
+
+function editCertificate(certificate) {
+  editingCertificateId.value = getId(certificate);
+  certificateForm.value = {
+    name: certificate.name || certificate.title || "",
+    provider: certificate.provider || "",
+    date: certificate.date || "",
+    link: certificate.link || "",
+  };
+}
+
+function cancelCertificateEdit() {
+  editingCertificateId.value = "";
+  certificateForm.value = { name: "", provider: "", date: "", link: "" };
+}
+
+async function deleteCertificate(certificate) {
+  const id = getId(certificate);
+  if (!id) return;
+
+  try {
+    await api.delete(`/certificates/${id}`);
+    await loadAdminData();
+  } catch (error) {
+    console.error("Certificate could not be deleted:", error);
+  }
 }
 
 function logout() {
   userStore.logout();
-  router.push("/login");
+  window.location.href = "/login";
 }
 
-function selectUser(userId) {
-  selectedUserId.value = userId;
-  skillForm.value.userId = userId;
-  projectForm.value.userId = userId;
-  certificateForm.value.userId = userId;
-}
-
-async function loadData() {
-  loading.value = true;
-
-  try {
-    const [usersRes, skillsRes, projectsRes, certificatesRes] =
-      await Promise.all([
-        api.get("/users"),
-        api.get("/skills"),
-        api.get("/projects"),
-        api.get("/certificates"),
-      ]);
-
-    users.value = usersRes.data || [];
-    skills.value = skillsRes.data || [];
-    projects.value = projectsRes.data || [];
-    certificates.value = certificatesRes.data || [];
-
-    if (!selectedUserId.value && users.value.length > 0) {
-      const firstNormalUser = users.value.find((user) => user.role !== "admin");
-      selectUser(firstNormalUser?._id || users.value[0]._id);
-    }
-  } catch (err) {
-    showError("Backend data could not be loaded.");
-  } finally {
-    loading.value = false;
-  }
-}
-
-async function addUser() {
-  if (!userForm.value.name || !userForm.value.email || !userForm.value.password) {
-    showError("Name, email and password are required.");
-    return;
-  }
-
-  try {
-    const response = await api.post("/users", userForm.value);
-    userForm.value = { name: "", email: "", password: "", role: "user" };
-    showMessage("Account added successfully.");
-    await loadData();
-    selectUser(response.data._id);
-  } catch (err) {
-    showError(err.response?.data?.message || "Could not add account.");
-  }
-}
-
-async function addSkill() {
-  if (!skillForm.value.userId || !skillForm.value.name) {
-    showError("Please choose an account and enter a skill name.");
-    return;
-  }
-
-  try {
-    await api.post("/skills", skillForm.value);
-    skillForm.value = { userId: selectedUserId.value, name: "", category: "" };
-    showMessage("Skill added successfully.");
-    await loadData();
-  } catch (err) {
-    showError(err.response?.data?.message || "Could not add skill.");
-  }
-}
-
-async function addProject() {
-  if (!projectForm.value.userId || !projectForm.value.title) {
-    showError("Please choose an account and enter a project title.");
-    return;
-  }
-
-  try {
-    await api.post("/projects", projectForm.value);
-    projectForm.value = {
-      userId: selectedUserId.value,
-      title: "",
-      description: "",
-      github: "",
-      status: "Planned",
-    };
-    showMessage("Project added successfully.");
-    await loadData();
-  } catch (err) {
-    showError(err.response?.data?.message || "Could not add project.");
-  }
-}
-
-async function addCertificate() {
-  if (!certificateForm.value.userId || !certificateForm.value.name) {
-    showError("Please choose an account and enter a certificate name.");
-    return;
-  }
-
-  try {
-    await api.post("/certificates", certificateForm.value);
-    certificateForm.value = {
-      userId: selectedUserId.value,
-      name: "",
-      provider: "",
-      date: "",
-      link: "",
-    };
-    showMessage("Certificate added successfully.");
-    await loadData();
-  } catch (err) {
-    showError(err.response?.data?.message || "Could not add certificate.");
-  }
-}
-
-function startEdit(type, item) {
-  editing.value = { type, id: item._id || item.id };
-
-  editForm.value = {
-    userId: item.userId || selectedUserId.value,
-    name: item.name || "",
-    email: item.email || "",
-    password: "",
-    role: item.role || "user",
-    category: item.category || "",
-    title: item.title || item.name || "",
-    description: item.description || "",
-    github: item.github || "",
-    status: item.status || "Planned",
-    provider: item.provider || "",
-    date: item.date || "",
-    link: item.link || "",
-  };
-}
-
-function cancelEdit() {
-  editing.value = { type: "", id: "" };
-}
-
-async function saveEdit() {
-  if (!editing.value.type || !editing.value.id) return;
-
-  let payload = {};
-
-  if (editing.value.type === "users") {
-    payload = {
-      name: editForm.value.name,
-      email: editForm.value.email,
-      role: editForm.value.role,
-    };
-
-    if (editForm.value.password) {
-      payload.password = editForm.value.password;
-    }
-  }
-
-  if (editing.value.type === "skills") {
-    payload = {
-      userId: editForm.value.userId,
-      name: editForm.value.name,
-      category: editForm.value.category,
-    };
-  }
-
-  if (editing.value.type === "projects") {
-    payload = {
-      userId: editForm.value.userId,
-      title: editForm.value.title,
-      description: editForm.value.description,
-      github: editForm.value.github,
-      status: editForm.value.status,
-    };
-  }
-
-  if (editing.value.type === "certificates") {
-    payload = {
-      userId: editForm.value.userId,
-      name: editForm.value.name,
-      provider: editForm.value.provider,
-      date: editForm.value.date,
-      link: editForm.value.link,
-    };
-  }
-
-  try {
-    await api.put(`/${editing.value.type}/${editing.value.id}`, payload);
-    showMessage("Item updated successfully.");
-    cancelEdit();
-    await loadData();
-  } catch (err) {
-    showError(err.response?.data?.message || "Could not update item.");
-  }
-}
-
-async function deleteItem(type, id, label) {
-  if (!id) return;
-
-  if (!confirm(`Delete: ${label}?`)) return;
-
-  try {
-    await api.delete(`/${type}/${id}`);
-    showMessage("Item deleted successfully.");
-    await loadData();
-
-    if (type === "users" && selectedUserId.value === id) {
-      selectedUserId.value = users.value[0]?._id || "";
-    }
-  } catch (err) {
-    showError(err.response?.data?.message || "Could not delete item.");
-  }
-}
-
-onMounted(() => {
-  if (!isCurrentUserAdmin()) {
-    router.push("/dashboard");
-    return;
-  }
-
-  loadData();
-});
+onMounted(loadAdminData);
 </script>
-
-<template>
-  <main class="admin-page">
-    <section class="admin-header">
-      <div>
-        <p class="tag">ADMIN AREA</p>
-        <h1>CareerBridge Admin Panel</h1>
-        <p>Manage accounts and the data that belongs to each user.</p>
-      </div>
-
-      <div class="admin-actions">
-        <button @click="goHome">Home</button>
-        <button @click="goDashboard">Dashboard</button>
-        <button @click="loadData">Refresh</button>
-        <button class="logout-admin" @click="logout">Logout</button>
-      </div>
-    </section>
-
-    <p v-if="message" class="success">{{ message }}</p>
-    <p v-if="error" class="error">{{ error }}</p>
-    <p v-if="loading" class="loading">Loading data...</p>
-
-    <section class="stats-grid">
-      <div v-for="item in stats" :key="item.label" class="stat-card">
-        <h2>{{ item.value }}</h2>
-        <p>{{ item.label }}</p>
-      </div>
-    </section>
-
-    <section v-if="editing.type" class="edit-panel">
-      <h2>Edit {{ editing.type }}</h2>
-
-      <form @submit.prevent="saveEdit">
-        <template v-if="editing.type === 'users'">
-          <input v-model="editForm.name" placeholder="Full name" />
-          <input v-model="editForm.email" placeholder="Email" />
-          <input v-model="editForm.password" placeholder="New password optional" type="password" />
-
-          <select v-model="editForm.role">
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-          </select>
-        </template>
-
-        <template v-if="editing.type !== 'users'">
-          <select v-model="editForm.userId">
-            <option v-for="user in users" :key="user._id" :value="user._id">
-              {{ user.name }} — {{ user.email }}
-            </option>
-          </select>
-        </template>
-
-        <template v-if="editing.type === 'skills'">
-          <input v-model="editForm.name" placeholder="Skill name" />
-          <input v-model="editForm.category" placeholder="Category" />
-        </template>
-
-        <template v-if="editing.type === 'projects'">
-          <input v-model="editForm.title" placeholder="Project title" />
-          <input v-model="editForm.description" placeholder="Description" />
-          <input v-model="editForm.github" placeholder="GitHub link" />
-
-          <select v-model="editForm.status">
-            <option value="Planned">Planned</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
-          </select>
-        </template>
-
-        <template v-if="editing.type === 'certificates'">
-          <input v-model="editForm.name" placeholder="Certificate name" />
-          <input v-model="editForm.provider" placeholder="Provider" />
-          <input v-model="editForm.date" type="date" />
-          <input v-model="editForm.link" placeholder="Certificate link" />
-        </template>
-
-        <div class="edit-actions">
-          <button type="submit">Save Changes</button>
-          <button type="button" class="cancel" @click="cancelEdit">Cancel</button>
-        </div>
-      </form>
-    </section>
-
-    <section class="admin-layout">
-      <aside class="accounts-panel">
-        <h2>Add Account</h2>
-
-        <form @submit.prevent="addUser">
-          <input v-model="userForm.name" placeholder="Full name" />
-          <input v-model="userForm.email" placeholder="Email" />
-          <input v-model="userForm.password" placeholder="Password" type="password" />
-
-          <select v-model="userForm.role">
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-          </select>
-
-          <button>Add Account</button>
-        </form>
-
-        <h3>All Accounts</h3>
-
-        <div
-          v-for="user in users"
-          :key="user._id"
-          :class="['account-card', { active: selectedUserId === user._id }]"
-          @click="selectUser(user._id)"
-        >
-          <div>
-            <strong>{{ user.name }}</strong>
-            <span>{{ user.email }}</span>
-            <small>Role: {{ user.role || "user" }}</small>
-          </div>
-
-          <div class="row-actions">
-            <button class="edit" @click.stop="startEdit('users', user)">Edit</button>
-            <button
-              class="danger"
-              @click.stop="deleteItem('users', user._id, user.email)"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      </aside>
-
-      <section class="user-data-panel">
-        <div v-if="selectedUser" class="selected-user">
-          <p class="tag">SELECTED ACCOUNT</p>
-          <h2>{{ selectedUser.name }}</h2>
-          <p>{{ selectedUser.email }} — {{ selectedUser.role }}</p>
-        </div>
-
-        <div class="forms-grid">
-          <div class="admin-card">
-            <h2>Add Skill</h2>
-            <form @submit.prevent="addSkill">
-              <select v-model="skillForm.userId">
-                <option value="">Choose account</option>
-                <option v-for="user in users" :key="user._id" :value="user._id">
-                  {{ user.name }}
-                </option>
-              </select>
-              <input v-model="skillForm.name" placeholder="Skill name" />
-              <input v-model="skillForm.category" placeholder="Category" />
-              <button>Add Skill</button>
-            </form>
-          </div>
-
-          <div class="admin-card">
-            <h2>Add Project</h2>
-            <form @submit.prevent="addProject">
-              <select v-model="projectForm.userId">
-                <option value="">Choose account</option>
-                <option v-for="user in users" :key="user._id" :value="user._id">
-                  {{ user.name }}
-                </option>
-              </select>
-              <input v-model="projectForm.title" placeholder="Project title" />
-              <input v-model="projectForm.description" placeholder="Description" />
-              <input v-model="projectForm.github" placeholder="GitHub link" />
-              <select v-model="projectForm.status">
-                <option value="Planned">Planned</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-              </select>
-              <button>Add Project</button>
-            </form>
-          </div>
-
-          <div class="admin-card">
-            <h2>Add Certificate</h2>
-            <form @submit.prevent="addCertificate">
-              <select v-model="certificateForm.userId">
-                <option value="">Choose account</option>
-                <option v-for="user in users" :key="user._id" :value="user._id">
-                  {{ user.name }}
-                </option>
-              </select>
-              <input v-model="certificateForm.name" placeholder="Certificate name" />
-              <input v-model="certificateForm.provider" placeholder="Provider" />
-              <input v-model="certificateForm.date" type="date" />
-              <input v-model="certificateForm.link" placeholder="Certificate link" />
-              <button>Add Certificate</button>
-            </form>
-          </div>
-        </div>
-
-        <div class="data-grid">
-          <div class="admin-card">
-            <h2>Skills of {{ selectedUser?.name }}</h2>
-
-            <p v-if="selectedSkills.length === 0" class="empty">No skills for this account.</p>
-
-            <ul>
-              <li v-for="skill in selectedSkills" :key="skill._id">
-                <div>
-                  <strong>{{ skill.name }}</strong>
-                  <span>{{ skill.category || "General" }}</span>
-                  <small>Owner: {{ ownerName(skill.userId) }}</small>
-                </div>
-
-                <div class="row-actions">
-                  <button class="edit" @click="startEdit('skills', skill)">Edit</button>
-                  <button class="danger" @click="deleteItem('skills', skill._id, skill.name)">
-                    Delete
-                  </button>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          <div class="admin-card">
-            <h2>Projects of {{ selectedUser?.name }}</h2>
-
-            <p v-if="selectedProjects.length === 0" class="empty">No projects for this account.</p>
-
-            <ul>
-              <li v-for="project in selectedProjects" :key="project._id">
-                <div>
-                  <strong>{{ project.title }}</strong>
-                  <span>{{ project.status }}</span>
-                  <small>{{ project.github }}</small>
-                  <small>Owner: {{ ownerName(project.userId) }}</small>
-                </div>
-
-                <div class="row-actions">
-                  <button class="edit" @click="startEdit('projects', project)">Edit</button>
-                  <button class="danger" @click="deleteItem('projects', project._id, project.title)">
-                    Delete
-                  </button>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          <div class="admin-card full-card">
-            <h2>Certificates of {{ selectedUser?.name }}</h2>
-
-            <p v-if="selectedCertificates.length === 0" class="empty">
-              No certificates for this account.
-            </p>
-
-            <ul>
-              <li v-for="certificate in selectedCertificates" :key="certificate._id">
-                <div>
-                  <strong>{{ certificate.name }}</strong>
-                  <span>{{ certificate.provider }}</span>
-                  <small>{{ certificate.date }}</small>
-                  <small>Owner: {{ ownerName(certificate.userId) }}</small>
-                </div>
-
-                <div class="row-actions">
-                  <button class="edit" @click="startEdit('certificates', certificate)">Edit</button>
-                  <button
-                    class="danger"
-                    @click="deleteItem('certificates', certificate._id, certificate.name)"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
-    </section>
-  </main>
-</template>
 
 <style scoped>
 .admin-page {
   min-height: 100vh;
-  padding: 40px 7%;
+  padding: 3rem 7%;
   background: #f4f7fb;
-  color: #111827;
+  color: #0f172a;
 }
 
-.admin-header {
-  background: linear-gradient(135deg, #10213f, #3345d9);
-  color: white;
-  border-radius: 24px;
-  padding: 35px;
+.admin-hero {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
+  gap: 2rem;
   align-items: center;
-  margin-bottom: 30px;
+  padding: 3rem;
+  border-radius: 28px;
+  color: white;
+  background: linear-gradient(135deg, #14264f, #3447f5);
 }
 
-.tag {
-  letter-spacing: 3px;
-  font-size: 13px;
-  font-weight: bold;
-  color: #bfdbfe;
+.admin-hero h1 {
+  margin: 0.5rem 0 1rem;
+  font-size: clamp(2.2rem, 5vw, 4rem);
 }
 
-.admin-header h1 {
-  font-size: 38px;
-  margin: 8px 0;
+.eyebrow {
+  margin: 0;
+  letter-spacing: 0.3em;
+  font-weight: 900;
 }
 
-.admin-actions,
-.row-actions,
-.edit-actions {
+.blue {
+  color: #2563eb;
+}
+
+.hero-actions,
+.selected-actions,
+.card-actions {
   display: flex;
+  gap: 0.8rem;
   flex-wrap: wrap;
-  gap: 10px;
 }
 
-.admin-actions button,
-form button {
+.btn {
+  border: none;
+  padding: 0.9rem 1.2rem;
+  border-radius: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn.light {
   background: white;
   color: #1d4ed8;
-  border: none;
-  padding: 12px 18px;
-  border-radius: 12px;
-  font-weight: bold;
-  cursor: pointer;
 }
 
-.admin-actions .logout-admin {
+.btn.bordered {
+  border: 1px solid #dbe3ef;
+}
+
+.btn.primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn.danger,
+.btn.logout {
   background: #fee2e2;
-  color: #b91c1c;
+  color: #991b1b;
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
-  margin-bottom: 30px;
+  gap: 1.2rem;
+  margin: 2rem 0;
 }
 
-.stat-card,
-.accounts-panel,
-.admin-card,
-.edit-panel,
-.selected-user {
+.stats-grid article,
+.panel {
+  padding: 2rem;
+  border-radius: 24px;
   background: white;
-  border-radius: 18px;
-  padding: 25px;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
 }
 
-.stat-card {
+.stats-grid article {
   text-align: center;
 }
 
-.stat-card h2 {
+.stats-grid strong {
+  display: block;
+  font-size: 2.8rem;
   color: #2563eb;
-  font-size: 34px;
+}
+
+.stats-grid span {
+  font-weight: 900;
 }
 
 .admin-layout {
   display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 24px;
-  align-items: start;
+  grid-template-columns: 1fr 2fr;
+  gap: 1.5rem;
 }
 
-.accounts-panel {
-  position: sticky;
-  top: 95px;
-}
-
-.account-card {
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  padding: 14px;
-  margin-bottom: 12px;
-  cursor: pointer;
+.users-list,
+.items-grid {
   display: grid;
-  gap: 12px;
+  gap: 0.9rem;
 }
 
-.account-card.active {
-  border-color: #2563eb;
-  background: #eff6ff;
-}
-
-.account-card div,
-li div {
+.user-card {
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  justify-content: space-between;
+  gap: 1rem;
+  cursor: pointer;
 }
 
-.account-card span,
-.account-card small,
-li span,
-li small {
+.user-card.active {
+  background: #e0e7ff;
+  border-color: #2563eb;
+}
+
+.user-card strong,
+.user-card span,
+.user-card small {
+  display: block;
+}
+
+.user-card span,
+.user-card small,
+.item-card span,
+.empty {
   color: #64748b;
-  font-size: 13px;
 }
 
-.selected-user {
-  margin-bottom: 24px;
+.mini-counts {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
 }
 
-.selected-user .tag {
-  color: #2563eb;
+.mini-counts span {
+  padding: 0.35rem 0.5rem;
+  border-radius: 10px;
+  background: white;
+  color: #1d4ed8;
+  font-weight: 900;
 }
 
-.forms-grid,
-.data-grid {
+.grid-form {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-}
-
-.full-card {
-  grid-column: 1 / -1;
-}
-
-.edit-panel {
-  margin-bottom: 30px;
-  border: 2px solid #dbeafe;
-}
-
-.admin-card h2,
-.accounts-panel h2,
-.accounts-panel h3,
-.edit-panel h2 {
-  margin-bottom: 15px;
-}
-
-form {
-  display: grid;
-  gap: 10px;
-  margin-bottom: 25px;
+  gap: 0.9rem;
 }
 
 input,
 select {
-  padding: 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 10px;
+  width: 100%;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid #dbe3ef;
+  font: inherit;
 }
 
-form button {
-  background: #2563eb;
-  color: white;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-li {
-  padding: 12px 0;
-  border-bottom: 1px solid #e5e7eb;
-  display: flex;
-  justify-content: space-between;
-  gap: 14px;
-  align-items: center;
-}
-
-.edit,
-.danger,
-.cancel {
-  border: none;
-  padding: 8px 12px;
-  border-radius: 10px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.edit {
-  background: #dbeafe;
-  color: #1d4ed8;
-}
-
-.danger {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
-.cancel {
-  background: #e5e7eb;
-  color: #374151;
-}
-
-.success,
-.error,
-.loading,
-.empty {
-  background: white;
-  padding: 14px;
-  border-radius: 12px;
-  margin-bottom: 18px;
-  font-weight: bold;
-}
-
-.success {
-  color: #15803d;
-}
-
-.error {
-  color: #b91c1c;
-}
-
-.empty {
-  color: #64748b;
+.selected-box {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: 20px;
   background: #f8fafc;
 }
 
-@media (max-width: 1100px) {
+.data-sections {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.item-card {
+  padding: 1rem;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.item-card strong,
+.item-card span {
+  display: block;
+}
+
+.item-card p {
+  color: #475569;
+}
+
+.card-actions button {
+  border: none;
+  padding: 0.65rem 0.9rem;
+  border-radius: 12px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.card-actions .delete {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+@media (max-width: 950px) {
+  .admin-hero,
   .admin-layout,
-  .forms-grid,
-  .data-grid,
-  .stats-grid {
+  .stats-grid,
+  .grid-form {
     grid-template-columns: 1fr;
-  }
-
-  .accounts-panel {
-    position: static;
-  }
-
-  .admin-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  li {
     flex-direction: column;
     align-items: flex-start;
   }
