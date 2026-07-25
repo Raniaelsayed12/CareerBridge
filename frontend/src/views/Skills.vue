@@ -200,6 +200,8 @@ function cancelEdit() {
 }
 
 async function deleteSkill(skill) {
+  if (!confirm("Are you sure you want to delete this skill?")) return;
+
   const id = getSkillId(skill);
   if (!id) return;
 

@@ -209,6 +209,8 @@ function cancelEdit() {
 }
 
 async function deleteProject(project) {
+  if (!confirm("Are you sure you want to delete this project?")) return;
+
   const id = getProjectId(project);
   if (!id) return;
 

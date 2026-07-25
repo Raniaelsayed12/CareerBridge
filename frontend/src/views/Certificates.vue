@@ -204,6 +204,8 @@ function cancelEdit() {
 }
 
 async function deleteCertificate(certificate) {
+  if (!confirm("Are you sure you want to delete this certificate?")) return;
+
   const id = getCertificateId(certificate);
   if (!id) return;
 

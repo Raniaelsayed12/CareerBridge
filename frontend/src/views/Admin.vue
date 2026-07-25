@@ -330,6 +330,8 @@ function cancelUserEdit() {
 }
 
 async function deleteUser(user) {
+  if (!confirm("Are you sure you want to delete this account?")) return;
+
   const id = getUserKey(user);
   if (!id) return;
 
@@ -378,6 +380,8 @@ function cancelSkillEdit() {
 }
 
 async function deleteSkill(skill) {
+  if (!confirm("Are you sure you want to delete this skill?")) return;
+
   const id = getId(skill);
   if (!id) return;
 
@@ -427,6 +431,8 @@ function cancelProjectEdit() {
 }
 
 async function deleteProject(project) {
+  if (!confirm("Are you sure you want to delete this project?")) return;
+
   const id = getId(project);
   if (!id) return;
 
@@ -476,6 +482,8 @@ function cancelCertificateEdit() {
 }
 
 async function deleteCertificate(certificate) {
+  if (!confirm("Are you sure you want to delete this certificate?")) return;
+
   const id = getId(certificate);
   if (!id) return;
 
