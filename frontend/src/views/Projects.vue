@@ -1,17 +1,101 @@
+<template>
+  <main v-if="isAdmin" class="admin-info-page">
+    <section class="admin-info-card">
+      <p class="eyebrow">ADMIN ACCOUNT</p>
+      <h1>Projects are managed from the Admin Panel</h1>
+      <p>
+        The admin account is used to manage all users. To view the projects of
+        Hania, Rania or Aly, open the Admin Panel and select a user.
+      </p>
+      <RouterLink to="/admin" class="admin-info-btn">
+        Open Admin Panel
+      </RouterLink>
+    </section>
+  </main>
+
+  <main v-else class="projects-page">
+    <section class="projects-hero">
+      <div>
+        <p class="eyebrow">PROJECT PORTFOLIO</p>
+        <h1>Projects</h1>
+        <p>
+          Manage your personal and university projects with descriptions,
+          GitHub links and status.
+        </p>
+
+        <div class="hero-actions">
+          <RouterLink to="/" class="btn light">Home</RouterLink>
+          <RouterLink to="/dashboard" class="btn light">Dashboard</RouterLink>
+        </div>
+      </div>
+
+      <div class="hero-count">
+        <strong>{{ projects.length }}</strong>
+        <span>projects</span>
+      </div>
+    </section>
+
+    <section class="form-panel">
+      <p class="eyebrow">NEW PROJECT</p>
+      <h2>{{ editingId ? "Edit project" : "Add a project" }}</h2>
+
+      <form class="project-form" @submit.prevent="saveProject">
+        <input v-model="form.title" placeholder="Project title" required />
+        <input v-model="form.description" placeholder="Description" required />
+        <input v-model="form.github" placeholder="GitHub link" />
+
+        <select v-model="form.status">
+          <option>Planned</option>
+          <option>In Progress</option>
+          <option>Completed</option>
+        </select>
+
+        <button class="btn primary" type="submit">
+          {{ editingId ? "Update project" : "Add project" }}
+        </button>
+
+        <button v-if="editingId" class="btn danger" type="button" @click="cancelEdit">
+          Cancel
+        </button>
+      </form>
+    </section>
+
+    <section class="projects-grid">
+      <article v-if="projects.length === 0" class="empty-card">
+        No projects added yet. Start by adding your first project.
+      </article>
+
+      <article
+        v-for="project in projects"
+        :key="getProjectId(project)"
+        class="project-card"
+      >
+        <span class="status">{{ project.status || "Project" }}</span>
+        <h3>{{ project.title || project.name }}</h3>
+        <p>{{ project.description }}</p>
+
+        <a v-if="project.github || project.link" :href="project.github || project.link" target="_blank">
+          GitHub / Link
+        </a>
+
+        <div class="card-actions">
+          <button class="edit-btn" @click="editProject(project)">Edit</button>
+          <button class="delete-btn" @click="deleteProject(project)">Delete</button>
+        </div>
+      </article>
+    </section>
+  </main>
+</template>
+
 <script setup>
 import { computed, onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
-import api from "../services/api";
+import { RouterLink } from "vue-router";
 import { useUserStore } from "../stores/userStore";
+import api from "../services/api";
 
 const userStore = useUserStore();
-const router = useRouter();
 
-const currentUserId = ref("");
 const projects = ref([]);
-const search = ref("");
-const message = ref("");
-const error = ref("");
 const editingId = ref("");
 
 const form = ref({
@@ -21,424 +105,303 @@ const form = ref({
   status: "Planned",
 });
 
-const filteredProjects = computed(() => {
-  const value = search.value.toLowerCase().trim();
+const isAdmin = computed(() => userStore.user?.role === "admin");
 
-  if (!value) return projects.value;
-
-  return projects.value.filter((project) => {
-    return (
-      project.title?.toLowerCase().includes(value) ||
-      project.description?.toLowerCase().includes(value) ||
-      project.status?.toLowerCase().includes(value)
-    );
-  });
+const currentUserId = computed(() => {
+  return userStore.user?._id || userStore.user?.id || userStore.user?.email;
 });
 
-
-
-
-function goHome() {
-  router.push("/");
+function normalizeList(data) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.projects)) return data.projects;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
 }
 
-function goDashboard() {
-  router.push("/dashboard");
+function getProjectId(project) {
+  return project._id || project.id;
 }
 
-function clearForm() {
+async function loadProjects() {
+  if (!currentUserId.value || isAdmin.value) return;
+
+  try {
+    const response = await api.get(`/projects?userId=${currentUserId.value}`);
+    projects.value = normalizeList(response.data);
+  } catch (error) {
+    console.error("Projects could not be loaded:", error);
+  }
+}
+
+async function saveProject() {
+  if (!currentUserId.value) return;
+
+  const payload = {
+    title: form.value.title,
+    description: form.value.description,
+    github: form.value.github,
+    status: form.value.status,
+    userId: currentUserId.value,
+  };
+
+  try {
+    if (editingId.value) {
+      await api.put(`/projects/${editingId.value}`, payload);
+    } else {
+      await api.post("/projects", payload);
+    }
+
+    form.value = {
+      title: "",
+      description: "",
+      github: "",
+      status: "Planned",
+    };
+
+    editingId.value = "";
+    await loadProjects();
+  } catch (error) {
+    console.error("Project could not be saved:", error);
+  }
+}
+
+function editProject(project) {
+  editingId.value = getProjectId(project);
+  form.value = {
+    title: project.title || project.name || "",
+    description: project.description || "",
+    github: project.github || project.link || "",
+    status: project.status || "Planned",
+  };
+}
+
+function cancelEdit() {
+  editingId.value = "";
   form.value = {
     title: "",
     description: "",
     github: "",
     status: "Planned",
   };
-
-  editingId.value = "";
-}
-
-async function resolveCurrentUser() {
-  const response = await api.get("/users");
-
-  const currentEmail = (userStore.email || "").toLowerCase().trim();
-
-  const currentUser = response.data.find(
-    (user) => user.email.toLowerCase().trim() === currentEmail
-  );
-
-  currentUserId.value = currentUser?._id || "";
-}
-
-async function loadProjects() {
-  try {
-    if (!currentUserId.value) {
-      await resolveCurrentUser();
-    }
-
-    const response = await api.get(`/projects?userId=${currentUserId.value}`);
-    projects.value = response.data || [];
-  } catch (err) {
-    error.value = "Projects could not be loaded.";
-  }
-}
-
-async function saveProject() {
-  if (!form.value.title) {
-    error.value = "Project title is required.";
-    message.value = "";
-    return;
-  }
-
-  try {
-    const payload = {
-      userId: currentUserId.value,
-      title: form.value.title,
-      description: form.value.description,
-      github: form.value.github,
-      status: form.value.status,
-    };
-
-    if (editingId.value) {
-      await api.put(`/projects/${editingId.value}`, payload);
-      message.value = "Project updated successfully.";
-    } else {
-      await api.post("/projects", payload);
-      message.value = "Project added successfully.";
-    }
-
-    error.value = "";
-    clearForm();
-    await loadProjects();
-  } catch (err) {
-    error.value = err.response?.data?.message || "Project could not be saved.";
-    message.value = "";
-  }
-}
-
-function editProject(project) {
-  editingId.value = project._id;
-
-  form.value = {
-    title: project.title || "",
-    description: project.description || "",
-    github: project.github || "",
-    status: project.status || "Planned",
-  };
 }
 
 async function deleteProject(project) {
-  if (!confirm(`Delete project: ${project.title}?`)) return;
+  const id = getProjectId(project);
+  if (!id) return;
 
   try {
-    await api.delete(`/projects/${project._id}`);
-    message.value = "Project deleted successfully.";
-    error.value = "";
+    await api.delete(`/projects/${id}`);
     await loadProjects();
-  } catch (err) {
-    error.value = "Project could not be deleted.";
-    message.value = "";
+  } catch (error) {
+    console.error("Project could not be deleted:", error);
   }
 }
 
 onMounted(loadProjects);
 </script>
 
-<template>
-  <main class="page">
-    <section class="hero">
-      <div>
-        <p class="tag">PROJECT PORTFOLIO</p>
-        <h1>Projects</h1>
-        <p>
-          Manage your personal and university projects with descriptions,
-          GitHub links and status.
-        </p>
-
-        <div class="hero-actions">
-          <button type="button" @click="goHome">Home</button>
-          <button type="button" @click="goDashboard">Dashboard</button>
-        </div>
-      </div>
-
-      <div class="counter">
-        <strong>{{ projects.length }}</strong>
-        <span>projects</span>
-      </div>
-    </section>
-
-    <p v-if="message" class="success">{{ message }}</p>
-    <p v-if="error" class="error">{{ error }}</p>
-
-    <section class="form-card">
-      <div>
-        <p class="tag blue">NEW PROJECT</p>
-        <h2>{{ editingId ? "Edit project" : "Add a project" }}</h2>
-      </div>
-
-      <form @submit.prevent="saveProject">
-        <input v-model="form.title" placeholder="Project title" />
-        <input v-model="form.description" placeholder="Description" />
-        <input v-model="form.github" placeholder="GitHub link" />
-
-        <select v-model="form.status">
-          <option value="Planned">Planned</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Completed">Completed</option>
-        </select>
-
-        <div class="buttons">
-          <button type="submit">
-            {{ editingId ? "Save changes" : "Add project" }}
-          </button>
-
-          <button v-if="editingId" type="button" class="secondary" @click="clearForm">
-            Cancel
-          </button>
-        </div>
-      </form>
-    </section>
-
-    <section class="list-header">
-      <div>
-        <p class="tag blue">PROJECT COLLECTION</p>
-        <h2>Your projects</h2>
-      </div>
-
-      <input v-model="search" placeholder="Search projects..." />
-    </section>
-
-    <section class="cards">
-      <article v-for="project in filteredProjects" :key="project._id" class="card">
-        <div class="card-top">
-          <span class="icon">
-            {{ project.title?.slice(0, 2).toUpperCase() }}
-          </span>
-
-          <span class="badge">{{ project.status }}</span>
-        </div>
-
-        <h3>{{ project.title }}</h3>
-        <p>{{ project.description }}</p>
-
-        <a v-if="project.github" :href="project.github" target="_blank">
-          Open GitHub
-        </a>
-
-        <div class="card-actions">
-          <button class="edit" @click="editProject(project)">Edit</button>
-          <button class="delete" @click="deleteProject(project)">Delete</button>
-        </div>
-      </article>
-
-      <p v-if="filteredProjects.length === 0" class="empty">
-        No projects for this account.
-      </p>
-    </section>
-  </main>
-</template>
-
 <style scoped>
-.page {
+.projects-page,
+.admin-info-page {
   min-height: 100vh;
-  padding: 40px 7%;
-  background: #f8fafc;
+  padding: 3rem 7%;
+  background: #f4f7fb;
   color: #0f172a;
 }
 
-.hero {
-  background: linear-gradient(135deg, #172554, #2563eb);
-  color: white;
-  border-radius: 24px;
-  padding: 45px;
+.projects-hero {
   display: flex;
   justify-content: space-between;
-  gap: 25px;
+  gap: 2rem;
   align-items: center;
-  margin-bottom: 28px;
+  padding: 3rem;
+  border-radius: 28px;
+  color: white;
+  background: linear-gradient(135deg, #14264f, #3447f5);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
 }
 
-.hero h1 {
-  font-size: 52px;
-  margin: 8px 0;
+.projects-hero h1 {
+  margin: 0.5rem 0 1rem;
+  font-size: clamp(2.2rem, 5vw, 4rem);
 }
 
-.tag {
-  letter-spacing: 3px;
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.blue {
+.eyebrow {
+  margin: 0;
   color: #2563eb;
+  letter-spacing: 0.3em;
+  font-weight: 900;
 }
 
-.counter {
-  background: rgba(255, 255, 255, 0.22);
-  border-radius: 18px;
-  padding: 22px 38px;
-  display: grid;
-  gap: 4px;
-  text-align: center;
-}
-
-.counter strong {
-  font-size: 34px;
+.projects-hero .eyebrow {
+  color: #dbeafe;
 }
 
 .hero-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 22px;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
 }
 
-.hero-actions button {
+.hero-count {
+  min-width: 140px;
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  text-align: center;
+}
+
+.hero-count strong {
+  display: block;
+  font-size: 2.8rem;
+}
+
+.btn {
+  border: none;
+  padding: 0.9rem 1.2rem;
+  border-radius: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn.light {
   background: white;
   color: #1d4ed8;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 18px;
-  font-weight: 800;
-  cursor: pointer;
 }
 
-.form-card,
-.card,
-.empty {
+.btn.primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn.danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.form-panel,
+.admin-info-card {
+  margin: 2rem 0;
+  padding: 2rem;
+  border-radius: 24px;
   background: white;
-  border-radius: 18px;
-  padding: 28px;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
 }
 
-form {
+.project-form {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-  margin-top: 18px;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
 }
 
 input,
 select {
   width: 100%;
-  box-sizing: border-box;
-  padding: 14px;
-  border: 1px solid #cbd5e1;
-  border-radius: 12px;
-}
-
-.buttons {
-  grid-column: 1 / -1;
-  display: flex;
-  gap: 10px;
-}
-
-button {
-  border: none;
-  border-radius: 12px;
-  padding: 13px 18px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-form button {
-  background: #2563eb;
-  color: white;
-}
-
-.secondary {
-  background: #e5e7eb;
-  color: #374151;
-}
-
-.success,
-.error {
-  background: white;
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 18px;
-  font-weight: 800;
-}
-
-.success {
-  color: #15803d;
-}
-
-.error {
-  color: #b91c1c;
-}
-
-.list-header {
-  margin: 32px 0 18px;
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  align-items: end;
-}
-
-.list-header input {
-  max-width: 330px;
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-}
-
-.card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-}
-
-.icon {
-  background: #dbeafe;
-  color: #1d4ed8;
+  padding: 1rem;
   border-radius: 14px;
-  padding: 14px;
-  font-weight: 900;
+  border: 1px solid #dbe3ef;
+  font: inherit;
 }
 
-.badge {
-  border: 1px solid #93c5fd;
-  color: #1d4ed8;
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.project-card,
+.empty-card {
+  padding: 2rem;
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+}
+
+.project-card h3 {
+  font-size: 1.5rem;
+  margin: 1rem 0;
+}
+
+.project-card p {
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.status {
+  display: inline-flex;
+  padding: 0.45rem 0.8rem;
   border-radius: 999px;
-  padding: 7px 12px;
-  font-size: 12px;
-  font-weight: 800;
+  background: #e0e7ff;
+  color: #1d4ed8;
+  font-weight: 900;
 }
 
 .card-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 18px;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
 }
 
-.edit {
+.edit-btn,
+.delete-btn {
+  border: none;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.edit-btn {
   background: #dbeafe;
   color: #1d4ed8;
 }
 
-.delete {
+.delete-btn {
   background: #fee2e2;
   color: #b91c1c;
 }
 
-.empty {
-  grid-column: 1 / -1;
-  color: #64748b;
+.admin-info-page {
+  display: grid;
+  place-items: center;
 }
 
-@media (max-width: 900px) {
-  .hero,
-  .list-header {
+.admin-info-card {
+  width: min(850px, 100%);
+  margin: 0;
+}
+
+.admin-info-card h1 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  margin: 1rem 0;
+}
+
+.admin-info-card p {
+  color: #64748b;
+  line-height: 1.7;
+}
+
+.admin-info-btn {
+  display: inline-flex;
+  margin-top: 1.5rem;
+  padding: 1rem 1.3rem;
+  border-radius: 14px;
+  background: #2563eb;
+  color: white;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+@media (max-width: 950px) {
+  .projects-hero {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  form,
-  .cards {
+  .project-form,
+  .projects-grid {
     grid-template-columns: 1fr;
   }
 }
