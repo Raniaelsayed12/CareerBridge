@@ -36,15 +36,7 @@
         <button class="submit-btn" type="submit" :disabled="loading">
           {{ loading ? "Signing in..." : "Sign in" }}
         </button>
-
-        <div class="demo-box">
-          <p>Demo accounts</p>
-          <button type="button" @click="fillDemo('admin')">Admin</button>
-          <button type="button" @click="fillDemo('hania')">Hania</button>
-          <button type="button" @click="fillDemo('rania')">Rania</button>
-          <button type="button" @click="fillDemo('aly')">Aly</button>
-        </div>
-      </form>
+</form>
     </section>
   </main>
 </template>
@@ -62,17 +54,7 @@ const showPassword = ref(false);
 const loading = ref(false);
 const errorMessage = ref("");
 
-const demoAccounts = {
-  admin: { email: "admin@test.de", password: "Admin2026!Test" },
-  hania: { email: "hania@test.com", password: "Hania2026!Test" },
-  rania: { email: "rania@test.com", password: "Rania2026!Test" },
-  aly: { email: "aly@test.com", password: "Aly2026!Test" },
-};
 
-function fillDemo(account) {
-  email.value = demoAccounts[account].email;
-  password.value = demoAccounts[account].password;
-}
 
 function normalizeUsers(data) {
   if (Array.isArray(data)) return data;
@@ -187,8 +169,7 @@ input {
   gap: 0.5rem;
 }
 
-.password-row button,
-.demo-box button {
+.password-row button {
   border: none;
   border-radius: 12px;
   padding: 0.8rem 1rem;
@@ -212,27 +193,6 @@ input {
   font-weight: 900;
 }
 
-.demo-box {
-  margin-top: 1rem;
-  padding: 1rem;
-  border-radius: 18px;
-  background: #f8fafc;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  align-items: center;
-}
-
-.demo-box p {
-  width: 100%;
-  margin: 0 0 0.3rem;
-  font-weight: 900;
-}
-
-.demo-box button {
-  background: #e0e7ff;
-  color: #1e3a8a;
-}
 
 @media (max-width: 850px) {
   .login-card {
