@@ -121,7 +121,15 @@ function handleLogout() {
           >
             About
           </RouterLink>
-        </div>
+        
+          <RouterLink
+             v-if="isAuthenticated"
+               to="/admin"
+              class="navigation-link"
+              @click="closeMenu"
+          >
+             Admin
+            </RouterLink>
 
         <div
             v-if="!isAuthenticated"
