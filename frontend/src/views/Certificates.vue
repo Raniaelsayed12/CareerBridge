@@ -44,7 +44,7 @@
 
     <section class="certificates-grid">
       <article v-if="filteredCertificates.length === 0" class="empty-card">
-        No certificates added yet. Start by adding your first certificate.
+        No certificates added yet. Add your first certificate to document your achievements.
       </article>
 
       <article

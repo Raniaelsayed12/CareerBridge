@@ -52,7 +52,7 @@
 
     <section class="projects-grid">
       <article v-if="filteredProjects.length === 0" class="empty-card">
-        No projects added yet. Start by adding your first project.
+        No projects added yet. Add your first project to show your work and experience.
       </article>
 
       <article

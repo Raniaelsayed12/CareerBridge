@@ -47,7 +47,7 @@
 
     <section class="skills-grid">
       <article v-if="filteredSkills.length === 0" class="empty-card">
-        No skills added yet. Start by adding your first skill.
+        No skills added yet. Add your first skill to start building your career profile.
       </article>
 
       <article
