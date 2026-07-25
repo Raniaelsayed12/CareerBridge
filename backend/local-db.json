@@ -62,8 +62,8 @@
     {
       "id": "skill-hania-2",
       "userId": "user-hania",
-      "name": "Git & GitHub",
-      "category": "Tools"
+      "name": "JavaScript",
+      "category": "Programming"
     },
     {
       "id": "skill-hania-3",
@@ -74,8 +74,32 @@
     {
       "id": "skill-hania-4",
       "userId": "user-hania",
+      "name": "Vue Router",
+      "category": "Routing"
+    },
+    {
+      "id": "skill-hania-5",
+      "userId": "user-hania",
       "name": "Node.js",
       "category": "Backend"
+    },
+    {
+      "id": "skill-hania-6",
+      "userId": "user-hania",
+      "name": "Express.js",
+      "category": "Backend"
+    },
+    {
+      "id": "skill-hania-7",
+      "userId": "user-hania",
+      "name": "Git & GitHub",
+      "category": "Tools"
+    },
+    {
+      "id": "skill-hania-8",
+      "userId": "user-hania",
+      "name": "Responsive Design",
+      "category": "Frontend"
     },
     {
       "id": "skill-rania-1",
@@ -88,6 +112,12 @@
       "userId": "user-rania",
       "name": "CSS Design",
       "category": "Frontend"
+    },
+    {
+      "id": "skill-rania-3",
+      "userId": "user-rania",
+      "name": "UI Layout",
+      "category": "Design"
     },
     {
       "id": "skill-aly-1",
@@ -109,7 +139,7 @@
       "id": "project-hania-2",
       "userId": "user-hania",
       "title": "Admin Data Management",
-      "description": "Admin panel for managing users, skills, projects and certificates.",
+      "description": "Admin panel for managing accounts and user-specific skills, projects and certificates.",
       "github": "https://github.com/Raniaelsayed12/CareerBridge",
       "status": "Completed"
     },
@@ -117,9 +147,25 @@
       "id": "project-hania-3",
       "userId": "user-hania",
       "title": "User Resume Generator",
-      "description": "Resume page that generates a personal overview from user data.",
+      "description": "Resume page that generates a personal overview from profile, skills, projects and certificates.",
       "github": "https://github.com/Raniaelsayed12/CareerBridge",
       "status": "In Progress"
+    },
+    {
+      "id": "project-hania-4",
+      "userId": "user-hania",
+      "title": "Documentation Viewer",
+      "description": "Docs page that shows user-specific documentation and supports print or save as PDF.",
+      "github": "https://github.com/Raniaelsayed12/CareerBridge",
+      "status": "Completed"
+    },
+    {
+      "id": "project-hania-5",
+      "userId": "user-hania",
+      "title": "Profile Progress Demo",
+      "description": "Demo data with different profile completion levels for Hania, Rania and Aly.",
+      "github": "https://github.com/Raniaelsayed12/CareerBridge",
+      "status": "Completed"
     },
     {
       "id": "project-rania-1",
@@ -172,10 +218,26 @@
       "link": ""
     },
     {
+      "id": "cert-hania-4",
+      "userId": "user-hania",
+      "name": "CareerBridge Documentation",
+      "provider": "University Project",
+      "date": "2026-07-25",
+      "link": ""
+    },
+    {
       "id": "cert-rania-1",
       "userId": "user-rania",
       "name": "Frontend Development",
       "provider": "CareerBridge Project",
+      "date": "2026-07-25",
+      "link": ""
+    },
+    {
+      "id": "cert-rania-2",
+      "userId": "user-rania",
+      "name": "UI Design Basics",
+      "provider": "University Project",
       "date": "2026-07-25",
       "link": ""
     },
