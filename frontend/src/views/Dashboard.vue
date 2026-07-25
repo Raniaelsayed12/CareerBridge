@@ -114,11 +114,17 @@ const currentUserId = computed(() => {
 });
 
 const profileProgress = computed(() => {
+  const savedProgress = Number(currentUser.value?.profileProgress);
+
+  if (!Number.isNaN(savedProgress) && savedProgress >= 0) {
+    return Math.min(100, Math.max(0, savedProgress));
+  }
+
   const fields = [
     currentUser.value?.name || currentUser.value?.fullName,
     currentUser.value?.email,
     currentUser.value?.city,
-    currentUser.value?.title || currentUser.value?.professionalTitle,
+    currentUser.value?.title || currentUser.value?.professionalTitle || currentUser.value?.professionalRole,
     currentUser.value?.university,
   ];
 
