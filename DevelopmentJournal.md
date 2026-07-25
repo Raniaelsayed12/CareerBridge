@@ -1,299 +1,333 @@
-CareerBridge – Development Journal
+# CareerBridge – Development Journal
 
-KW 1 – Projektplanung und Vorbereitung
+## KW 1 – Projektplanung und Vorbereitung
 
-Erledigte Aufgaben
-Projektidee „CareerBridge“ ausgewählt.
-Ziele und Zielgruppe definiert.
-Erste Anforderungen gesammelt.
-GitHub-Repository erstellt.
-Projektstruktur geplant.
-Aufgaben im Team verteilt.
+### Erledigte Aufgaben
+- Projektidee „CareerBridge“ ausgewählt.
+- Ziele und Zielgruppe definiert.
+- Erste Anforderungen gesammelt.
+- GitHub-Repository erstellt.
+- Projektstruktur geplant.
+- Aufgaben im Team verteilt.
 
-Neue Technologien
+### Neue Technologien
+- Überblick über Vue 3, Pinia und Express.
+- Einführung in GitHub für die gemeinsame Entwicklung.
 
-Überblick über Vue 3, Pinia und Express.
-Einführung in GitHub für die gemeinsame Entwicklung.
-Herausforderungen
-Auswahl eines geeigneten Projektthemas.
-Planung einer sinnvollen Projektstruktur.
+### Herausforderungen
+- Auswahl eines geeigneten Projektthemas.
+- Planung einer sinnvollen Projektstruktur.
 
-Lösungen
+### Lösungen
+- Mehrere Projektideen wurden verglichen.
+- Gemeinsam wurde entschieden, eine Karriereplattform zu entwickeln.
 
-Mehrere Projektideen wurden verglichen.
-Gemeinsam wurde entschieden, eine Karriereplattform zu entwickeln.
-ChatGPT-Unterstützung
-Unterstützung bei der Ideenfindung.
-Erklärung der Projektarchitektur.
-Vorschläge zur Strukturierung des Projekts.
-Erkenntnisse
+### ChatGPT-Unterstützung
+- Unterstützung bei der Ideenfindung.
+- Erklärung der Projektarchitektur.
+- Vorschläge zur Strukturierung des Projekts.
+
+### Erkenntnisse
 Eine gute Planung spart später viel Entwicklungszeit.
 
+---
 
-KW 2 – Frontend-Grundlagen
+## KW 2 – Frontend-Grundlagen
 
+### Erledigte Aufgaben
+- Vue-3-Projekt mit Vite erstellt.
+- Vue Router integriert.
+- Pinia eingerichtet.
+- Grundlayout erstellt.
+- Navbar und Startseite entwickelt.
 
-Erledigte Aufgaben
+### Neue Technologien
+- Composition API.
+- Vue Router.
+- Pinia State Management.
+- Vite.
 
-Vue-3-Projekt mit Vite erstellt.
-Vue Router integriert.
-Pinia eingerichtet.
-Grundlayout erstellt.
-Navbar und Startseite entwickelt.
-Neue Technologien
-Composition API.
-Vue Router.
-Pinia State Management.
-Herausforderungen
-Verständnis der Komponentenstruktur.
-Navigation zwischen mehreren Seiten.
+### Herausforderungen
+- Verständnis der Komponentenstruktur.
+- Navigation zwischen mehreren Seiten.
 
-Lösungen
+### Lösungen
+- Komponenten in kleine wiederverwendbare Teile aufgeteilt.
+- Router-Struktur vereinfacht.
 
-Komponenten in kleine wiederverwendbare Teile aufgeteilt.
-Router-Struktur vereinfacht.
-ChatGPT-Unterstützung
-Erklärung der Composition API.
-Hilfe beim Verständnis von Routing und Pinia.
-Erkenntnisse
+### ChatGPT-Unterstützung
+- Erklärung der Composition API.
+- Hilfe beim Verständnis von Routing und Pinia.
+
+### Erkenntnisse
 Komponenten erleichtern die Wiederverwendung von Code.
 
-Nächste Woche
-
+### Nächste Woche
 Login und Register implementieren.
 
-KW 3 – Benutzerverwaltung
+---
 
-Erledigte Aufgaben
-Login-Seite entwickelt.
-Registrierungsseite erstellt.
-Formulare validiert.
-Benutzeroberfläche verbessert.
+## KW 3 – Benutzerverwaltung
 
-Neue Technologien
+### Erledigte Aufgaben
+- Login-Seite entwickelt.
+- Registrierungsseite erstellt.
+- Formulare validiert.
+- Benutzeroberfläche verbessert.
+- Erste Benutzerrollen vorbereitet.
 
-Axios.
-REST-API.
-Formularvalidierung.
-Herausforderungen
-Daten zwischen Frontend und Backend übertragen.
-Fehlerhafte Eingaben behandeln.
+### Neue Technologien
+- Axios.
+- REST-API.
+- Formularvalidierung.
 
-Lösungen
+### Herausforderungen
+- Daten zwischen Frontend und Backend übertragen.
+- Fehlerhafte Eingaben behandeln.
+- Login-Zustand im Frontend verwalten.
 
-Axios für HTTP-Anfragen verwendet.
-Validierungen im Frontend ergänzt.
-ChatGPT-Unterstützung
-Erklärung von Axios.
-Unterstützung beim Verständnis von HTTP-Methoden.
+### Lösungen
+- Axios für HTTP-Anfragen verwendet.
+- Validierungen im Frontend ergänzt.
+- Pinia für den Benutzerstatus verwendet.
 
-Erkenntnisse
+### ChatGPT-Unterstützung
+- Erklärung von Axios.
+- Unterstützung beim Verständnis von HTTP-Methoden.
+- Hilfe bei Login- und Register-Logik.
 
+### Erkenntnisse
 Eine gute Validierung verbessert die Benutzerfreundlichkeit.
 
-Nächste Woche
-
+### Nächste Woche
 Backend entwickeln.
 
+---
 
+## KW 4 – Backend und Datenhaltung
 
-KW 4 – Backend und Datenbank
+### Erledigte Aufgaben
+- Express-Server erstellt.
+- REST-API entwickelt.
+- CRUD-Endpunkte für Benutzer, Skills, Projekte und Zertifikate erstellt.
+- Lokale JSON-Datenhaltung mit `local-db.json` umgesetzt.
+- Frontend und Backend über Axios verbunden.
 
-Erledigte Aufgaben
-Express-Server erstellt.
-MongoDB Atlas verbunden.
-REST-API entwickelt.
-CRUD-Endpunkte erstellt.
+### Neue Technologien
+- Node.js.
+- Express.js.
+- REST API.
+- Lokale JSON-Datenhaltung.
 
-Neue Technologien
+### Herausforderungen
+- Verbindung zwischen Frontend und Backend.
+- Daten dauerhaft speichern.
+- Fehler bei API-Anfragen.
 
-Express.js.
-MongoDB Atlas.
-REST API.
+### Lösungen
+- API-Schritte einzeln getestet.
+- Backend-Endpunkte mit Browser und Terminal überprüft.
+- `local-db.json` als einfache lokale Datenquelle verwendet.
 
-Herausforderungen
+### ChatGPT-Unterstützung
+- Erklärung von Express-Routen.
+- Unterstützung beim Verständnis von REST-Endpunkten.
+- Hilfe bei der Analyse von Fehlermeldungen.
 
-Verbindung zwischen Backend und Datenbank.
-Fehler bei API-Anfragen.
+### Erkenntnisse
+Frontend und Backend müssen sauber zusammenarbeiten. Auch eine lokale Datenhaltung muss strukturiert aufgebaut sein.
 
-Lösungen
-
-API-Schritte einzeln getestet.
-Datenbankverbindung überprüft.
-ChatGPT-Unterstützung
-Erklärung von MongoDB.
-Unterstützung beim Verständnis von Express-Routen.
-Hilfe bei der Analyse von Fehlermeldungen.
-
-Erkenntnisse
-
-Frontend und Backend müssen sauber zusammenarbeiten.
-
-Nächste Woche
-
+### Nächste Woche
 CRUD-Funktionen erweitern.
 
-KW 5 – CRUD-Funktionen
+---
 
-Erledigte Aufgaben
-Skills-Seite fertiggestellt.
-Projects-Seite erweitert.
-Certificates-Seite implementiert.
-Suchfunktion ergänzt.
-Bearbeiten- und Löschen-Funktionen verbessert.
+## KW 5 – CRUD-Funktionen
 
-Neue Technologien
+### Erledigte Aufgaben
+- Skills-Seite fertiggestellt.
+- Projects-Seite erweitert.
+- Certificates-Seite implementiert.
+- Suchfunktion ergänzt.
+- Bearbeiten- und Löschen-Funktionen verbessert.
+- Daten wurden benutzerspezifisch gespeichert.
 
-MongoDB CRUD.
-Dynamische Formulare.
+### Neue Technologien
+- CRUD mit REST-API.
+- Dynamische Formulare.
+- Axios für API-Aufrufe.
 
-Herausforderungen
+### Herausforderungen
+- Daten nach Änderungen automatisch aktualisieren.
+- Einheitliche Struktur für alle CRUD-Seiten.
+- Daten nach Benutzer trennen.
 
-Daten nach Änderungen automatisch aktualisieren.
-Einheitliche Struktur für alle CRUD-Seiten.
+### Lösungen
+- Gemeinsames CRUD-Muster verwendet.
+- API-Aufrufe vereinheitlicht.
+- Jeder Datensatz wurde mit einer Benutzer-ID verknüpft.
 
-Lösungen
+### ChatGPT-Unterstützung
+- Erklärung von CRUD-Konzepten.
+- Hilfe bei der Fehleranalyse.
+- Unterstützung bei der Strukturierung der API-Aufrufe.
 
-Gemeinsames CRUD-Muster verwendet.
-API-Aufrufe vereinheitlicht.
-ChatGPT-Unterstützung
-Erklärung von CRUD-Konzepten.
-Hilfe bei der Fehleranalyse.
+### Erkenntnisse
+Wiederverwendbarer Code reduziert Entwicklungsaufwand. Benutzerspezifische Daten verbessern die Struktur der Anwendung.
 
-Erkenntnisse
-
-Wiederverwendbarer Code reduziert Entwicklungsaufwand.
-
-Nächste Woche
-
+### Nächste Woche
 Dashboard und Profil entwickeln.
 
+---
 
+## KW 6 – Dashboard und Benutzerprofil
 
-KW 6 – Dashboard und Benutzerprofil
+### Erledigte Aufgaben
+- Dashboard erstellt.
+- Statistik-Karten integriert.
+- Fortschrittsanzeige für das Profil eingebunden.
+- Profilseite erweitert.
+- Benutzerspezifische Daten im Dashboard angezeigt.
+- Resume-Seite implementiert.
+- Docs-Seite für benutzerspezifische Daten vorbereitet.
 
-Erledigte Aufgaben
-Dashboard erstellt.
-Statistik-Karten integriert.
-Diagramm mit Chart.js eingebunden.
-Profilseite erweitert.
-PDF-Lebenslauf implementiert.
-Neue Technologien
-Chart.js.
-html2canvas.
-jsPDF.
+### Neue Technologien
+- Computed Properties in Vue.
+- Pinia State Management.
+- Browser Print API für „Save as PDF“.
 
-Herausforderungen
+### Herausforderungen
+- Dynamische Daten korrekt darstellen.
+- Daten des aktuell angemeldeten Benutzers anzeigen.
+- PDF-Speicherung über den Browser sauber darstellen.
 
-Dynamische Daten korrekt darstellen.
-PDF-Erstellung aus HTML.
+### Lösungen
+- Pinia für den eingeloggten Benutzer verwendet.
+- Dashboard mit berechneten Werten aufgebaut.
+- Skills, Projekte und Zertifikate nach Benutzer gefiltert.
+- Print-Ansicht für Resume und Docs verbessert.
 
-Lösungen
+### ChatGPT-Unterstützung
+- Unterstützung beim PDF-Export über den Druckdialog.
+- Hilfe beim Verständnis von computed-Eigenschaften.
+- Unterstützung beim Filtern benutzerspezifischer Daten.
 
-Pinia-Daten verwendet.
-Dashboard mit berechneten Werten aufgebaut.
-ChatGPT-Unterstützung
-Erklärung von Chart.js.
-Unterstützung beim PDF-Export.
-Hilfe beim Verständnis von computed-Eigenschaften.
-Erkenntnisse
-Dynamische Dashboards verbessern die Benutzererfahrung.
+### Erkenntnisse
+Dynamische Dashboards verbessern die Benutzererfahrung. State Management ist wichtig für Login und benutzerspezifische Inhalte.
 
-Nächste Woche
-
+### Nächste Woche
 Tests und Optimierungen.
 
+---
 
-KW 7 – Tests und Optimierung
+## KW 7 – Tests und Optimierung
 
+### Erledigte Aufgaben
+- Anwendung getestet.
+- Fehler behoben.
+- Responsive Design verbessert.
+- Benutzeroberfläche optimiert.
+- Navigation und Routing überprüft.
+- GitHub aktualisiert.
 
-Erledigte Aufgaben
-Anwendung getestet.
-Fehler behoben.
-Responsive Design verbessert.
-Benutzeroberfläche optimiert.
-GitHub aktualisiert.
-Herausforderungen
-Darstellung auf verschiedenen Bildschirmgrößen.
-Kleinere Fehler im Zusammenspiel von Frontend und Backend.
+### Herausforderungen
+- Darstellung auf verschiedenen Bildschirmgrößen.
+- Kleinere Fehler im Zusammenspiel von Frontend und Backend.
+- Probleme beim Wechsel zwischen verschiedenen Benutzerkonten.
 
-Lösungen
+### Lösungen
+- Mehrere Testläufe durchgeführt.
+- Layout schrittweise verbessert.
+- Session-Verwaltung angepasst.
+- Route Guards überprüft.
 
-Mehrere Testläufe durchgeführt.
-Layout schrittweise verbessert.
-ChatGPT-Unterstützung
-Unterstützung bei der Fehlersuche.
-Erklärung von Vue-Fehlermeldungen.
-Vorschläge zur Codeverbesserung.
+### ChatGPT-Unterstützung
+- Unterstützung bei der Fehlersuche.
+- Erklärung von Vue-Fehlermeldungen.
+- Vorschläge zur Codeverbesserung.
 
-Erkenntnisse
+### Erkenntnisse
+Testen ist ein wichtiger Teil der Softwareentwicklung. Besonders Login, Routing und Benutzerwechsel müssen sorgfältig geprüft werden.
 
-Testen ist ein wichtiger Teil der Softwareentwicklung.
+### Nächste Woche
+Dokumentation und Abschluss vorbereiten.
 
-Nächste Woche
+---
 
+## KW 8 – Dokumentation und Abschluss
 
+### Erledigte Aufgaben
+- Projektdokumentation fertiggestellt.
+- Screenshots der Anwendung erstellt.
+- GitHub überprüft.
+- Präsentation vorbereitet.
+- Code bereinigt.
+- Finale Tests durchgeführt.
 
+### Herausforderungen
+- Alle Projektdokumente vollständig vorbereiten.
+- Präsentation verständlich strukturieren.
+- Screenshots sinnvoll auswählen und einordnen.
 
+### Lösungen
+- Dokumentation überarbeitet.
+- Letzte Fehler behoben.
+- Screenshots im Repository abgelegt.
+- Projektstruktur überprüft.
 
+### ChatGPT-Unterstützung
+- Unterstützung bei der Formulierung der Dokumentation.
+- Hilfe bei der Struktur der Präsentation.
+- Unterstützung bei der Auswahl wichtiger Screenshots.
 
+### Erkenntnisse
+Eine gute Dokumentation ist wichtig, damit andere das Projekt verstehen können.
 
-KW 8 – Dokumentation und Abschluss
+### Nächste Woche
+Abgabe und Präsentation.
 
-Erledigte Aufgaben
-Projektdokumentation fertiggestellt.
-GitHub überprüft.
-Präsentation vorbereitet.
-Code bereinigt.
-Finale Tests durchgeführt.
+---
 
-Herausforderungen
+## KW 9 – Abschlussphase und Projektverbesserungen
 
-Alle Projektdokumente vollständig vorbereiten.
-Präsentation verständlich strukturieren.
+### Abgeschlossene Aufgaben
+- Die Projektstruktur wurde neu organisiert und in Frontend und Backend getrennt.
+- Das Dashboard wurde mit benutzerspezifischen Statistiken verbessert.
+- Eine benutzerspezifische Dokumentationsseite wurde hinzugefügt.
+- Die Funktionen „Drucken“ und „Als PDF speichern“ wurden implementiert.
+- Das Design und die Benutzeroberfläche wurden auf allen Seiten vereinheitlicht.
+- Probleme bei Authentifizierung, Session-Verwaltung und Routing wurden behoben.
+- Abschließende Tests und Fehlerbehebungen wurden durchgeführt.
+- Das finale GitHub-Repository wurde vorbereitet und aktualisiert.
 
-Lösungen
+### Herausforderungen
+- Merge-Konflikte nach der Umstrukturierung des Projekts lösen.
+- Frontend und Backend nach der Trennung erfolgreich synchronisieren.
+- Sicherstellen, dass jeder Benutzer ausschließlich auf seine eigenen Daten zugreifen kann.
+- Eine einheitliche Benutzeroberfläche auf allen Seiten herstellen.
 
-Dokumentation überarbeitet.
-Letzte Fehler behoben.
+### Lösungen
+- GitHub-Änderungen mit Rebase integriert.
+- Frontend und Backend getrennt getestet.
+- Daten über Benutzer-ID gefiltert.
+- Design auf ein einheitliches Blau-Weiß-Theme angepasst.
+- Finale Screenshots erstellt und im Repository gespeichert.
 
+### Ergebnis
+Die finale Version von CareerBridge wurde erfolgreich fertiggestellt. Die Anwendung ist für die Präsentation und die Abgabe vorbereitet.
 
-KW 9 – Abschlussphase und Projektverbesserungen
+### ChatGPT-Unterstützung
+- Unterstützung bei der Erstellung und Überarbeitung der Projektdokumentation.
+- Hilfe beim Formulieren technischer Inhalte.
+- Unterstützung bei Git, Fehleranalyse und Präsentationsvorbereitung.
+- Alle Vorschläge wurden geprüft und bei Bedarf manuell angepasst.
 
-Abgeschlossene Aufgaben
+---
 
-Die Projektstruktur wurde neu organisiert und in Frontend und Backend getrennt.
-Das Dashboard wurde mit benutzerspezifischen Statistiken verbessert.
-Eine benutzerspezifische Dokumentationsseite wurde hinzugefügt.
-Die Funktionen Drucken und Als PDF speichern wurden implementiert.
-Das Design und die Benutzeroberfläche wurden auf allen Seiten vereinheitlicht.
-Probleme bei der Authentifizierung und beim Routing wurden behoben.
-Abschließende Tests und Fehlerbehebungen wurden durchgeführt.
-Das finale GitHub-Repository wurde vorbereitet und aktualisiert.
+## Lessons Learned
 
-Herausforderungen
+Während des Projekts haben wir gelernt, wie moderne Webanwendungen mit Vue 3, Pinia, Express und einer lokalen JSON-Datenhaltung entwickelt werden. Besonders wichtig war das Zusammenspiel zwischen Frontend und Backend sowie die strukturierte Planung des Entwicklungsprozesses.
 
-Merge-Konflikte nach der Umstrukturierung des Projekts lösen.
-Frontend und Backend nach der Trennung erfolgreich synchronisieren.
-Sicherstellen, dass jeder Benutzer ausschließlich auf seine eigenen Daten zugreifen kann.
+Außerdem haben wir gelernt, Probleme systematisch zu analysieren, Lösungen gemeinsam zu erarbeiten und unsere Fortschritte regelmäßig zu dokumentieren. Die Arbeit mit GitHub hat gezeigt, wie wichtig saubere Commits, regelmäßige Updates und eine klare Projektstruktur sind.
 
-Ergebnis
-
-Die finale Version von CareerBridge wurde erfolgreich fertiggestellt.
-Die Anwendung wurde für die Präsentation und die Abgabe vorbereitet.
-
-ChatGPT-Unterstützung
-
-Unterstützung bei der Erstellung der Projektdokumentation.
-Hilfe beim Formulieren technischer Inhalte.
-Alle Vorschläge wurden geprüft und bei Bedarf manuell angepasst.
-
-
-
-Lessons Learned
-
-Während des Projekts haben wir gelernt, wie moderne Webanwendungen mit Vue 3, Pinia, Express und MongoDB entwickelt werden. Besonders wichtig war für uns das Zusammenspiel zwischen Frontend und Backend sowie die strukturierte Planung des Entwicklungsprozesses. Außerdem haben wir gelernt, Probleme systematisch zu analysieren, Lösungen gemeinsam zu erarbeiten und unsere Fortschritte regelmäßig zu dokumentieren.
-
-
-ChatGPT wurde während des Projekts als unterstützendes Lernwerkzeug verwendet. Es half beim Verständnis von Vue.js, Pinia, Express und MongoDB, erklärte Fehlermeldungen, unterstützte bei der Strukturierung der Dokumentation sowie bei der Vorbereitung der Abschlusspräsentation. Alle Vorschläge wurden von unserem Team überprüft, angepasst und in den Projektkontext eingeordnet, bevor sie übernommen wurden.
-
+ChatGPT wurde während des Projekts als unterstützendes Lernwerkzeug verwendet. Es half beim Verständnis von Vue.js, Pinia, Express, Routing, API-Aufrufen und GitHub. Außerdem unterstützte es bei der Analyse von Fehlermeldungen, bei der Strukturierung der Dokumentation und bei der Vorbereitung der Abschlusspräsentation. Alle Vorschläge wurden vom Team überprüft, angepasst und in den Projektkontext eingeordnet, bevor sie übernommen wurden.
