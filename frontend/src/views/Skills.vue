@@ -7,9 +7,16 @@
         <p>Add, edit and organize your technical and professional skills.</p>
       </div>
 
-      <div class="hero-actions">
-        <RouterLink to="/" class="btn light">Home</RouterLink>
-        <RouterLink to="/dashboard" class="btn light">Dashboard</RouterLink>
+      <div class="hero-side">
+        <div class="hero-count">
+          <strong>{{ skills.length }}</strong>
+          <span>skills</span>
+        </div>
+
+        <div class="hero-actions">
+          <RouterLink to="/" class="btn light">Home</RouterLink>
+          <RouterLink to="/dashboard" class="btn light">Dashboard</RouterLink>
+        </div>
       </div>
     </section>
 
@@ -244,6 +251,33 @@ onMounted(loadSkills);
   color: #dbeafe;
 }
 
+.hero-side {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.hero-count {
+  min-width: 140px;
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  text-align: center;
+}
+
+.hero-count strong {
+  display: block;
+  font-size: 2.8rem;
+  color: white;
+}
+
+.hero-count span {
+  color: white;
+  font-weight: 800;
+}
+
 .hero-actions {
   display: flex;
   gap: 0.8rem;
@@ -410,6 +444,10 @@ input {
   .skills-hero {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .hero-side {
+    justify-content: flex-start;
   }
 
   .skill-form,
