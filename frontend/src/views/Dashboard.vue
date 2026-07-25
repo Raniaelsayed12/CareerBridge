@@ -59,6 +59,11 @@ async function loadDashboard() {
       return;
     }
 
+    if (currentUser.value.role === "admin") {
+      router.push("/admin");
+      return;
+    }
+
     const userId = currentUser.value._id;
 
     const [skillsRes, projectsRes, certificatesRes] = await Promise.all([
@@ -73,6 +78,10 @@ async function loadDashboard() {
   } catch (err) {
     error.value = "Dashboard data could not be loaded.";
   }
+}
+
+function goHome() {
+  router.push("/");
 }
 
 function goTo(path) {
@@ -93,7 +102,10 @@ onMounted(loadDashboard);
         </p>
       </div>
 
-      <button @click="loadDashboard">Refresh</button>
+      <div class="hero-actions">
+        <button @click="goHome">Home</button>
+        <button @click="loadDashboard">Refresh</button>
+      </div>
     </section>
 
     <p v-if="error" class="error">{{ error }}</p>
@@ -225,6 +237,22 @@ onMounted(loadDashboard);
 .hero h1 {
   font-size: 42px;
   margin: 8px 0;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hero-actions button {
+  background: white;
+  color: #1d4ed8;
+  border: none;
+  border-radius: 12px;
+  padding: 13px 18px;
+  font-weight: 800;
+  cursor: pointer;
 }
 
 .hero button,

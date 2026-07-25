@@ -1,109 +1,54 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useUserStore } from "../stores/userStore";
 
 import Home from "../views/Home.vue";
-import Login from "../views/Login.vue";
-import Register from "../views/Register.vue";
 import Dashboard from "../views/Dashboard.vue";
-import Profile from "../views/Profile.vue";
 import Skills from "../views/Skills.vue";
 import Projects from "../views/Projects.vue";
 import Certificates from "../views/Certificates.vue";
-import About from "../views/About.vue";
 import Resume from "../views/Resume.vue";
+import Profile from "../views/Profile.vue";
+import About from "../views/About.vue";
+import Login from "../views/Login.vue";
+import Register from "../views/Register.vue";
 import Admin from "../views/Admin.vue";
+import Docs from "../views/Docs.vue";
 
 const routes = [
-  { path: "/admin", name: "Admin", component: Admin },
-  {
-    path: "/",
-    name: "home",
-    component: Home,
-  },
-  {
-    path: "/login",
-    name: "login",
-    component: Login,
-    meta: { guestOnly: true },
-  },
-  {
-    path: "/register",
-    name: "register",
-    component: Register,
-    meta: { guestOnly: true },
-  },
-  {
-    path: "/dashboard",
-    name: "dashboard",
-    component: Dashboard,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/profile",
-    name: "profile",
-    component: Profile,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/skills",
-    name: "skills",
-    component: Skills,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/projects",
-    name: "projects",
-    component: Projects,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/certificates",
-    name: "certificates",
-    component: Certificates,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/resume",
-    name: "resume",
-    component: Resume,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/about",
-    name: "about",
-    component: About,
-  },
-  {
-    path: "/:pathMatch(.*)*",
-    redirect: "/",
-  },
+  { path: "/", name: "Home", component: Home, meta: { public: true } },
+  { path: "/about", name: "About", component: About, meta: { public: true } },
+  { path: "/login", name: "Login", component: Login, meta: { public: true } },
+  { path: "/register", name: "Register", component: Register, meta: { public: true } },
+
+  { path: "/dashboard", name: "Dashboard", component: Dashboard, meta: { requiresAuth: true } },
+  { path: "/skills", name: "Skills", component: Skills, meta: { requiresAuth: true } },
+  { path: "/projects", name: "Projects", component: Projects, meta: { requiresAuth: true } },
+  { path: "/certificates", name: "Certificates", component: Certificates, meta: { requiresAuth: true } },
+  { path: "/resume", name: "Resume", component: Resume, meta: { requiresAuth: true } },
+  { path: "/profile", name: "Profile", component: Profile, meta: { requiresAuth: true } },
+  { path: "/docs", name: "Docs", component: Docs, meta: { requiresAuth: true } },
+
+  { path: "/admin", name: "Admin", component: Admin, meta: { requiresAuth: true, requiresAdmin: true } },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
-
-  scrollBehavior() {
-    return { top: 0 };
-  },
 });
 
 router.beforeEach((to) => {
-  const savedUser = localStorage.getItem("careerbridge-user");
-  const isAuthenticated = Boolean(savedUser);
+  const userStore = useUserStore();
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    return {
-      name: "login",
-      query: {
-        redirect: to.fullPath,
-      },
-    };
+  if (to.meta.requiresAuth && !userStore.loggedIn) {
+    return "/login";
   }
 
-  if (to.meta.guestOnly && isAuthenticated) {
-    return {
-      name: "dashboard",
-    };
+  if (to.meta.requiresAdmin && userStore.role !== "admin") {
+    return "/dashboard";
+  }
+
+  if ((to.path === "/login" || to.path === "/register") && userStore.loggedIn) {
+    return "/";
   }
 
   return true;

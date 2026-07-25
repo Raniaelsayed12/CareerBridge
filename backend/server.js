@@ -15,28 +15,28 @@ const defaultData = {
       _id: "user-admin",
       name: "System Admin",
       email: "admin@test.de",
-      password: "admin12345",
+      password: "Admin2026!Test",
       role: "admin"
     },
     {
       _id: "user-hania",
       name: "Hania Alilat",
       email: "hania@test.com",
-      password: "hania12345",
+      password: "Hania2026!Test",
       role: "user"
     },
     {
       _id: "user-rania",
       name: "Rania Abdelaal",
       email: "rania@test.com",
-      password: "rania12345",
+      password: "Rania2026!Test",
       role: "user"
     },
     {
       _id: "user-aly",
       name: "Aly Elatrby",
       email: "aly@test.com",
-      password: "aly12345",
+      password: "Aly2026!Test",
       role: "user"
     }
   ],
@@ -203,7 +203,16 @@ app.put("/users/:id", (req, res) => {
 
   user.name = req.body.name || user.name;
   user.email = req.body.email || user.email;
-  user.role = req.body.role || user.role;
+
+  if (req.body.role) {
+    user.role = req.body.role;
+  }
+
+  user.city = req.body.city ?? user.city ?? "";
+  user.professionalRole = req.body.professionalRole ?? user.professionalRole ?? "";
+  user.university = req.body.university ?? user.university ?? "";
+  user.bio = req.body.bio ?? user.bio ?? "";
+  user.github = req.body.github ?? user.github ?? "";
 
   if (req.body.password) {
     user.password = req.body.password;
