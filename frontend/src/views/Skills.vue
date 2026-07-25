@@ -1,17 +1,98 @@
+<template>
+  <main v-if="isAdmin" class="admin-info-page">
+    <section class="admin-info-card">
+      <p class="eyebrow">ADMIN ACCOUNT</p>
+      <h1>Skills are managed from the Admin Panel</h1>
+      <p>
+        The admin account is used to manage all users. To view the skills of
+        Hania, Rania or Aly, open the Admin Panel and select a user.
+      </p>
+      <RouterLink to="/admin" class="admin-info-btn">
+        Open Admin Panel
+      </RouterLink>
+    </section>
+  </main>
+
+  <main v-else class="skills-page">
+    <section class="skills-hero">
+      <div>
+        <p class="eyebrow">SKILLS</p>
+        <h1>Manage your skills</h1>
+        <p>Add, edit and organize your technical and professional skills.</p>
+      </div>
+
+      <div class="hero-actions">
+        <RouterLink to="/" class="btn light">Home</RouterLink>
+        <RouterLink to="/dashboard" class="btn light">Dashboard</RouterLink>
+      </div>
+    </section>
+
+    <section class="form-panel">
+      <h2>{{ editingId ? "Edit Skill" : "Add Skill" }}</h2>
+
+      <form @submit.prevent="saveSkill" class="skill-form">
+        <input v-model="form.name" placeholder="Skill name" required />
+        <input v-model="form.category" placeholder="Category" required />
+
+        <button type="submit" class="btn primary">
+          {{ editingId ? "Update" : "Add Skill" }}
+        </button>
+
+        <button
+          v-if="editingId"
+          type="button"
+          class="btn danger"
+          @click="cancelEdit"
+        >
+          Cancel
+        </button>
+      </form>
+    </section>
+
+    <section class="search-panel">
+      <input v-model="searchQuery" placeholder="Search skills..." />
+    </section>
+
+    <section class="skills-grid">
+      <article v-if="filteredSkills.length === 0" class="empty-card">
+        No skills added yet. Start by adding your first skill.
+      </article>
+
+      <article
+        v-for="skill in filteredSkills"
+        :key="getSkillId(skill)"
+        class="skill-card"
+      >
+        <div class="skill-initials">
+          {{ getInitials(skill.name || skill.title) }}
+        </div>
+
+        <span class="skill-category">
+          {{ skill.category || "Skill" }}
+        </span>
+
+        <h3>{{ skill.name || skill.title }}</h3>
+        <p>{{ skill.category || "General" }}</p>
+
+        <div class="card-actions">
+          <button class="edit-btn" @click="editSkill(skill)">Edit</button>
+          <button class="delete-btn" @click="deleteSkill(skill)">Delete</button>
+        </div>
+      </article>
+    </section>
+  </main>
+</template>
+
 <script setup>
 import { computed, onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
-import api from "../services/api";
+import { RouterLink } from "vue-router";
 import { useUserStore } from "../stores/userStore";
+import api from "../services/api";
 
 const userStore = useUserStore();
-const router = useRouter();
 
-const currentUserId = ref("");
 const skills = ref([]);
-const search = ref("");
-const message = ref("");
-const error = ref("");
+const searchQuery = ref("");
 const editingId = ref("");
 
 const form = ref({
@@ -19,400 +100,315 @@ const form = ref({
   category: "",
 });
 
-const filteredSkills = computed(() => {
-  const value = search.value.toLowerCase().trim();
+const isAdmin = computed(() => userStore.user?.role === "admin");
 
-  if (!value) return skills.value;
+const currentUserId = computed(() => {
+  return userStore.user?._id || userStore.user?.id || userStore.user?.email;
+});
+
+const filteredSkills = computed(() => {
+  const query = searchQuery.value.toLowerCase().trim();
+
+  if (!query) return skills.value;
 
   return skills.value.filter((skill) => {
-    return (
-      skill.name?.toLowerCase().includes(value) ||
-      skill.category?.toLowerCase().includes(value)
-    );
+    const name = (skill.name || skill.title || "").toLowerCase();
+    const category = (skill.category || "").toLowerCase();
+    return name.includes(query) || category.includes(query);
   });
 });
 
-
-
-function goHome() {
-  router.push("/");
+function normalizeList(data) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.skills)) return data.skills;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
 }
 
-function goDashboard() {
-  router.push("/dashboard");
+function getSkillId(skill) {
+  return skill._id || skill.id;
 }
 
-function clearForm() {
-  form.value = {
-    name: "",
-    category: "",
-  };
-
-  editingId.value = "";
-}
-
-async function resolveCurrentUser() {
-  const response = await api.get("/users");
-
-  const currentEmail = (userStore.email || "").toLowerCase().trim();
-
-  const currentUser = response.data.find(
-    (user) => user.email.toLowerCase().trim() === currentEmail
-  );
-
-  currentUserId.value = currentUser?._id || "";
+function getInitials(text = "SK") {
+  return text
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase();
 }
 
 async function loadSkills() {
-  try {
-    if (!currentUserId.value) {
-      await resolveCurrentUser();
-    }
+  if (!currentUserId.value || isAdmin.value) return;
 
+  try {
     const response = await api.get(`/skills?userId=${currentUserId.value}`);
-    skills.value = response.data || [];
-  } catch (err) {
-    error.value = "Skills could not be loaded.";
+    skills.value = normalizeList(response.data);
+  } catch (error) {
+    console.error("Skills could not be loaded:", error);
   }
 }
 
 async function saveSkill() {
-  if (!form.value.name) {
-    error.value = "Skill name is required.";
-    message.value = "";
-    return;
-  }
+  if (!currentUserId.value) return;
+
+  const payload = {
+    name: form.value.name,
+    category: form.value.category,
+    userId: currentUserId.value,
+  };
 
   try {
-    const payload = {
-      userId: currentUserId.value,
-      name: form.value.name,
-      category: form.value.category,
-    };
-
     if (editingId.value) {
       await api.put(`/skills/${editingId.value}`, payload);
-      message.value = "Skill updated successfully.";
     } else {
       await api.post("/skills", payload);
-      message.value = "Skill added successfully.";
     }
 
-    error.value = "";
-    clearForm();
+    form.value = { name: "", category: "" };
+    editingId.value = "";
     await loadSkills();
-  } catch (err) {
-    error.value = err.response?.data?.message || "Skill could not be saved.";
-    message.value = "";
+  } catch (error) {
+    console.error("Skill could not be saved:", error);
   }
 }
 
 function editSkill(skill) {
-  editingId.value = skill._id;
-
+  editingId.value = getSkillId(skill);
   form.value = {
-    name: skill.name || "",
+    name: skill.name || skill.title || "",
     category: skill.category || "",
   };
 }
 
+function cancelEdit() {
+  editingId.value = "";
+  form.value = { name: "", category: "" };
+}
+
 async function deleteSkill(skill) {
-  if (!confirm(`Delete skill: ${skill.name}?`)) return;
+  const id = getSkillId(skill);
+  if (!id) return;
 
   try {
-    await api.delete(`/skills/${skill._id}`);
-    message.value = "Skill deleted successfully.";
-    error.value = "";
+    await api.delete(`/skills/${id}`);
     await loadSkills();
-  } catch (err) {
-    error.value = "Skill could not be deleted.";
-    message.value = "";
+  } catch (error) {
+    console.error("Skill could not be deleted:", error);
   }
 }
 
 onMounted(loadSkills);
 </script>
 
-<template>
-  <main class="page">
-    <section class="hero">
-      <div>
-        <p class="tag">SKILL MANAGEMENT</p>
-        <h1>Skills</h1>
-        <p>Organize your technical and professional skills by category.</p>
-        <div class="hero-actions">
-          <button type="button" @click="goHome">Home</button>
-          <button type="button" @click="goDashboard">Dashboard</button>
-        </div>
-      </div>
-
-      <div class="counter">
-        <strong>{{ skills.length }}</strong>
-        <span>skills</span>
-      </div>
-    </section>
-
-    <p v-if="message" class="success">{{ message }}</p>
-    <p v-if="error" class="error">{{ error }}</p>
-
-    <section class="form-card">
-      <div>
-        <p class="tag green">NEW SKILL</p>
-        <h2>{{ editingId ? "Edit skill" : "Add a skill" }}</h2>
-      </div>
-
-      <form @submit.prevent="saveSkill">
-        <input v-model="form.name" placeholder="Skill name" />
-        <input v-model="form.category" placeholder="Category" />
-
-        <div class="buttons">
-          <button type="submit">
-            {{ editingId ? "Save changes" : "Add skill" }}
-          </button>
-
-          <button v-if="editingId" type="button" class="secondary" @click="clearForm">
-            Cancel
-          </button>
-        </div>
-      </form>
-    </section>
-
-    <section class="list-header">
-      <div>
-        <p class="tag green">SKILL COLLECTION</p>
-        <h2>Your skills</h2>
-      </div>
-
-      <input v-model="search" placeholder="Search skills..." />
-    </section>
-
-    <section class="cards">
-      <article v-for="skill in filteredSkills" :key="skill._id" class="card">
-        <div class="card-top">
-          <span class="icon">
-            {{ skill.name?.slice(0, 2).toUpperCase() }}
-          </span>
-
-          <span class="badge">{{ skill.category || "General" }}</span>
-        </div>
-
-        <h3>{{ skill.name }}</h3>
-        <p>{{ skill.category || "General" }}</p>
-
-        <div class="card-actions">
-          <button class="edit" @click="editSkill(skill)">Edit</button>
-          <button class="delete" @click="deleteSkill(skill)">Delete</button>
-        </div>
-      </article>
-
-      <p v-if="filteredSkills.length === 0" class="empty">
-        No skills for this account.
-      </p>
-    </section>
-  </main>
-</template>
-
 <style scoped>
-.page {
+.skills-page,
+.admin-info-page {
   min-height: 100vh;
-  padding: 40px 7%;
-  background: #f8fafc;
+  padding: 3rem 7%;
+  background: #f4f7fb;
   color: #0f172a;
 }
 
-.hero {
-  background: linear-gradient(135deg, #064e3b, #10b981);
-  color: white;
-  border-radius: 24px;
-  padding: 45px;
+.skills-hero {
   display: flex;
   justify-content: space-between;
-  gap: 25px;
+  gap: 2rem;
   align-items: center;
-  margin-bottom: 28px;
+  padding: 3rem;
+  border-radius: 28px;
+  color: white;
+  background: linear-gradient(135deg, #14264f, #3447f5);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
 }
 
-.hero h1 {
-  font-size: 52px;
-  margin: 8px 0;
+.skills-hero h1 {
+  margin: 0.5rem 0 1rem;
+  font-size: clamp(2.2rem, 5vw, 4rem);
 }
 
-.tag {
-  letter-spacing: 3px;
-  font-size: 13px;
-  font-weight: 800;
+.eyebrow {
+  margin: 0;
+  color: #2563eb;
+  letter-spacing: 0.3em;
+  font-weight: 900;
 }
 
-.green {
-  color: #047857;
-}
-
-.counter {
-  background: rgba(255, 255, 255, 0.22);
-  border-radius: 18px;
-  padding: 22px 38px;
-  display: grid;
-  gap: 4px;
-  text-align: center;
-}
-
-.counter strong {
-  font-size: 34px;
+.skills-hero .eyebrow {
+  color: #dbeafe;
 }
 
 .hero-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 22px;
+  gap: 0.8rem;
+  flex-wrap: wrap;
 }
 
-.hero-actions button {
+.btn {
+  border: none;
+  padding: 0.9rem 1.2rem;
+  border-radius: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn.light {
   background: white;
   color: #1d4ed8;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 18px;
-  font-weight: 800;
-  cursor: pointer;
 }
 
-.form-card,
-.card,
-.empty {
+.btn.primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn.danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.form-panel,
+.search-panel,
+.admin-info-card {
+  margin: 2rem 0;
+  padding: 2rem;
+  border-radius: 24px;
   background: white;
-  border-radius: 18px;
-  padding: 28px;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
 }
 
-form {
+.skill-form {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-  margin-top: 18px;
+  grid-template-columns: 1fr 1fr auto auto;
+  gap: 0.8rem;
 }
 
 input {
   width: 100%;
-  box-sizing: border-box;
-  padding: 14px;
-  border: 1px solid #cbd5e1;
-  border-radius: 12px;
-}
-
-.buttons {
-  grid-column: 1 / -1;
-  display: flex;
-  gap: 10px;
-}
-
-button {
-  border: none;
-  border-radius: 12px;
-  padding: 13px 18px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-form button {
-  background: #059669;
-  color: white;
-}
-
-.secondary {
-  background: #e5e7eb;
-  color: #374151;
-}
-
-.success,
-.error {
-  background: white;
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 18px;
-  font-weight: 800;
-}
-
-.success {
-  color: #15803d;
-}
-
-.error {
-  color: #b91c1c;
-}
-
-.list-header {
-  margin: 32px 0 18px;
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  align-items: end;
-}
-
-.list-header input {
-  max-width: 330px;
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-}
-
-.card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-}
-
-.icon {
-  background: #d1fae5;
-  color: #047857;
+  padding: 1rem;
   border-radius: 14px;
-  padding: 14px;
+  border: 1px solid #dbe3ef;
+  font: inherit;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.skill-card,
+.empty-card {
+  padding: 2rem;
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+}
+
+.skill-card {
+  text-align: center;
+  position: relative;
+}
+
+.skill-initials {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: #bbf7d0;
+  color: #047857;
   font-weight: 900;
 }
 
-.badge {
-  border: 1px solid #6ee7b7;
-  color: #047857;
+.skill-category {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid #34d399;
   border-radius: 999px;
-  padding: 7px 12px;
-  font-size: 12px;
+  color: #047857;
   font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.skill-card h3 {
+  margin: 1.5rem 0 0.6rem;
+  font-size: 1.4rem;
+}
+
+.skill-card p {
+  color: #64748b;
 }
 
 .card-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 18px;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
 }
 
-.edit {
+.edit-btn,
+.delete-btn {
+  border: none;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.edit-btn {
   background: #dbeafe;
   color: #1d4ed8;
 }
 
-.delete {
+.delete-btn {
   background: #fee2e2;
   color: #b91c1c;
 }
 
-.empty {
-  grid-column: 1 / -1;
-  color: #64748b;
+.admin-info-page {
+  display: grid;
+  place-items: center;
 }
 
-@media (max-width: 900px) {
-  .hero,
-  .list-header {
+.admin-info-card {
+  width: min(850px, 100%);
+  margin: 0;
+}
+
+.admin-info-card h1 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  margin: 1rem 0;
+}
+
+.admin-info-card p {
+  color: #64748b;
+  line-height: 1.7;
+}
+
+.admin-info-btn {
+  display: inline-flex;
+  margin-top: 1.5rem;
+  padding: 1rem 1.3rem;
+  border-radius: 14px;
+  background: #2563eb;
+  color: white;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+@media (max-width: 950px) {
+  .skills-hero {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  form,
-  .cards {
+  .skill-form,
+  .skills-grid {
     grid-template-columns: 1fr;
   }
 }
