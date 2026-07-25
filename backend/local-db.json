@@ -4,38 +4,52 @@
       "_id": "user-admin",
       "name": "System Admin",
       "email": "admin@test.de",
-      "password": "admin12345",
-      "role": "admin"
+      "password": "Admin2026!Test",
+      "role": "admin",
+      "professionalRole": "Platform Administrator",
+      "city": "",
+      "university": "",
+      "bio": "",
+      "github": ""
     },
     {
       "_id": "user-hania",
       "name": "Hania Alilat",
       "email": "hania@test.com",
-      "password": "hania12345",
-      "role": "user"
+      "password": "Hania2026!Test",
+      "role": "user",
+      "professionalRole": "Student",
+      "city": "",
+      "university": "",
+      "bio": "",
+      "github": ""
     },
     {
       "_id": "user-rania",
       "name": "Rania Abdelaal",
       "email": "rania@test.com",
-      "password": "rania12345",
-      "role": "user"
+      "password": "Rania2026!Test",
+      "role": "user",
+      "professionalRole": "Student",
+      "city": "",
+      "university": "",
+      "bio": "",
+      "github": ""
     },
     {
       "_id": "user-aly",
       "name": "Aly Elatrby",
       "email": "aly@test.com",
-      "password": "aly12345",
-      "role": "user"
+      "password": "Aly2026!Test",
+      "role": "user",
+      "professionalRole": "Student",
+      "city": "",
+      "university": "",
+      "bio": "",
+      "github": ""
     }
   ],
   "skills": [
-    {
-      "_id": "skill-hania-1",
-      "userId": "user-hania",
-      "name": "Vue.js",
-      "category": "Frontend"
-    },
     {
       "_id": "skill-hania-2",
       "userId": "user-hania",
@@ -65,6 +79,12 @@
       "userId": "user-aly",
       "name": "Express.js",
       "category": "Backend"
+    },
+    {
+      "_id": "skill-1784954880198-fbfbf128002e98",
+      "userId": "user-hania",
+      "name": "Vue.js",
+      "category": "Frontend"
     }
   ],
   "projects": [
@@ -113,6 +133,14 @@
       "userId": "user-aly",
       "title": "Data Management",
       "description": "API routes for users, skills, projects and certificates.",
+      "github": "https://github.com/Raniaelsayed12/CareerBridge",
+      "status": "Planned"
+    },
+    {
+      "_id": "project-1784954963023-7b0a703482fe6",
+      "userId": "user-hania",
+      "title": "Resume Builder",
+      "description": "A resume page that collects profile information, skills, projects and certificates in one professional view.",
       "github": "https://github.com/Raniaelsayed12/CareerBridge",
       "status": "Planned"
     }
