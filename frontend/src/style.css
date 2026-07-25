@@ -38,3 +38,115 @@
   color: #64748b;
   font-size: 18px;
 }
+/* CareerBridge spacing fix */
+* {
+  box-sizing: border-box;
+}
+
+.form-panel,
+.search-panel,
+.panel,
+.admin-info-card,
+.selected-box {
+  margin-bottom: 2rem !important;
+}
+
+.skill-form,
+.project-form,
+.certificate-form,
+.grid-form {
+  display: grid !important;
+  gap: 1.1rem !important;
+  align-items: center !important;
+}
+
+.skill-form {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto !important;
+}
+
+.project-form,
+.certificate-form,
+.grid-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.skill-form input,
+.project-form input,
+.certificate-form input,
+.grid-form input,
+.project-form select,
+.grid-form select {
+  min-width: 0 !important;
+  height: 56px !important;
+}
+
+.skill-form .btn,
+.project-form .btn,
+.certificate-form .btn,
+.grid-form .btn {
+  min-height: 56px !important;
+  white-space: nowrap !important;
+}
+
+.skills-grid,
+.projects-grid,
+.certificates-grid,
+.items-grid {
+  gap: 1.6rem !important;
+  margin-top: 2rem !important;
+}
+
+.skill-card,
+.project-card,
+.certificate-card,
+.item-card,
+.empty-card {
+  overflow: hidden !important;
+}
+
+@media (max-width: 950px) {
+  .skill-form,
+  .project-form,
+  .certificate-form,
+  .grid-form {
+    grid-template-columns: 1fr !important;
+  }
+
+  .skill-form .btn,
+  .project-form .btn,
+  .certificate-form .btn,
+  .grid-form .btn {
+    width: 100% !important;
+  }
+}
+
+/* Print clean page */
+@media print {
+  .navbar,
+  .no-print,
+  header.navbar {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  .docs-page,
+  .resume-page {
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  .docs-layout {
+    display: block !important;
+    margin: 0 !important;
+  }
+
+  .doc-paper,
+  .resume-sheet {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 2rem !important;
+  }
+}

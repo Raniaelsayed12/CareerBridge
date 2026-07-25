@@ -1,318 +1,235 @@
-<script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import api from "../services/api";
-import { useUserStore } from "../stores/userStore";
-
-const userStore = useUserStore();
-const router = useRouter();
-
-const email = ref("");
-const password = ref("");
-const showPassword = ref(false);
-const error = ref("");
-const loading = ref(false);
-
-const demoAccounts = [
-  {
-    label: "Admin",
-    email: "admin@test.de",
-    password: "Admin2026!Test",
-  },
-  {
-    label: "Hania",
-    email: "hania@test.com",
-    password: "Hania2026!Test",
-  },
-  {
-    label: "Rania",
-    email: "rania@test.com",
-    password: "Rania2026!Test",
-  },
-  {
-    label: "Aly",
-    email: "aly@test.com",
-    password: "Aly2026!Test",
-  },
-];
-
-function fillAccount(account) {
-  email.value = account.email;
-  password.value = account.password;
-  error.value = "";
-}
-
-async function login() {
-  if (!email.value || !password.value) {
-    error.value = "Email and password are required.";
-    return;
-  }
-
-  loading.value = true;
-  error.value = "";
-
-  try {
-    const response = await api.post("/login", {
-      email: email.value.trim(),
-      password: password.value,
-    });
-
-    const user = response.data.user;
-
-    userStore.setUser(user);
-
-    router.push("/");
-  } catch (err) {
-    error.value = err.response?.data?.message || "Cannot connect to the server.";
-  } finally {
-    loading.value = false;
-  }
-}
-</script>
-
 <template>
   <main class="login-page">
     <section class="login-card">
-      <div class="info">
-        <span class="logo">CB</span>
-
-        <h1>Build your career profile</h1>
-
+      <div class="login-info">
+        <p class="eyebrow">WELCOME BACK</p>
+        <h1>Sign in to CareerBridge</h1>
         <p>
-          Manage your skills, projects and certificates in one professional workspace.
+          Access your dashboard, manage your skills, projects, certificates and
+          career profile.
         </p>
-
-        <ul>
-          <li>Organize your professional skills</li>
-          <li>Present your personal projects</li>
-          <li>Manage certificates and achievements</li>
-        </ul>
       </div>
 
-      <form class="form" @submit.prevent="login">
-        <p class="tag">WELCOME BACK</p>
-        <h2>Sign in to CareerBridge</h2>
-        <p>Enter your account details to continue.</p>
+      <form class="login-form" @submit.prevent="handleLogin">
+        <label>
+          Email
+          <input v-model="email" type="email" placeholder="email@example.com" required />
+        </label>
 
-        <p v-if="error" class="error">{{ error }}</p>
+        <label>
+          Password
+          <div class="password-row">
+            <input
+              v-model="password"
+              :type="showPassword ? 'text' : 'password'"
+              placeholder="Password"
+              required
+            />
+            <button type="button" @click="showPassword = !showPassword">
+              {{ showPassword ? "Hide" : "Show" }}
+            </button>
+          </div>
+        </label>
 
-        <label>Email address</label>
-        <input
-          v-model="email"
-          type="email"
-          placeholder="example@test.com"
-          autocomplete="off"
-        />
+        <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
 
-        <label>Password</label>
-
-        <div class="password-row">
-          <input
-            v-model="password"
-            :type="showPassword ? 'text' : 'password'"
-            placeholder="Password"
-            autocomplete="off"
-          />
-
-          <button
-            type="button"
-            class="show-button"
-            @click="showPassword = !showPassword"
-          >
-            {{ showPassword ? "Hide" : "Show" }}
-          </button>
-        </div>
-
-        <button class="login-button" type="submit" :disabled="loading">
+        <button class="submit-btn" type="submit" :disabled="loading">
           {{ loading ? "Signing in..." : "Sign in" }}
         </button>
 
         <div class="demo-box">
           <p>Demo accounts</p>
-
-          <div class="demo-grid">
-            <button
-              v-for="account in demoAccounts"
-              :key="account.email"
-              type="button"
-              @click="fillAccount(account)"
-            >
-              {{ account.label }}
-              <small>{{ account.email }}</small>
-            </button>
-          </div>
+          <button type="button" @click="fillDemo('admin')">Admin</button>
+          <button type="button" @click="fillDemo('hania')">Hania</button>
+          <button type="button" @click="fillDemo('rania')">Rania</button>
+          <button type="button" @click="fillDemo('aly')">Aly</button>
         </div>
       </form>
     </section>
   </main>
 </template>
 
+<script setup>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useUserStore } from "../stores/userStore";
+import api from "../services/api";
+
+const router = useRouter();
+const userStore = useUserStore();
+
+const email = ref("");
+const password = ref("");
+const showPassword = ref(false);
+const loading = ref(false);
+const errorMessage = ref("");
+
+const demoAccounts = {
+  admin: { email: "admin@test.de", password: "Admin2026!Test" },
+  hania: { email: "hania@test.com", password: "Hania2026!Test" },
+  rania: { email: "rania@test.com", password: "Rania2026!Test" },
+  aly: { email: "aly@test.com", password: "Aly2026!Test" },
+};
+
+function fillDemo(account) {
+  email.value = demoAccounts[account].email;
+  password.value = demoAccounts[account].password;
+}
+
+async function handleLogin() {
+  loading.value = true;
+  errorMessage.value = "";
+
+  try {
+    const response = await api.post("/login", {
+      email: email.value,
+      password: password.value,
+    });
+
+    const loginData = response.data;
+    const user = loginData.user || loginData.account || loginData;
+
+    if (!user || !user.email) {
+      throw new Error("No valid user returned by backend.");
+    }
+
+    userStore.setUser(user);
+
+    sessionStorage.setItem("careerbridgeUser", JSON.stringify(user));
+
+    window.location.href = "/";
+  } catch (error) {
+    console.error("Login failed:", error);
+    errorMessage.value = "Login failed. Please check email and password.";
+  } finally {
+    loading.value = false;
+  }
+}
+</script>
+
 <style scoped>
 .login-page {
   min-height: 100vh;
-  padding: 70px 7%;
-  background: #f8fafc;
+  display: grid;
+  place-items: center;
+  padding: 3rem 7%;
+  background: #f4f7fb;
 }
 
 .login-card {
-  max-width: 1150px;
-  margin: 0 auto;
+  width: min(1050px, 100%);
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 2.5rem;
+  border-radius: 30px;
   background: white;
+  box-shadow: 0 25px 70px rgba(15, 23, 42, 0.12);
+}
+
+.login-info {
+  padding: 2.5rem;
   border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
-}
-
-.info {
-  background: linear-gradient(135deg, #172554, #3547c8);
   color: white;
-  padding: 70px;
+  background: linear-gradient(135deg, #14264f, #3447f5);
 }
 
-.logo {
-  display: inline-flex;
-  width: 58px;
-  height: 58px;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
-  font-weight: 900;
-  margin-bottom: 35px;
-}
-
-.info h1 {
-  font-size: 50px;
-  line-height: 1.1;
-}
-
-.info p,
-.info li {
-  font-size: 17px;
-  color: #dbeafe;
-}
-
-.info ul {
-  margin-top: 35px;
-  padding-left: 20px;
-}
-
-.form {
-  padding: 70px;
-  display: grid;
-  gap: 14px;
-}
-
-.tag {
-  color: #2563eb;
-  font-weight: 900;
-  letter-spacing: 3px;
-}
-
-.form h2 {
-  font-size: 34px;
+.eyebrow {
   margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.35em;
+  font-weight: 800;
+}
+
+.login-info h1 {
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  margin: 1rem 0;
+}
+
+.login-info p {
+  line-height: 1.7;
+}
+
+.login-form {
+  display: grid;
+  gap: 1rem;
+  align-content: center;
 }
 
 label {
+  display: grid;
+  gap: 0.45rem;
   font-weight: 800;
-  color: #334155;
+  color: #0f172a;
 }
 
 input {
   width: 100%;
-  box-sizing: border-box;
-  padding: 15px;
-  border: 1px solid #cbd5e1;
-  border-radius: 12px;
-  font-size: 15px;
+  padding: 0.95rem 1rem;
+  border-radius: 14px;
+  border: 1px solid #dbe3ef;
+  font: inherit;
 }
 
 .password-row {
-  display: grid;
-  grid-template-columns: 1fr 90px;
-  gap: 10px;
+  display: flex;
+  gap: 0.5rem;
 }
 
-.show-button {
+.password-row button,
+.demo-box button {
   border: none;
   border-radius: 12px;
-  background: #dbeafe;
-  color: #1d4ed8;
-  font-weight: 900;
+  padding: 0.8rem 1rem;
+  font-weight: 800;
   cursor: pointer;
 }
 
-.login-button {
-  margin-top: 12px;
-  padding: 15px;
+.submit-btn {
+  margin-top: 0.5rem;
   border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  background: #2563eb;
   color: white;
   font-weight: 900;
   cursor: pointer;
 }
 
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .error {
-  background: #fef2f2;
   color: #b91c1c;
-  padding: 14px;
-  border-radius: 12px;
   font-weight: 800;
 }
 
 .demo-box {
-  margin-top: 14px;
-  padding: 16px;
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 18px;
   background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
 }
 
 .demo-box p {
-  margin: 0 0 12px;
-  font-weight: 900;
-  color: #334155;
+  width: 100%;
+  margin: 0 0 0.3rem;
+  font-weight: 800;
 }
 
-.demo-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+.demo-box button {
+  background: #e0e7ff;
+  color: #1e3a8a;
 }
 
-.demo-grid button {
-  text-align: left;
-  border: 1px solid #dbeafe;
-  background: white;
-  color: #0f172a;
-  border-radius: 12px;
-  padding: 12px;
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.demo-grid small {
-  display: block;
-  margin-top: 4px;
-  color: #64748b;
-  font-weight: 600;
-}
-
-@media (max-width: 900px) {
+@media (max-width: 850px) {
   .login-card {
-    grid-template-columns: 1fr;
-  }
-
-  .info,
-  .form {
-    padding: 35px;
-  }
-
-  .demo-grid {
     grid-template-columns: 1fr;
   }
 }

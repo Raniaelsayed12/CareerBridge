@@ -4,6 +4,43 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
+
+// CAREERBRIDGE DOCS ROUTES START
+const DOCS_DIR = path.join(__dirname, "..", "documentation", "Docs");
+
+app.get("/docs", (req, res) => {
+  try {
+    if (!fs.existsSync(DOCS_DIR)) {
+      return res.json([]);
+    }
+
+    const files = fs
+      .readdirSync(DOCS_DIR)
+      .filter((file) => file.endsWith(".md"))
+      .sort();
+
+    res.json(files);
+  } catch (error) {
+    res.status(500).json({ message: "Documentation could not be loaded." });
+  }
+});
+
+app.get("/docs/:filename", (req, res) => {
+  try {
+    const filename = path.basename(req.params.filename);
+    const filePath = path.join(DOCS_DIR, filename);
+
+    if (!filename.endsWith(".md") || !fs.existsSync(filePath)) {
+      return res.status(404).json({ message: "Documentation file not found." });
+    }
+
+    res.type("text/plain").send(fs.readFileSync(filePath, "utf8"));
+  } catch (error) {
+    res.status(500).json({ message: "Documentation file could not be loaded." });
+  }
+});
+// CAREERBRIDGE DOCS ROUTES END
+
 app.use(cors());
 app.use(express.json());
 

@@ -1,387 +1,321 @@
-<script setup>
-import { computed, onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
-import api from "../services/api";
-import { useUserStore } from "../stores/userStore";
-
-const router = useRouter();
-const userStore = useUserStore();
-
-const currentUser = ref(null);
-const skills = ref([]);
-const projects = ref([]);
-const certificates = ref([]);
-const error = ref("");
-
-const progress = computed(() => {
-  let score = 20;
-
-  score += Math.min(skills.value.length * 10, 25);
-  score += Math.min(projects.value.length * 15, 30);
-  score += Math.min(certificates.value.length * 10, 25);
-
-  return Math.min(score, 100);
-});
-
-const recentItems = computed(() => {
-  return [
-    ...skills.value.slice(0, 2).map((item) => ({
-      title: item.name,
-      type: "Skill",
-    })),
-    ...projects.value.slice(0, 2).map((item) => ({
-      title: item.title || item.name,
-      type: "Project",
-    })),
-    ...certificates.value.slice(0, 2).map((item) => ({
-      title: item.name,
-      type: "Certificate",
-    })),
-  ];
-});
-
-async function resolveCurrentUser() {
-  const response = await api.get("/users");
-
-  const email = (userStore.email || "").toLowerCase().trim();
-
-  currentUser.value = response.data.find(
-    (user) => user.email.toLowerCase().trim() === email
-  );
-}
-
-async function loadDashboard() {
-  try {
-    await resolveCurrentUser();
-
-    if (!currentUser.value) {
-      error.value = "Current user could not be found.";
-      return;
-    }
-
-    if (currentUser.value.role === "admin") {
-      router.push("/dashboard");
-      return;
-    }
-
-    const userId = currentUser.value._id;
-
-    const [skillsRes, projectsRes, certificatesRes] = await Promise.all([
-      api.get(`/skills?userId=${userId}`),
-      api.get(`/projects?userId=${userId}`),
-      api.get(`/certificates?userId=${userId}`),
-    ]);
-
-    skills.value = skillsRes.data || [];
-    projects.value = projectsRes.data || [];
-    certificates.value = certificatesRes.data || [];
-  } catch (err) {
-    error.value = "Dashboard data could not be loaded.";
-  }
-}
-
-function goHome() {
-  router.push("/");
-}
-
-function goTo(path) {
-  router.push(path);
-}
-
-onMounted(loadDashboard);
-</script>
-
 <template>
   <main class="dashboard-page">
-    <section class="hero">
+    <section class="dashboard-hero">
       <div>
-        <p class="tag">CAREER OVERVIEW</p>
-        <h1>Welcome back, {{ currentUser?.name || userStore.name }}</h1>
+        <p class="eyebrow">DASHBOARD</p>
+        <h1>Welcome back, {{ userName }}</h1>
         <p>
-          This dashboard shows only your own skills, projects and certificates.
+          This is your personal CareerBridge overview. Here you can see your own
+          skills, projects and certificates.
         </p>
       </div>
 
       <div class="hero-actions">
-        <button @click="goHome">Home</button>
-        <button @click="loadDashboard">Refresh</button>
+        <RouterLink to="/" class="btn secondary">Home</RouterLink>
+        <RouterLink to="/skills" class="btn">Skills</RouterLink>
+        <RouterLink to="/projects" class="btn">Projects</RouterLink>
+        <RouterLink to="/certificates" class="btn">Certificates</RouterLink>
       </div>
     </section>
-
-    <p v-if="error" class="error">{{ error }}</p>
 
     <section class="stats-grid">
-      <article class="stat-card" @click="goTo('/skills')">
-        <span>S</span>
-        <h2>{{ skills.length }}</h2>
-        <p>Skills</p>
+      <article class="stat-card">
+        <strong>{{ skills.length }}</strong>
+        <span>Skills</span>
       </article>
 
-      <article class="stat-card" @click="goTo('/projects')">
-        <span>P</span>
-        <h2>{{ projects.length }}</h2>
-        <p>Projects</p>
+      <article class="stat-card">
+        <strong>{{ projects.length }}</strong>
+        <span>Projects</span>
       </article>
 
-      <article class="stat-card" @click="goTo('/certificates')">
-        <span>C</span>
-        <h2>{{ certificates.length }}</h2>
-        <p>Certificates</p>
+      <article class="stat-card">
+        <strong>{{ certificates.length }}</strong>
+        <span>Certificates</span>
+      </article>
+
+      <article class="stat-card">
+        <strong>{{ profileProgress }}%</strong>
+        <span>Profile progress</span>
       </article>
     </section>
 
-    <section class="progress-card">
-      <div>
-        <h2>Profile progress</h2>
-        <p>Progress is calculated from your personal data.</p>
-      </div>
-
-      <strong>{{ progress }}%</strong>
-
-      <div class="progress-bar">
-        <div :style="{ width: progress + '%' }"></div>
-      </div>
-    </section>
-
-    <section class="content-grid">
+    <section class="dashboard-grid">
       <article class="panel">
-        <h2>Your skills</h2>
+        <p class="eyebrow">QUICK ACTIONS</p>
+        <h2>Manage your career profile</h2>
 
-        <p v-if="skills.length === 0" class="empty">No skills yet.</p>
+        <div class="quick-actions">
+          <RouterLink to="/skills" class="action-card">
+            <strong>Add Skill</strong>
+            <span>Manage your technical and soft skills.</span>
+          </RouterLink>
 
-        <ul>
-          <li v-for="skill in skills" :key="skill._id">
-            <strong>{{ skill.name }}</strong>
-            <span>{{ skill.category || "General" }}</span>
-          </li>
-        </ul>
+          <RouterLink to="/projects" class="action-card">
+            <strong>Add Project</strong>
+            <span>Document your university and personal projects.</span>
+          </RouterLink>
 
-        <button @click="goTo('/skills')">Manage skills</button>
+          <RouterLink to="/certificates" class="action-card">
+            <strong>Add Certificate</strong>
+            <span>Save certificates and learning achievements.</span>
+          </RouterLink>
+
+          <RouterLink to="/profile" class="action-card">
+            <strong>Edit Profile</strong>
+            <span>Update your personal career information.</span>
+          </RouterLink>
+        </div>
       </article>
 
       <article class="panel">
-        <h2>Your projects</h2>
+        <p class="eyebrow">CURRENT USER</p>
+        <h2>{{ userName }}</h2>
+        <p>{{ currentUser?.email }}</p>
+        <p class="role-text">Role: {{ currentUser?.role || "user" }}</p>
 
-        <p v-if="projects.length === 0" class="empty">No projects yet.</p>
-
-        <ul>
-          <li v-for="project in projects" :key="project._id">
-            <strong>{{ project.title || project.name }}</strong>
-            <span>{{ project.status || "Planned" }}</span>
-          </li>
-        </ul>
-
-        <button @click="goTo('/projects')">Manage projects</button>
-      </article>
-
-      <article class="panel">
-        <h2>Your certificates</h2>
-
-        <p v-if="certificates.length === 0" class="empty">No certificates yet.</p>
-
-        <ul>
-          <li v-for="certificate in certificates" :key="certificate._id">
-            <strong>{{ certificate.name }}</strong>
-            <span>{{ certificate.provider || "No provider" }}</span>
-          </li>
-        </ul>
-
-        <button @click="goTo('/certificates')">Manage certificates</button>
-      </article>
-
-      <article class="panel">
-        <h2>Recent activity</h2>
-
-        <p v-if="recentItems.length === 0" class="empty">No activity yet.</p>
-
-        <ul>
-          <li v-for="item in recentItems" :key="item.type + item.title">
-            <strong>{{ item.title }}</strong>
-            <span>{{ item.type }}</span>
-          </li>
-        </ul>
-
-        <button @click="goTo('/resume')">Open resume</button>
+        <RouterLink
+          v-if="currentUser?.role === 'admin'"
+          to="/admin"
+          class="admin-link"
+        >
+          Open Admin Panel
+        </RouterLink>
       </article>
     </section>
   </main>
 </template>
 
+<script setup>
+import { computed, onMounted, ref } from "vue";
+import { RouterLink } from "vue-router";
+import { useUserStore } from "../stores/userStore";
+import api from "../services/api";
+
+const userStore = useUserStore();
+
+const skills = ref([]);
+const projects = ref([]);
+const certificates = ref([]);
+
+const currentUser = computed(() => userStore.user);
+
+const userName = computed(() => {
+  return (
+    currentUser.value?.name ||
+    currentUser.value?.fullName ||
+    currentUser.value?.email ||
+    "User"
+  );
+});
+
+const currentUserId = computed(() => {
+  return currentUser.value?.id || currentUser.value?._id || currentUser.value?.email;
+});
+
+const profileProgress = computed(() => {
+  const fields = [
+    currentUser.value?.name || currentUser.value?.fullName,
+    currentUser.value?.email,
+    currentUser.value?.city,
+    currentUser.value?.title || currentUser.value?.professionalTitle,
+    currentUser.value?.university,
+  ];
+
+  const filled = fields.filter(Boolean).length;
+  return Math.round((filled / fields.length) * 100);
+});
+
+async function loadDashboardData() {
+  if (!currentUserId.value) return;
+
+  try {
+    const [skillsRes, projectsRes, certificatesRes] = await Promise.all([
+      api.get(`/skills?userId=${currentUserId.value}`),
+      api.get(`/projects?userId=${currentUserId.value}`),
+      api.get(`/certificates?userId=${currentUserId.value}`),
+    ]);
+
+    skills.value = Array.isArray(skillsRes.data) ? skillsRes.data : [];
+    projects.value = Array.isArray(projectsRes.data) ? projectsRes.data : [];
+    certificates.value = Array.isArray(certificatesRes.data) ? certificatesRes.data : [];
+  } catch (error) {
+    console.error("Dashboard data could not be loaded:", error);
+  }
+}
+
+onMounted(loadDashboardData);
+</script>
+
 <style scoped>
 .dashboard-page {
   min-height: 100vh;
-  padding: 40px 7%;
-  background: #f8fafc;
-  color: #0f172a;
+  padding: 3rem 7%;
+  background: #f4f7fb;
+  color: #101827;
 }
 
-.hero {
-  background: linear-gradient(135deg, #172554, #4f46e5);
-  color: white;
-  border-radius: 24px;
-  padding: 38px;
+.dashboard-hero {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
+  gap: 2rem;
   align-items: center;
-  margin-bottom: 28px;
+  padding: 3rem;
+  border-radius: 28px;
+  color: white;
+  background: linear-gradient(135deg, #14264f, #3447f5);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
 }
 
-.tag {
-  letter-spacing: 3px;
-  font-size: 13px;
+.dashboard-hero h1 {
+  margin: 0.5rem 0 1rem;
+  font-size: clamp(2.2rem, 5vw, 4rem);
+}
+
+.dashboard-hero p {
+  max-width: 680px;
+  line-height: 1.7;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.35em;
   font-weight: 800;
-  color: #bfdbfe;
+  color: #2563eb;
 }
 
-.hero h1 {
-  font-size: 42px;
-  margin: 8px 0;
+.dashboard-hero .eyebrow {
+  color: #dbeafe;
 }
 
 .hero-actions {
   display: flex;
-  gap: 10px;
   flex-wrap: wrap;
+  gap: 0.8rem;
+  justify-content: flex-end;
 }
 
-.hero-actions button {
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 110px;
+  padding: 0.9rem 1.2rem;
+  border-radius: 14px;
   background: white;
   color: #1d4ed8;
-  border: none;
-  border-radius: 12px;
-  padding: 13px 18px;
   font-weight: 800;
-  cursor: pointer;
+  text-decoration: none;
 }
 
-.hero button,
-.panel button {
-  border: none;
-  border-radius: 12px;
-  padding: 13px 18px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.hero button {
-  background: white;
-  color: #1d4ed8;
+.btn.secondary {
+  background: #dbeafe;
+  color: #0f172a;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-  margin-bottom: 24px;
-}
-
-.stat-card,
-.progress-card,
-.panel,
-.error {
-  background: white;
-  border-radius: 18px;
-  padding: 25px;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
+  gap: 1.2rem;
+  margin: 2rem 0;
 }
 
 .stat-card {
-  cursor: pointer;
-  transition: transform 0.2s ease;
+  padding: 2.2rem;
+  border-radius: 24px;
+  background: white;
+  text-align: center;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
 }
 
-.stat-card:hover {
-  transform: translateY(-3px);
+.stat-card strong {
+  display: block;
+  font-size: 2.8rem;
+  color: #2563eb;
+  margin-bottom: 0.8rem;
 }
 
 .stat-card span {
-  background: #dbeafe;
-  color: #1d4ed8;
-  border-radius: 12px;
-  padding: 10px 14px;
-  font-weight: 900;
+  font-weight: 700;
 }
 
-.stat-card h2 {
-  color: #2563eb;
-  font-size: 36px;
-  margin: 18px 0 4px;
-}
-
-.progress-card {
-  margin-bottom: 24px;
-}
-
-.progress-card strong {
-  display: block;
-  color: #2563eb;
-  font-size: 30px;
-  margin: 14px 0;
-}
-
-.progress-bar {
-  height: 12px;
-  background: #e5e7eb;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.progress-bar div {
-  height: 100%;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
-}
-
-.content-grid {
+.dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+.panel {
+  padding: 2rem;
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
 }
 
 .panel h2 {
-  margin-bottom: 15px;
+  margin: 0.8rem 0 1rem;
+  font-size: 2rem;
 }
 
-ul {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 18px;
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 1rem;
 }
 
-li {
-  padding: 12px 0;
-  border-bottom: 1px solid #e5e7eb;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.action-card {
+  padding: 1.2rem;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  text-decoration: none;
+  color: #0f172a;
 }
 
-li span,
-.empty {
+.action-card strong,
+.action-card span {
+  display: block;
+}
+
+.action-card span {
+  margin-top: 0.5rem;
   color: #64748b;
+  line-height: 1.5;
 }
 
-.panel button {
-  background: #2563eb;
-  color: white;
-}
-
-.error {
-  color: #b91c1c;
-  margin-bottom: 18px;
+.role-text {
+  margin-top: 1rem;
   font-weight: 800;
+  color: #2563eb;
+}
+
+.admin-link {
+  display: inline-flex;
+  margin-top: 1.5rem;
+  padding: 0.9rem 1.2rem;
+  border-radius: 14px;
+  background: #fee2e2;
+  color: #991b1b;
+  font-weight: 800;
+  text-decoration: none;
 }
 
 @media (max-width: 900px) {
-  .hero,
+  .dashboard-hero,
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .stats-grid,
-  .content-grid {
+  .quick-actions {
     grid-template-columns: 1fr;
   }
 
-  .hero {
-    flex-direction: column;
-    align-items: flex-start;
+  .hero-actions {
+    justify-content: flex-start;
   }
 }
 </style>
