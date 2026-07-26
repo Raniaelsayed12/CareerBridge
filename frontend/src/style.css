@@ -919,3 +919,457 @@ th {
 
 /* === CareerBridge Final Design System END === */
 
+
+/* === CareerBridge EXAM FINAL UI START === */
+
+/* Final professional layout for presentation/exam */
+:root {
+  --cb-blue-dark: #14264f;
+  --cb-blue: #2563eb;
+  --cb-blue-soft: #dbeafe;
+  --cb-bg: #f5f7fb;
+  --cb-white: #ffffff;
+  --cb-text: #0f172a;
+  --cb-muted: #64748b;
+  --cb-border: #dbe3ef;
+  --cb-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+  --cb-radius-xl: 30px;
+  --cb-radius-lg: 22px;
+  --cb-page: 1120px;
+}
+
+* {
+  box-sizing: border-box !important;
+}
+
+body {
+  margin: 0 !important;
+  background: var(--cb-bg) !important;
+  color: var(--cb-text) !important;
+}
+
+/* Pages are centered, not full screen */
+.home-page,
+.about-page,
+.dashboard-page,
+.skills-page,
+.projects-page,
+.certificates-page,
+.resume-page,
+.docs-page,
+.admin-page,
+.profile-page,
+.login-page,
+.register-page {
+  width: min(var(--cb-page), calc(100% - 72px)) !important;
+  margin: 0 auto !important;
+  padding: 38px 0 70px !important;
+}
+
+/* Navbar: clean and balanced */
+.navbar {
+  width: 100% !important;
+  min-height: 78px !important;
+  padding: 0.7rem 4.5% !important;
+  background: var(--cb-white) !important;
+  border-bottom: 1px solid var(--cb-border) !important;
+  box-shadow: 0 8px 26px rgba(15, 23, 42, 0.05) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  overflow: visible !important;
+}
+
+.brand {
+  font-size: 1.85rem !important;
+  font-weight: 900 !important;
+  color: var(--cb-blue) !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.nav-links {
+  flex: 1 !important;
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 0.35rem !important;
+  flex-wrap: nowrap !important;
+}
+
+.nav-links a {
+  min-height: 42px !important;
+  padding: 0.55rem 0.72rem !important;
+  border-radius: 14px !important;
+  font-size: 0.93rem !important;
+  font-weight: 800 !important;
+  color: var(--cb-text) !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+}
+
+.nav-links a.router-link-active {
+  background: var(--cb-blue-soft) !important;
+  color: var(--cb-blue) !important;
+  border: 1px solid #bfdbfe !important;
+}
+
+.user-badge {
+  max-width: 155px !important;
+  min-height: 48px !important;
+  padding: 0.55rem 0.8rem !important;
+  border-radius: 16px !important;
+  background: #f8fbff !important;
+  border: 1px solid var(--cb-border) !important;
+  flex-shrink: 0 !important;
+}
+
+.user-badge strong {
+  display: block !important;
+  font-size: 0.9rem !important;
+  line-height: 1.1 !important;
+}
+
+.user-badge span {
+  display: block !important;
+  font-size: 0.72rem !important;
+  color: var(--cb-muted) !important;
+  margin-top: 3px !important;
+}
+
+.logout-btn {
+  min-height: 46px !important;
+  padding: 0.68rem 0.95rem !important;
+  border-radius: 15px !important;
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+  border: none !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+/* Hero sections: professional, not too huge */
+.dashboard-hero,
+.skills-hero,
+.projects-hero,
+.certificates-hero,
+.docs-hero,
+.admin-hero,
+.about-hero,
+.resume-hero,
+.login-info,
+.register-info {
+  width: 100% !important;
+  min-height: 260px !important;
+  padding: 48px 56px !important;
+  margin: 0 0 30px !important;
+  border-radius: var(--cb-radius-xl) !important;
+  background: linear-gradient(135deg, var(--cb-blue-dark), var(--cb-blue)) !important;
+  color: white !important;
+  box-shadow: 0 24px 60px rgba(37, 99, 235, 0.18) !important;
+}
+
+/* Home should look stronger and bigger */
+.home-hero {
+  width: 100% !important;
+  min-height: 420px !important;
+  padding: 64px 66px !important;
+  margin: 0 0 34px !important;
+  border-radius: 34px !important;
+  background:
+    radial-gradient(circle at top right, rgba(219,234,254,0.30), transparent 35%),
+    linear-gradient(135deg, var(--cb-blue-dark), var(--cb-blue)) !important;
+  color: white !important;
+  box-shadow: 0 28px 70px rgba(37, 99, 235, 0.24) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+
+.home-hero h1 {
+  max-width: 760px !important;
+  font-size: clamp(3rem, 6vw, 5.4rem) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.055em !important;
+  margin: 0 0 22px !important;
+}
+
+.home-hero p {
+  max-width: 720px !important;
+  font-size: 1.16rem !important;
+  line-height: 1.75 !important;
+  color: rgba(255,255,255,0.92) !important;
+}
+
+.dashboard-hero h1,
+.skills-hero h1,
+.projects-hero h1,
+.certificates-hero h1,
+.docs-hero h1,
+.admin-hero h1,
+.about-hero h1,
+.resume-hero h1,
+.login-info h1,
+.register-info h1 {
+  font-size: clamp(2.35rem, 4.5vw, 4.3rem) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.045em !important;
+  margin: 0 0 16px !important;
+}
+
+.dashboard-hero p,
+.skills-hero p,
+.projects-hero p,
+.certificates-hero p,
+.docs-hero p,
+.admin-hero p,
+.about-hero p,
+.resume-hero p,
+.login-info p,
+.register-info p {
+  max-width: 760px !important;
+  font-size: 1.04rem !important;
+  line-height: 1.7 !important;
+  color: rgba(255,255,255,0.92) !important;
+}
+
+.eyebrow {
+  display: inline-block !important;
+  margin-bottom: 12px !important;
+  color: #bfdbfe !important;
+  font-size: 0.78rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.28em !important;
+  text-transform: uppercase !important;
+}
+
+/* Cards / panels unified */
+.stat-card,
+.form-panel,
+.search-panel,
+.panel,
+.skill-card,
+.project-card,
+.certificate-card,
+.doc-paper,
+.docs-sidebar,
+.resume-sheet,
+.profile-card,
+.profile-hero,
+.login-card,
+.register-card,
+.about-grid article,
+.empty-card,
+.action-card,
+.user-card,
+.admin-card {
+  background: var(--cb-white) !important;
+  border: 1px solid var(--cb-border) !important;
+  border-radius: var(--cb-radius-lg) !important;
+  box-shadow: var(--cb-shadow) !important;
+}
+
+/* Same grid spacing everywhere */
+.stats-grid,
+.skills-grid,
+.projects-grid,
+.certificates-grid,
+.cards-grid,
+.about-grid,
+.admin-grid,
+.dashboard-grid,
+.features-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)) !important;
+  gap: 22px !important;
+  align-items: stretch !important;
+}
+
+.stat-card {
+  min-height: 145px !important;
+  padding: 28px !important;
+  text-align: center !important;
+}
+
+.skill-card,
+.project-card,
+.certificate-card,
+.action-card,
+.user-card,
+.about-grid article {
+  min-height: 210px !important;
+  padding: 28px !important;
+}
+
+/* Forms */
+input,
+textarea,
+select {
+  width: 100% !important;
+  min-height: 46px !important;
+  border: 1px solid var(--cb-border) !important;
+  border-radius: 14px !important;
+  padding: 0.82rem 0.95rem !important;
+  font-size: 0.98rem !important;
+  color: var(--cb-text) !important;
+  background: white !important;
+  outline: none !important;
+}
+
+textarea {
+  min-height: 115px !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--cb-blue) !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.13) !important;
+}
+
+label {
+  display: block !important;
+  margin-bottom: 8px !important;
+  font-weight: 800 !important;
+}
+
+/* Buttons */
+button,
+.btn,
+.submit-btn,
+.edit-btn,
+.delete-btn,
+.admin-info-btn,
+.register-link,
+.login-link {
+  min-height: 46px !important;
+  border-radius: 15px !important;
+  padding: 0.78rem 1.08rem !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+}
+
+.btn.primary,
+.submit-btn,
+.admin-info-btn,
+.register-link {
+  background: var(--cb-blue) !important;
+  color: white !important;
+  border: 1px solid var(--cb-blue) !important;
+}
+
+.btn.light,
+.edit-btn {
+  background: white !important;
+  color: var(--cb-blue) !important;
+  border: 1px solid #bfdbfe !important;
+}
+
+.delete-btn {
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+  border: 1px solid #fecaca !important;
+}
+
+/* Text colors */
+.stat-card strong,
+.stat-card .number,
+.blue,
+.role-text {
+  color: var(--cb-blue) !important;
+}
+
+/* Progress */
+.progress-bar,
+.progress-track {
+  height: 12px !important;
+  background: #e5e7eb !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+}
+
+.progress-fill {
+  height: 100% !important;
+  background: linear-gradient(135deg, var(--cb-blue), #4f46e5) !important;
+  border-radius: 999px !important;
+}
+
+/* Docs and Resume */
+.doc-paper,
+.resume-sheet {
+  padding: 38px !important;
+  line-height: 1.72 !important;
+}
+
+/* Do not stretch content too much inside wide screens */
+@media (min-width: 1400px) {
+  .home-page,
+  .about-page,
+  .dashboard-page,
+  .skills-page,
+  .projects-page,
+  .certificates-page,
+  .resume-page,
+  .docs-page,
+  .admin-page,
+  .profile-page,
+  .login-page,
+  .register-page {
+    width: 1120px !important;
+  }
+}
+
+/* Smaller screens */
+@media (max-width: 1050px) {
+  .home-page,
+  .about-page,
+  .dashboard-page,
+  .skills-page,
+  .projects-page,
+  .certificates-page,
+  .resume-page,
+  .docs-page,
+  .admin-page,
+  .profile-page,
+  .login-page,
+  .register-page {
+    width: min(100% - 34px, var(--cb-page)) !important;
+  }
+
+  .home-hero,
+  .dashboard-hero,
+  .skills-hero,
+  .projects-hero,
+  .certificates-hero,
+  .docs-hero,
+  .admin-hero,
+  .about-hero,
+  .resume-hero,
+  .login-info,
+  .register-info {
+    padding: 42px 34px !important;
+  }
+
+  .navbar {
+    flex-wrap: wrap !important;
+  }
+
+  .nav-links {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+  }
+}
+
+@media print {
+  .navbar,
+  header.navbar,
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* === CareerBridge EXAM FINAL UI END === */
+
