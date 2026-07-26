@@ -1,297 +1,399 @@
 <template>
-  <main class="home-page">
-    <section class="hero">
-      <div class="hero-text">
-        <p class="badge">Your professional journey starts here</p>
+  <main class="cb-home-page">
+    <section class="cb-landing">
+      <div class="cb-left">
+        <span class="cb-pill">Presentation Frameworks · Westfälische Hochschule</span>
 
-        <h1>
-          Build a career profile that
-          <span>stands out.</span>
-        </h1>
+        <h1>Your Career Profile in One Place</h1>
 
-        <p class="subtitle">
-          CareerBridge helps students and young professionals organize their
-          skills, projects, certificates and career information in one modern
-          digital workspace.
+        <p class="cb-subtitle">
+          CareerBridge helps students organize their skills, projects, certificates,
+          resume and personal documentation in one clean web application.
         </p>
 
-        <div class="hero-actions">
-          <RouterLink v-if="!isLoggedIn" to="/login" class="btn primary">
-            Sign in
-          </RouterLink>
+        <div class="cb-feature-grid">
+          <article class="cb-feature-card">
+            <div class="cb-icon">👤</div>
+            <div>
+              <h3>User Profile</h3>
+              <p>Personal data and profile progress</p>
+            </div>
+          </article>
 
-          <RouterLink v-if="!isLoggedIn" to="/register" class="btn secondary">
-            Create account
-          </RouterLink>
+          <article class="cb-feature-card">
+            <div class="cb-icon">🧠</div>
+            <div>
+              <h3>Skills</h3>
+              <p>Technical and soft skills</p>
+            </div>
+          </article>
 
-          <RouterLink v-if="isLoggedIn" to="/dashboard" class="btn primary">
-            Open Dashboard
-          </RouterLink>
+          <article class="cb-feature-card">
+            <div class="cb-icon">💼</div>
+            <div>
+              <h3>Projects</h3>
+              <p>University and personal work</p>
+            </div>
+          </article>
 
-          <RouterLink v-if="isAdmin" to="/admin" class="btn secondary">
-            Open Admin Panel
-          </RouterLink>
+          <article class="cb-feature-card">
+            <div class="cb-icon">🏅</div>
+            <div>
+              <h3>Certificates</h3>
+              <p>Certificates and achievements</p>
+            </div>
+          </article>
+
+          <article class="cb-feature-card">
+            <div class="cb-icon">📄</div>
+            <div>
+              <h3>Resume</h3>
+              <p>Generated from user data</p>
+            </div>
+          </article>
+
+          <article class="cb-feature-card">
+            <div class="cb-icon">🛡️</div>
+            <div>
+              <h3>Admin Panel</h3>
+              <p>Manage users and content</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="cb-actions">
+          <RouterLink to="/login" class="cb-btn cb-primary">Get Started</RouterLink>
+          <RouterLink to="/about" class="cb-btn cb-secondary">Learn More</RouterLink>
         </div>
       </div>
 
-      <div class="hero-card">
-        <div class="card-header">
-          <div class="logo-box">CB</div>
-          <div>
-            <strong>CareerBridge</strong>
-            <span>Career Dashboard</span>
+      <div class="cb-right">
+        <div class="cb-login-preview">
+          <div class="cb-tabs">
+            <span class="active">Login</span>
+            <span>Register</span>
           </div>
-        </div>
 
-        <div class="overview-box">
-          <small>Welcome to CareerBridge</small>
-          <h2>Your career overview</h2>
-        </div>
+          <h2>Welcome back</h2>
+          <p>Sign in to open your personal dashboard.</p>
 
-        <div class="mini-stats">
-          <div>
-            <strong>Skills</strong>
-            <span>Manage abilities</span>
-          </div>
-          <div>
-            <strong>Projects</strong>
-            <span>Show your work</span>
-          </div>
-          <div>
-            <strong>Certificates</strong>
-            <span>Save achievements</span>
-          </div>
-        </div>
+          <div class="cb-input-preview">Email address</div>
+          <div class="cb-input-preview">Password</div>
 
-        <div class="progress-box">
-          <strong>Profile progress</strong>
-          <div class="progress-line">
-            <span></span>
+          <RouterLink to="/login" class="cb-signin-preview">Sign In</RouterLink>
+
+          <div class="cb-demo-users">
+            <div>
+              <strong>Hania</strong>
+              <span>100% profile</span>
+            </div>
+            <div>
+              <strong>Rania</strong>
+              <span>60% profile</span>
+            </div>
+            <div>
+              <strong>Aly</strong>
+              <span>20% profile</span>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="features">
+    <section class="cb-bottom">
       <article>
-        <h3>Skills</h3>
-        <p>Collect and organize your technical and soft skills.</p>
+        <strong>Vue 3</strong>
+        <span>Modern frontend</span>
       </article>
-
       <article>
-        <h3>Projects</h3>
-        <p>Document university, personal and team projects.</p>
+        <strong>Pinia</strong>
+        <span>State management</span>
       </article>
-
       <article>
-        <h3>Certificates</h3>
-        <p>Save certificates and learning achievements.</p>
+        <strong>Express</strong>
+        <span>Local backend API</span>
       </article>
-
       <article>
-        <h3>Resume</h3>
-        <p>Present your career profile in a structured resume page.</p>
+        <strong>JSON DB</strong>
+        <span>local-db.json</span>
       </article>
     </section>
   </main>
 </template>
 
 <script setup>
-import { computed } from "vue";
 import { RouterLink } from "vue-router";
-import { useUserStore } from "../stores/userStore";
-
-const userStore = useUserStore();
-
-const isLoggedIn = computed(() => !!userStore.user);
-const isAdmin = computed(() => userStore.user?.role === "admin");
 </script>
 
 <style scoped>
-.home-page {
-  min-height: 100vh;
-  background: #f4f7fb;
-  color: #0f172a;
+.cb-home-page {
+  width: min(1180px, calc(100% - 72px)) !important;
+  margin: 0 auto !important;
+  padding: 70px 0 80px !important;
 }
 
-.hero {
-  min-height: calc(100vh - 90px);
+.cb-landing {
+  min-height: 620px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
+  grid-template-columns: 1.15fr 0.85fr;
   align-items: center;
-  padding: 5rem 7%;
+  gap: 70px;
 }
 
-.badge {
+.cb-left {
+  max-width: 720px;
+}
+
+.cb-pill {
   display: inline-flex;
-  padding: 0.6rem 1rem;
+  align-items: center;
+  gap: 8px;
+  padding: 0.55rem 1rem;
   border-radius: 999px;
-  background: #e0e7ff;
-  color: #1d4ed8;
+  background: #dbeafe;
+  color: #2563eb;
+  font-size: 0.9rem;
+  font-weight: 900;
+  margin-bottom: 24px;
+}
+
+.cb-pill::before {
+  content: "✦";
+  color: #2563eb;
+}
+
+h1 {
+  margin: 0;
+  color: #0f172a;
+  font-size: clamp(3.2rem, 6vw, 5.6rem);
+  line-height: 1.02;
+  letter-spacing: -0.06em;
+  font-weight: 950;
+}
+
+.cb-subtitle {
+  margin: 24px 0 30px;
+  color: #475569;
+  font-size: 1.18rem;
+  line-height: 1.75;
+  max-width: 650px;
+}
+
+.cb-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(230px, 1fr));
+  gap: 16px;
+  margin: 30px 0 34px;
+}
+
+.cb-feature-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 92px;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid #dbe3ef;
+  border-radius: 20px;
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.07);
+}
+
+.cb-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #dbeafe, #ffffff);
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  border: 1px solid #bfdbfe;
+  flex-shrink: 0;
+}
+
+.cb-feature-card h3 {
+  margin: 0 0 5px;
+  color: #0f172a;
+  font-size: 1.03rem;
   font-weight: 900;
 }
 
-.hero h1 {
-  margin: 1.5rem 0;
-  font-size: clamp(3rem, 7vw, 6rem);
-  line-height: 0.95;
-}
-
-.hero h1 span {
-  display: block;
-  color: #3b4df5;
-}
-
-.subtitle {
-  max-width: 650px;
+.cb-feature-card p {
+  margin: 0;
   color: #64748b;
-  font-size: 1.2rem;
-  line-height: 1.8;
+  font-size: 0.9rem;
+  line-height: 1.35;
 }
 
-.hero-actions {
-  margin-top: 2rem;
+.cb-actions {
   display: flex;
-  gap: 1rem;
+  gap: 14px;
   flex-wrap: wrap;
 }
 
-.btn {
-  padding: 1rem 1.4rem;
+.cb-btn {
+  min-height: 50px;
+  padding: 0.9rem 1.35rem;
   border-radius: 16px;
   font-weight: 900;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.btn.primary {
+.cb-primary {
   background: #2563eb;
   color: white;
+  box-shadow: 0 18px 35px rgba(37, 99, 235, 0.25);
 }
 
-.btn.secondary {
+.cb-secondary {
   background: white;
-  color: #1d4ed8;
-  border: 1px solid #dbe3ef;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
 }
 
-.hero-card {
-  padding: 2rem;
+.cb-right {
+  display: flex;
+  justify-content: center;
+}
+
+.cb-login-preview {
+  width: min(410px, 100%);
+  padding: 28px;
   border-radius: 28px;
   background: white;
+  border: 1px solid #e2e8f0;
   box-shadow: 0 30px 80px rgba(15, 23, 42, 0.14);
 }
 
-.card-header {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.logo-box {
-  width: 52px;
-  height: 52px;
+.cb-tabs {
+  height: 44px;
+  background: #eef2f7;
   border-radius: 14px;
   display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px;
+  margin-bottom: 34px;
+}
+
+.cb-tabs span {
+  display: grid;
   place-items: center;
-  background: #3b4df5;
+  border-radius: 11px;
+  font-weight: 800;
+  color: #64748b;
+}
+
+.cb-tabs .active {
+  background: white;
+  color: #0f172a;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.cb-login-preview h2 {
+  margin: 0 0 8px;
+  font-size: 1.9rem;
+  color: #0f172a;
+}
+
+.cb-login-preview p {
+  margin: 0 0 24px;
+  color: #64748b;
+}
+
+.cb-input-preview {
+  height: 54px;
+  border: 1px solid #dbe3ef;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  color: #94a3b8;
+  margin-bottom: 14px;
+  background: #fbfdff;
+}
+
+.cb-signin-preview {
+  height: 54px;
+  border-radius: 15px;
+  background: #2563eb;
   color: white;
   font-weight: 900;
-}
-
-.card-header span {
-  display: block;
-  color: #64748b;
-  margin-top: 0.2rem;
-}
-
-.overview-box {
-  margin: 2rem 0;
-  padding: 2rem;
-  border-radius: 24px;
-  color: white;
-  background: linear-gradient(135deg, #14264f, #3447f5);
-}
-
-.overview-box h2 {
-  margin: 0.4rem 0 0;
-  font-size: 2rem;
-}
-
-.mini-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  place-items: center;
+  text-decoration: none;
+  margin: 18px 0 24px;
 }
 
-.mini-stats div,
-.progress-box {
-  padding: 1rem;
-  border-radius: 18px;
-  background: #f8fafc;
-  border: 1px solid #e5e7eb;
+.cb-demo-users {
+  display: grid;
+  gap: 10px;
 }
 
-.mini-stats strong,
-.mini-stats span {
-  display: block;
+.cb-demo-users div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #f8fbff;
+  border: 1px solid #dbeafe;
 }
 
-.mini-stats span {
-  color: #64748b;
-  margin-top: 0.3rem;
+.cb-demo-users strong {
+  color: #14264f;
 }
 
-.progress-line {
-  margin-top: 1rem;
-  height: 10px;
-  border-radius: 999px;
-  background: #e5e7eb;
-  overflow: hidden;
+.cb-demo-users span {
+  color: #2563eb;
+  font-weight: 800;
 }
 
-.progress-line span {
-  display: block;
-  width: 82%;
-  height: 100%;
-  background: #3b4df5;
-}
-
-.features {
-  padding: 0 7% 5rem;
+.cb-bottom {
+  margin-top: 20px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1.2rem;
+  gap: 18px;
 }
 
-.features article {
-  padding: 1.6rem;
-  border-radius: 22px;
+.cb-bottom article {
+  padding: 22px;
+  border-radius: 20px;
   background: white;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+  border: 1px solid #dbe3ef;
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.06);
 }
 
-.features h3 {
-  margin-top: 0;
-  font-size: 1.4rem;
+.cb-bottom strong {
+  display: block;
+  color: #2563eb;
+  font-size: 1.25rem;
+  margin-bottom: 6px;
 }
 
-.features p {
+.cb-bottom span {
   color: #64748b;
-  line-height: 1.6;
 }
 
-@media (max-width: 950px) {
-  .hero,
-  .features {
+@media (max-width: 980px) {
+  .cb-home-page {
+    width: min(100% - 34px, 1180px) !important;
+    padding: 34px 0 60px !important;
+  }
+
+  .cb-landing {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
+
+  .cb-feature-grid,
+  .cb-bottom {
     grid-template-columns: 1fr;
   }
 
-  .mini-stats {
-    grid-template-columns: 1fr;
+  h1 {
+    font-size: 3rem;
   }
 }
 </style>
