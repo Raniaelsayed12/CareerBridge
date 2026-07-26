@@ -1373,3 +1373,57 @@ button,
 
 /* === CareerBridge EXAM FINAL UI END === */
 
+
+/* === Final clean guest navbar START === */
+
+/* Hide About from top navbar, because it is already available via Learn More */
+.navbar .nav-links a[href="/about"] {
+  display: none !important;
+}
+
+/* Make guest navbar compact and professional */
+.navbar {
+  min-height: 72px !important;
+  padding: 0.65rem 5% !important;
+}
+
+.brand {
+  font-size: 1.7rem !important;
+}
+
+.nav-links {
+  gap: 0.45rem !important;
+}
+
+.nav-links a {
+  min-height: 38px !important;
+  padding: 0.48rem 0.75rem !important;
+  border-radius: 12px !important;
+  font-size: 0.92rem !important;
+  font-weight: 800 !important;
+}
+
+/* Home active should not look too huge */
+.nav-links a.router-link-active {
+  background: #dbeafe !important;
+  color: #2563eb !important;
+  border: 1px solid #bfdbfe !important;
+}
+
+/* Sign in simple */
+.nav-links a[href="/login"] {
+  background: #eef4ff !important;
+  color: #2563eb !important;
+  border: 1px solid #dbeafe !important;
+}
+
+/* Create account primary but not oversized */
+.nav-links a[href="/register"] {
+  background: #2563eb !important;
+  color: white !important;
+  border: 1px solid #2563eb !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+/* === Final clean guest navbar END === */
