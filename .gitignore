@@ -12,3 +12,4 @@ backend/local-db.json
 backup-now/
 backup-broken-ui/
 backup-*/
+*.mp4
