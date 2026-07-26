@@ -13,8 +13,8 @@
       <div class="hero-actions">
         <RouterLink to="/" class="btn light">Home</RouterLink>
         <RouterLink to="/dashboard" class="btn light">Dashboard</RouterLink>
-        <button class="btn light" @click="printDoc">Drucken / Als PDF speichern</button>
-        <button class="btn light" @click="printDoc">Als PDF speichern</button>
+        <button class="btn light" @click="printDoc">Drucken</button>
+        <button class="btn light" @click="printDoc">Drucken</button>
       </div>
     </section>
 
