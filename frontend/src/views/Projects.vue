@@ -78,6 +78,7 @@
 </template>
 
 <script setup>
+import { confirmAction } from "../utils/confirmDialog";
 import { computed, onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import { useUserStore } from "../stores/userStore";
@@ -209,7 +210,7 @@ function cancelEdit() {
 }
 
 async function deleteProject(project) {
-  if (!confirm("Are you sure you want to delete this project?")) return;
+  if (!(await confirmAction("Are you sure you want to delete this project?"))) return;
 
   const id = getProjectId(project);
   if (!id) return;

@@ -73,6 +73,7 @@
 </template>
 
 <script setup>
+import { confirmAction } from "../utils/confirmDialog";
 import { computed, onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import { useUserStore } from "../stores/userStore";
@@ -204,7 +205,7 @@ function cancelEdit() {
 }
 
 async function deleteCertificate(certificate) {
-  if (!confirm("Are you sure you want to delete this certificate?")) return;
+  if (!(await confirmAction("Are you sure you want to delete this certificate?"))) return;
 
   const id = getCertificateId(certificate);
   if (!id) return;

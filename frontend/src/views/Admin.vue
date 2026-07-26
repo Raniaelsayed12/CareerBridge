@@ -202,6 +202,7 @@
 </template>
 
 <script setup>
+import { confirmAction } from "../utils/confirmDialog";
 import { computed, onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import { useUserStore } from "../stores/userStore";
@@ -350,7 +351,7 @@ function cancelUserEdit() {
 }
 
 async function deleteUser(user) {
-  if (!confirm("Are you sure you want to delete this account?")) return;
+  if (!(await confirmAction("Are you sure you want to delete this account?"))) return;
 
   const id = getUserKey(user);
   if (!id) return;
@@ -400,7 +401,7 @@ function cancelSkillEdit() {
 }
 
 async function deleteSkill(skill) {
-  if (!confirm("Are you sure you want to delete this skill?")) return;
+  if (!(await confirmAction("Are you sure you want to delete this skill?"))) return;
 
   const id = getId(skill);
   if (!id) return;
@@ -451,7 +452,7 @@ function cancelProjectEdit() {
 }
 
 async function deleteProject(project) {
-  if (!confirm("Are you sure you want to delete this project?")) return;
+  if (!(await confirmAction("Are you sure you want to delete this project?"))) return;
 
   const id = getId(project);
   if (!id) return;
@@ -502,7 +503,7 @@ function cancelCertificateEdit() {
 }
 
 async function deleteCertificate(certificate) {
-  if (!confirm("Are you sure you want to delete this certificate?")) return;
+  if (!(await confirmAction("Are you sure you want to delete this certificate?"))) return;
 
   const id = getId(certificate);
   if (!id) return;

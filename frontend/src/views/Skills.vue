@@ -76,6 +76,7 @@
 </template>
 
 <script setup>
+import { confirmAction } from "../utils/confirmDialog";
 import { computed, onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import { useUserStore } from "../stores/userStore";
@@ -200,7 +201,7 @@ function cancelEdit() {
 }
 
 async function deleteSkill(skill) {
-  if (!confirm("Are you sure you want to delete this skill?")) return;
+  if (!(await confirmAction("Are you sure you want to delete this skill?"))) return;
 
   const id = getSkillId(skill);
   if (!id) return;
