@@ -200,7 +200,7 @@ function cancelEdit() {
   form.value = { name: "", category: "" };
 }
 
-async async function deleteSkill(skill) {
+async function deleteSkill(skill) {
   if (!(await confirmAction("Möchten Sie diesen Eintrag wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."))) return;
 
   const id = getSkillId(skill);

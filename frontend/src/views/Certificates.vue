@@ -204,7 +204,7 @@ function cancelEdit() {
   };
 }
 
-async async function deleteCertificate(certificate) {
+async function deleteCertificate(certificate) {
   if (!(await confirmAction("Möchten Sie diesen Eintrag wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."))) return;
 
   const id = getCertificateId(certificate);

@@ -1,257 +1,201 @@
 <template>
   <main class="home-page">
-    <section class="home-layout">
-      <div class="home-content">
-        <h1>CareerBridge</h1>
-
-        <p class="lead">
-          A clean student career platform for managing profile information,
-          skills, certificates, resume and personal documentation in one place.
-        </p>
-
-        <div class="feature-grid">
-          <article>
-            <span>👤</span>
-            <div>
-              <h3>User Profile</h3>
-              <p>Keep personal information and profile progress organized.</p>
-            </div>
-          </article>
-
-          <article>
-            <span>🧠</span>
-            <div>
-              <h3>Skills</h3>
-              <p>Manage technical and soft skills clearly.</p>
-            </div>
-          </article>
-
-          <article>
-            <span>🏅</span>
-            <div>
-              <h3>Certificates</h3>
-              <p>Store certificates, providers and completion dates.</p>
-            </div>
-          </article>
-
-          <article>
-            <span>📄</span>
-            <div>
-              <h3>Resume</h3>
-              <p>Generate a resume from the current user data.</p>
-            </div>
-          </article>
-
-          <article>
-            <span>📚</span>
-            <div>
-              <h3>Docs</h3>
-              <p>Display documentation data for the logged-in user.</p>
-            </div>
-          </article>
-
-          <article>
-            <span>🛡️</span>
-            <div>
-              <h3>Admin Panel</h3>
-              <p>Manage users and their career information.</p>
-            </div>
-          </article>
-        </div>
-      </div>
-
-      <aside class="welcome-card">
-        <div class="tabs">
-          <RouterLink to="/login">Login</RouterLink>
-          <RouterLink to="/register">Register</RouterLink>
-        </div>
-
-        <h2>Welcome back</h2>
+    <section class="hero">
+      <div class="hero-text">
+        <h1>
+          Build a<br />
+          career profile<br />
+          that <span>stands out.</span>
+        </h1>
 
         <p>
-          Access your personal dashboard, update your profile and prepare your
-          career documents.
+          CareerBridge helps students and young professionals organize their
+          skills, projects, certificates and career information in one modern
+          digital workspace.
         </p>
 
-        <RouterLink to="/login" class="primary-action">Get Started</RouterLink>
-        <RouterLink to="/register" class="secondary-action">Create account</RouterLink>
-        <RouterLink to="/about" class="about-action">Learn more about CareerBridge</RouterLink>
-      </aside>
+        <RouterLink
+          :to="userStore.isLoggedIn ? '/dashboard' : '/login'"
+          class="primary-btn"
+        >
+          Open Dashboard
+        </RouterLink>
+      </div>
+
+      <div class="preview-card">
+        <div class="preview-header">
+          <small>Welcome to CareerBridge</small>
+          <h2>Your career overview</h2>
+        </div>
+
+        <div class="preview-grid">
+          <article>
+            <strong>Skills</strong>
+            <span>Manage abilities</span>
+          </article>
+          <article>
+            <strong>Projects</strong>
+            <span>Show your work</span>
+          </article>
+          <article>
+            <strong>Certificates</strong>
+            <span>Save achievements</span>
+          </article>
+        </div>
+
+        <div class="progress-card">
+          <strong>Profile progress</strong>
+          <div class="progress-track">
+            <div class="progress-fill"></div>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 </template>
 
 <script setup>
 import { RouterLink } from "vue-router";
+import { useUserStore } from "../stores/userStore";
+
+const userStore = useUserStore();
 </script>
 
 <style scoped>
 .home-page {
-  width: min(1160px, calc(100% - 64px));
+  width: min(1180px, calc(100% - 64px));
   margin: 0 auto;
-  padding: 76px 0 90px;
+  padding: 80px 0 90px;
 }
 
-.home-layout {
+.hero {
+  min-height: 620px;
   display: grid;
-  grid-template-columns: 1.12fr 0.88fr;
-  gap: 68px;
+  grid-template-columns: 1fr 0.92fr;
   align-items: center;
+  gap: 72px;
 }
 
-.home-content {
-  max-width: 720px;
-}
-
-h1 {
+.hero-text h1 {
   margin: 0;
   color: #0f172a;
-  font-size: clamp(4rem, 7vw, 6.2rem);
-  line-height: 1;
-  letter-spacing: -0.02em;
+  font-size: clamp(4.2rem, 7vw, 6.7rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
   font-weight: 950;
 }
 
-.lead {
-  max-width: 680px;
-  margin: 26px 0 34px;
-  color: #475569;
-  font-size: 1.16rem;
+.hero-text h1 span {
+  color: #3447f5;
+}
+
+.hero-text p {
+  max-width: 600px;
+  margin: 28px 0 32px;
+  color: #64748b;
+  font-size: 1.08rem;
   line-height: 1.75;
 }
 
-.feature-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(230px, 1fr));
-  gap: 16px;
-}
-
-.feature-grid article {
-  min-height: 96px;
-  padding: 18px;
-  border-radius: 22px;
-  background: #ffffff;
-  border: 1px solid #dbe3ef;
-  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.07);
-  display: flex;
-  gap: 16px;
-  align-items: center;
-}
-
-.feature-grid span {
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
-  background: #dbeafe;
-  display: grid;
-  place-items: center;
-  font-size: 1.45rem;
-  flex-shrink: 0;
-}
-
-.feature-grid h3 {
-  margin: 0 0 5px;
-  color: #0f172a;
-  font-size: 1rem;
-}
-
-.feature-grid p {
-  margin: 0;
-  color: #64748b;
-  font-size: 0.9rem;
-  line-height: 1.35;
-}
-
-.welcome-card {
-  padding: 34px;
-  border-radius: 30px;
-  background: #ffffff;
-  border: 1px solid #dbe3ef;
-  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.14);
-}
-
-.tabs {
-  height: 46px;
-  padding: 4px;
-  margin-bottom: 34px;
-  border-radius: 15px;
-  background: #eef2f7;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-
-.tabs a {
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  text-decoration: none;
-  color: #64748b;
-  font-weight: 900;
-}
-
-.tabs a:first-child {
-  background: #ffffff;
-  color: #0f172a;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
-}
-
-.welcome-card h2 {
-  margin: 0 0 10px;
-  color: #0f172a;
-  font-size: 2rem;
-  letter-spacing: -0.01em;
-}
-
-.welcome-card p {
-  margin: 0 0 24px;
-  color: #64748b;
-  line-height: 1.7;
-}
-
-.primary-action,
-.secondary-action {
-  min-height: 54px;
-  border-radius: 16px;
-  display: grid;
-  place-items: center;
-  text-decoration: none;
-  font-weight: 900;
-  margin-bottom: 12px;
-}
-
-.primary-action {
+.primary-btn {
+  min-height: 52px;
+  padding: 0.95rem 1.35rem;
+  border-radius: 14px;
   background: #2563eb;
   color: white;
-}
-
-.secondary-action {
-  background: #dbeafe;
-  color: #2563eb;
-  border: 1px solid #bfdbfe;
-}
-
-.about-action {
-  display: block;
-  margin-top: 18px;
-  text-align: center;
-  color: #2563eb;
-  font-weight: 850;
+  font-weight: 900;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: 0 18px 35px rgba(37, 99, 235, 0.25);
+}
+
+.preview-card {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 28px;
+  border: 1px solid #dbe3ef;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.12);
+}
+
+.preview-header {
+  padding: 30px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #14264f, #3447f5);
+  color: white;
+  margin-bottom: 24px;
+}
+
+.preview-header small {
+  color: #dbeafe;
+  font-weight: 800;
+}
+
+.preview-header h2 {
+  margin: 8px 0 0;
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.preview-grid article,
+.progress-card {
+  padding: 18px;
+  border-radius: 18px;
+  background: #f8fbff;
+  border: 1px solid #dbe3ef;
+}
+
+.preview-grid strong,
+.progress-card strong {
+  display: block;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.preview-grid span {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.progress-track {
+  height: 12px;
+  margin-top: 14px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  width: 82%;
+  height: 100%;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  border-radius: 999px;
 }
 
 @media (max-width: 980px) {
   .home-page {
-    width: min(100% - 32px, 1160px);
-    padding: 38px 0 60px;
+    width: min(100% - 32px, 1180px);
+    padding: 40px 0 60px;
   }
 
-  .home-layout {
+  .hero {
     grid-template-columns: 1fr;
     gap: 36px;
   }
 
-  .feature-grid {
+  .preview-grid {
     grid-template-columns: 1fr;
+  }
+
+  .hero-text h1 {
+    font-size: 3.5rem;
   }
 }
 </style>

@@ -3,28 +3,32 @@
     <header class="navbar">
       <RouterLink to="/" class="brand">CareerBridge</RouterLink>
 
-      <!-- After login: full navigation -->
-      <nav v-if="userStore.isLoggedIn" class="nav-links">
-        <RouterLink to="/dashboard">Dashboard</RouterLink>
-        <RouterLink to="/skills">Skills</RouterLink>
-        <RouterLink to="/projects">Projects</RouterLink>
-        <RouterLink to="/certificates">Certificates</RouterLink>
-        <RouterLink to="/resume">Resume</RouterLink>
-        <RouterLink to="/docs">Docs</RouterLink>
-        <RouterLink to="/profile">Profile</RouterLink>
-        <RouterLink v-if="userStore.isAdmin" to="/admin">Admin</RouterLink>
-
-        <div class="user-badge">
-          <strong>{{ userStore.user?.name || "User" }}</strong>
-          <span>{{ userStore.user?.email }}</span>
-        </div>
-
-        <button class="logout-btn" type="button" @click="logout">Logout</button>
-      </nav>
-
-      <!-- Before login: only Home link outside the Home page -->
-      <nav v-else-if="route.path !== '/'" class="guest-nav">
+      <nav class="nav-links">
         <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/about">About</RouterLink>
+
+        <template v-if="userStore.isLoggedIn">
+          <RouterLink to="/dashboard">Dashboard</RouterLink>
+          <RouterLink to="/skills">Skills</RouterLink>
+          <RouterLink to="/projects">Projects</RouterLink>
+          <RouterLink to="/certificates">Certificates</RouterLink>
+          <RouterLink to="/resume">Resume</RouterLink>
+          <RouterLink to="/docs">Docs</RouterLink>
+          <RouterLink to="/profile">Profile</RouterLink>
+          <RouterLink v-if="userStore.isAdmin" to="/admin">Admin</RouterLink>
+
+          <div class="user-badge">
+            <strong>{{ userStore.user?.name || "User" }}</strong>
+            <span>{{ userStore.user?.email }}</span>
+          </div>
+
+          <button class="logout-btn" type="button" @click="logout">Logout</button>
+        </template>
+
+        <template v-else>
+          <RouterLink to="/login">Sign in</RouterLink>
+          <RouterLink to="/register" class="create-link">Create account</RouterLink>
+        </template>
       </nav>
     </header>
 
@@ -33,11 +37,10 @@
 </template>
 
 <script setup>
-import { RouterLink, RouterView, useRouter, useRoute } from "vue-router";
+import { RouterLink, RouterView, useRouter } from "vue-router";
 import { useUserStore } from "./stores/userStore";
 
 const router = useRouter();
-const route = useRoute();
 const userStore = useUserStore();
 
 function logout() {
@@ -54,14 +57,13 @@ function logout() {
 
 .navbar {
   width: 100%;
-  min-height: 72px;
+  min-height: 76px;
   padding: 0.75rem 5%;
   background: #ffffff;
   border-bottom: 1px solid #dbe3ef;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
 }
 
@@ -73,19 +75,18 @@ function logout() {
   white-space: nowrap;
 }
 
-.nav-links,
-.guest-nav {
+.nav-links {
+  flex: 1;
   display: flex;
-  align-items: center;
   justify-content: flex-end;
-  gap: 0.45rem;
+  align-items: center;
+  gap: 0.42rem;
   flex-wrap: nowrap;
 }
 
-.nav-links a,
-.guest-nav a {
+.nav-links a {
   min-height: 40px;
-  padding: 0.55rem 0.78rem;
+  padding: 0.55rem 0.72rem;
   border-radius: 13px;
   color: #0f172a;
   font-size: 0.92rem;
@@ -96,11 +97,15 @@ function logout() {
   white-space: nowrap;
 }
 
-.nav-links a.router-link-active,
-.guest-nav a.router-link-active {
+.nav-links a.router-link-active {
   background: #dbeafe;
   color: #2563eb;
   border: 1px solid #bfdbfe;
+}
+
+.create-link {
+  background: #2563eb;
+  color: #ffffff !important;
 }
 
 .user-badge {
