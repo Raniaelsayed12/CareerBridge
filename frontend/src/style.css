@@ -436,3 +436,486 @@ body,
     padding: 0.6rem 0.75rem !important;
   }
 }
+
+
+/* === CareerBridge Final Design System START === */
+
+/* Global professional blue-white design system */
+:root {
+  --cb-primary: #2563eb;
+  --cb-primary-dark: #14264f;
+  --cb-primary-soft: #dbeafe;
+  --cb-bg: #f4f7fb;
+  --cb-surface: #ffffff;
+  --cb-text: #0f172a;
+  --cb-muted: #64748b;
+  --cb-border: #dbe3ef;
+  --cb-danger: #ef4444;
+
+  --cb-radius-xl: 28px;
+  --cb-radius-lg: 22px;
+  --cb-radius-md: 16px;
+
+  --cb-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+  --cb-shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.06);
+
+  --cb-page-width: 1180px;
+  --cb-gap: 24px;
+}
+
+* {
+  box-sizing: border-box !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0 !important;
+  background: var(--cb-bg) !important;
+  color: var(--cb-text) !important;
+}
+
+/* Page width: all pages same alignment */
+.home-page,
+.about-page,
+.dashboard-page,
+.skills-page,
+.projects-page,
+.certificates-page,
+.resume-page,
+.docs-page,
+.admin-page,
+.profile-page,
+.login-page,
+.register-page {
+  width: min(var(--cb-page-width), calc(100% - 48px)) !important;
+  margin: 0 auto !important;
+  padding: 48px 0 72px !important;
+}
+
+/* Navbar cleaner and balanced */
+.navbar {
+  width: 100% !important;
+  min-height: 84px !important;
+  padding: 0.75rem 4.2% !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid var(--cb-border) !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  overflow: visible !important;
+}
+
+.brand {
+  font-size: 1.9rem !important;
+  font-weight: 900 !important;
+  color: var(--cb-primary) !important;
+  white-space: nowrap !important;
+}
+
+.nav-links {
+  flex: 1 !important;
+  min-width: 0 !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
+  flex-wrap: nowrap !important;
+}
+
+.nav-links a {
+  min-height: 42px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0.58rem 0.72rem !important;
+  border-radius: 15px !important;
+  font-size: 0.95rem !important;
+  font-weight: 800 !important;
+  color: var(--cb-text) !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+}
+
+.nav-links a.router-link-active {
+  background: var(--cb-primary-soft) !important;
+  color: var(--cb-primary) !important;
+  border: 1px solid #bfdbfe !important;
+}
+
+.user-badge {
+  min-height: 50px !important;
+  max-width: 160px !important;
+  padding: 0.58rem 0.82rem !important;
+  border-radius: 17px !important;
+  border: 1px solid var(--cb-border) !important;
+  background: #f8fbff !important;
+  box-shadow: var(--cb-shadow-soft) !important;
+  flex-shrink: 0 !important;
+}
+
+.user-badge strong {
+  display: block !important;
+  font-size: 0.9rem !important;
+  line-height: 1.15 !important;
+}
+
+.user-badge span {
+  display: block !important;
+  font-size: 0.72rem !important;
+  color: var(--cb-muted) !important;
+  margin-top: 3px !important;
+}
+
+.logout-btn {
+  min-height: 48px !important;
+  padding: 0.72rem 0.95rem !important;
+  border-radius: 17px !important;
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+  font-weight: 900 !important;
+  border: none !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+/* Hero sections: same size and spacing */
+.dashboard-hero,
+.skills-hero,
+.projects-hero,
+.certificates-hero,
+.docs-hero,
+.admin-hero,
+.about-hero,
+.resume-hero,
+.home-hero,
+.login-info,
+.register-info {
+  width: 100% !important;
+  min-height: 300px !important;
+  padding: 58px 64px !important;
+  margin: 0 0 34px !important;
+  border-radius: var(--cb-radius-xl) !important;
+  background: linear-gradient(135deg, var(--cb-primary-dark), var(--cb-primary)) !important;
+  color: white !important;
+  box-shadow: 0 24px 60px rgba(37, 99, 235, 0.20) !important;
+}
+
+.dashboard-hero h1,
+.skills-hero h1,
+.projects-hero h1,
+.certificates-hero h1,
+.docs-hero h1,
+.admin-hero h1,
+.about-hero h1,
+.resume-hero h1,
+.home-hero h1 {
+  margin: 0 0 18px !important;
+  font-size: clamp(2.2rem, 4vw, 4.2rem) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.04em !important;
+}
+
+.dashboard-hero p,
+.skills-hero p,
+.projects-hero p,
+.certificates-hero p,
+.docs-hero p,
+.admin-hero p,
+.about-hero p,
+.resume-hero p,
+.home-hero p {
+  max-width: 760px !important;
+  font-size: 1.04rem !important;
+  line-height: 1.75 !important;
+  color: rgba(255,255,255,0.92) !important;
+}
+
+.eyebrow {
+  display: inline-block !important;
+  margin-bottom: 14px !important;
+  color: #bfdbfe !important;
+  font-size: 0.8rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.32em !important;
+  text-transform: uppercase !important;
+}
+
+/* Cards and panels: same look everywhere */
+.stat-card,
+.form-panel,
+.search-panel,
+.panel,
+.skill-card,
+.project-card,
+.certificate-card,
+.doc-paper,
+.docs-sidebar,
+.resume-sheet,
+.profile-card,
+.profile-hero,
+.login-card,
+.register-card,
+.about-grid article,
+.empty-card,
+.action-card,
+.user-card,
+.admin-card {
+  background: var(--cb-surface) !important;
+  border: 1px solid var(--cb-border) !important;
+  border-radius: var(--cb-radius-lg) !important;
+  box-shadow: var(--cb-shadow) !important;
+}
+
+.stat-card {
+  min-height: 150px !important;
+  padding: 30px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.stat-card strong,
+.stat-card .number,
+.stat-card h3 {
+  color: var(--cb-primary) !important;
+  font-size: 2.4rem !important;
+  line-height: 1 !important;
+  margin-bottom: 10px !important;
+}
+
+/* Equal grids */
+.stats-grid,
+.skills-grid,
+.projects-grid,
+.certificates-grid,
+.cards-grid,
+.about-grid,
+.admin-grid,
+.dashboard-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+  gap: var(--cb-gap) !important;
+  align-items: stretch !important;
+}
+
+.skill-card,
+.project-card,
+.certificate-card,
+.action-card,
+.user-card {
+  min-height: 210px !important;
+  padding: 28px !important;
+}
+
+/* Forms and inputs */
+input,
+textarea,
+select {
+  width: 100% !important;
+  min-height: 46px !important;
+  border: 1px solid var(--cb-border) !important;
+  border-radius: 14px !important;
+  padding: 0.82rem 0.95rem !important;
+  font-size: 0.98rem !important;
+  color: var(--cb-text) !important;
+  background: #ffffff !important;
+  outline: none !important;
+}
+
+textarea {
+  min-height: 115px !important;
+  resize: vertical !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--cb-primary) !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.13) !important;
+}
+
+label {
+  display: block !important;
+  margin-bottom: 8px !important;
+  color: var(--cb-text) !important;
+  font-weight: 800 !important;
+}
+
+/* Buttons: same height and radius */
+button,
+.btn,
+.submit-btn,
+.edit-btn,
+.delete-btn,
+.admin-info-btn,
+.register-link,
+.login-link {
+  min-height: 46px !important;
+  border-radius: 15px !important;
+  padding: 0.78rem 1.08rem !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease !important;
+}
+
+button:hover,
+.btn:hover,
+.submit-btn:hover,
+.edit-btn:hover {
+  transform: translateY(-1px) !important;
+}
+
+.btn.primary,
+.submit-btn,
+.admin-info-btn,
+.register-link {
+  background: var(--cb-primary) !important;
+  color: white !important;
+  border: 1px solid var(--cb-primary) !important;
+}
+
+.btn.light,
+.edit-btn {
+  background: white !important;
+  color: var(--cb-primary) !important;
+  border: 1px solid #bfdbfe !important;
+}
+
+.delete-btn {
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+  border: 1px solid #fecaca !important;
+}
+
+/* Progress */
+.progress-bar,
+.progress-track {
+  height: 12px !important;
+  border-radius: 999px !important;
+  background: #e5e7eb !important;
+  overflow: hidden !important;
+}
+
+.progress-fill {
+  height: 100% !important;
+  border-radius: 999px !important;
+  background: linear-gradient(135deg, var(--cb-primary), #4f46e5) !important;
+}
+
+/* Tables / admin lists */
+table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+th,
+td {
+  padding: 14px 16px !important;
+  border-bottom: 1px solid var(--cb-border) !important;
+  text-align: left !important;
+}
+
+th {
+  color: var(--cb-primary-dark) !important;
+  font-weight: 900 !important;
+  background: #f8fbff !important;
+}
+
+/* Docs print content */
+.doc-paper {
+  padding: 36px !important;
+  line-height: 1.75 !important;
+}
+
+/* Mobile */
+@media (max-width: 1100px) {
+  .navbar {
+    padding: 0.7rem 3% !important;
+  }
+
+  .brand {
+    font-size: 1.55rem !important;
+  }
+
+  .nav-links a {
+    font-size: 0.86rem !important;
+    padding: 0.52rem 0.5rem !important;
+  }
+
+  .user-badge {
+    max-width: 130px !important;
+  }
+}
+
+@media (max-width: 850px) {
+  .navbar {
+    align-items: flex-start !important;
+    flex-wrap: wrap !important;
+  }
+
+  .nav-links {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+  }
+
+  .home-page,
+  .about-page,
+  .dashboard-page,
+  .skills-page,
+  .projects-page,
+  .certificates-page,
+  .resume-page,
+  .docs-page,
+  .admin-page,
+  .profile-page,
+  .login-page,
+  .register-page {
+    width: min(100% - 28px, var(--cb-page-width)) !important;
+    padding: 28px 0 52px !important;
+  }
+
+  .dashboard-hero,
+  .skills-hero,
+  .projects-hero,
+  .certificates-hero,
+  .docs-hero,
+  .admin-hero,
+  .about-hero,
+  .resume-hero,
+  .home-hero,
+  .login-info,
+  .register-info {
+    min-height: auto !important;
+    padding: 38px 28px !important;
+    border-radius: 22px !important;
+  }
+}
+
+/* Print: hide app navigation */
+@media print {
+  .navbar,
+  header.navbar,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  .docs-page,
+  .resume-page {
+    width: 100% !important;
+    padding: 0 !important;
+  }
+}
+
+/* === CareerBridge Final Design System END === */
+
