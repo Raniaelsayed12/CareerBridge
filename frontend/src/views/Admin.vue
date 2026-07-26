@@ -269,17 +269,16 @@ function getUserCertificates(user) {
 }
 
 const filteredUsers = computed(() => {
-  const query = userSearchQuery.value.trim().toLowerCase();
+  const query = userSearchQuery.value.toLowerCase().trim();
 
-  if (!query) {
-    return users.value;
-  }
+  if (!query) return users.value;
 
   return users.value.filter((user) => {
-    const name = String(user.name || "").toLowerCase();
-    const email = String(user.email || "").toLowerCase();
+    const name = (user.name || user.fullName || "").toLowerCase();
+    const email = (user.email || "").toLowerCase();
+    const role = (user.role || "").toLowerCase();
 
-    return name.startsWith(query) || email.startsWith(query);
+    return name.includes(query) || email.includes(query) || role.includes(query);
   });
 });
 
@@ -350,8 +349,8 @@ function cancelUserEdit() {
   userForm.value = { name: "", email: "", password: "", role: "user" };
 }
 
-async function deleteUser(user) {
-  if (!(await confirmAction("Are you sure you want to delete this account?"))) return;
+async async function deleteUser(user) {
+  if (!(await confirmAction("Möchten Sie diesen Eintrag wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."))) return;
 
   const id = getUserKey(user);
   if (!id) return;
@@ -400,8 +399,8 @@ function cancelSkillEdit() {
   skillForm.value = { name: "", category: "" };
 }
 
-async function deleteSkill(skill) {
-  if (!(await confirmAction("Are you sure you want to delete this skill?"))) return;
+async async function deleteSkill(skill) {
+  if (!(await confirmAction("Möchten Sie diesen Eintrag wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."))) return;
 
   const id = getId(skill);
   if (!id) return;
@@ -451,8 +450,8 @@ function cancelProjectEdit() {
   projectForm.value = { title: "", description: "", github: "", status: "Planned" };
 }
 
-async function deleteProject(project) {
-  if (!(await confirmAction("Are you sure you want to delete this project?"))) return;
+async async function deleteProject(project) {
+  if (!(await confirmAction("Möchten Sie diesen Eintrag wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."))) return;
 
   const id = getId(project);
   if (!id) return;
@@ -502,8 +501,8 @@ function cancelCertificateEdit() {
   certificateForm.value = { name: "", provider: "", date: "", link: "" };
 }
 
-async function deleteCertificate(certificate) {
-  if (!(await confirmAction("Are you sure you want to delete this certificate?"))) return;
+async async function deleteCertificate(certificate) {
+  if (!(await confirmAction("Möchten Sie diesen Eintrag wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."))) return;
 
   const id = getId(certificate);
   if (!id) return;

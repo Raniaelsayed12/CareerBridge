@@ -209,8 +209,8 @@ function cancelEdit() {
   };
 }
 
-async function deleteProject(project) {
-  if (!(await confirmAction("Are you sure you want to delete this project?"))) return;
+async async function deleteProject(project) {
+  if (!(await confirmAction("Möchten Sie diesen Eintrag wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."))) return;
 
   const id = getProjectId(project);
   if (!id) return;

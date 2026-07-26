@@ -1,9 +1,5 @@
-export function confirmAction(message, options = {}) {
+export function confirmAction(message = "Möchten Sie diesen Eintrag wirklich löschen?") {
   return new Promise((resolve) => {
-    const title = options.title || "Löschen bestätigen";
-    const confirmText = options.confirmText || "Löschen";
-    const cancelText = options.cancelText || "Abbrechen";
-
     if (!document.getElementById("cb-confirm-style")) {
       const style = document.createElement("style");
       style.id = "cb-confirm-style";
@@ -19,18 +15,17 @@ export function confirmAction(message, options = {}) {
           padding: 20px;
         }
         .cb-confirm-box {
-          width: min(440px, 100%);
-          background: #ffffff;
-          border-radius: 24px;
+          width: min(430px, 100%);
+          background: white;
+          border-radius: 22px;
           padding: 28px;
           box-shadow: 0 30px 80px rgba(15, 23, 42, 0.25);
           border: 1px solid #dbeafe;
-          font-family: inherit;
         }
         .cb-confirm-box h3 {
           margin: 0 0 12px;
           color: #14264f;
-          font-size: 1.45rem;
+          font-size: 1.4rem;
         }
         .cb-confirm-box p {
           margin: 0;
@@ -43,19 +38,18 @@ export function confirmAction(message, options = {}) {
           justify-content: flex-end;
           gap: 12px;
         }
-        .cb-confirm-cancel,
-        .cb-confirm-ok {
+        .cb-confirm-actions button {
           border: none;
           border-radius: 14px;
-          padding: 0.85rem 1.15rem;
+          padding: 0.8rem 1.1rem;
           font-weight: 800;
           cursor: pointer;
         }
-        .cb-confirm-cancel {
+        .cb-cancel {
           background: #f1f5f9;
           color: #14264f;
         }
-        .cb-confirm-ok {
+        .cb-delete {
           background: #ef4444;
           color: white;
         }
@@ -68,27 +62,22 @@ export function confirmAction(message, options = {}) {
 
     overlay.innerHTML = `
       <div class="cb-confirm-box">
-        <h3></h3>
-        <p></p>
+        <h3>Löschen bestätigen</h3>
+        <p>${message}</p>
         <div class="cb-confirm-actions">
-          <button class="cb-confirm-cancel" type="button"></button>
-          <button class="cb-confirm-ok" type="button"></button>
+          <button class="cb-cancel" type="button">Abbrechen</button>
+          <button class="cb-delete" type="button">Löschen</button>
         </div>
       </div>
     `;
-
-    overlay.querySelector("h3").textContent = title;
-    overlay.querySelector("p").textContent = message;
-    overlay.querySelector(".cb-confirm-cancel").textContent = cancelText;
-    overlay.querySelector(".cb-confirm-ok").textContent = confirmText;
 
     const close = (value) => {
       overlay.remove();
       resolve(value);
     };
 
-    overlay.querySelector(".cb-confirm-cancel").addEventListener("click", () => close(false));
-    overlay.querySelector(".cb-confirm-ok").addEventListener("click", () => close(true));
+    overlay.querySelector(".cb-cancel").addEventListener("click", () => close(false));
+    overlay.querySelector(".cb-delete").addEventListener("click", () => close(true));
     overlay.addEventListener("click", (event) => {
       if (event.target === overlay) close(false);
     });
