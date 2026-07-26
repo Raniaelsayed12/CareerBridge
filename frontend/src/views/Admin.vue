@@ -268,16 +268,17 @@ function getUserCertificates(user) {
 }
 
 const filteredUsers = computed(() => {
-  const query = userSearchQuery.value.toLowerCase().trim();
+  const query = userSearchQuery.value.trim().toLowerCase();
 
-  if (!query) return users.value;
+  if (!query) {
+    return users.value;
+  }
 
   return users.value.filter((user) => {
-    const name = (user.name || user.fullName || "").toLowerCase();
-    const email = (user.email || "").toLowerCase();
-    const role = (user.role || "").toLowerCase();
+    const name = String(user.name || "").toLowerCase();
+    const email = String(user.email || "").toLowerCase();
 
-    return name.includes(query) || email.includes(query) || role.includes(query);
+    return name.startsWith(query) || email.startsWith(query);
   });
 });
 
