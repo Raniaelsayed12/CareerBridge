@@ -13,3 +13,7 @@ backup-now/
 backup-broken-ui/
 backup-*/
 *.mp4
+.vscode/
+backend/server.local-json.backup.js
+*.zip
+live+prasenation 2/
