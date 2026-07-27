@@ -129,6 +129,8 @@ function loadData() {
   data.skills = data.skills || [];
   data.projects = data.projects || [];
   data.certificates = data.certificates || [];
+  data.applications = data.applications || [];
+  data.goals = data.goals || [];
 
   return data;
 }
@@ -427,6 +429,140 @@ app.delete("/certificates/:id", (req, res) => {
   saveData(db);
   res.json({ message: "Certificate deleted successfully." });
 });
+
+
+/* APPLICATIONS */
+app.get("/applications", (req, res) => {
+  const { userId } = req.query;
+
+  if (!userId) {
+    return res.json(db.applications || []);
+  }
+
+  res.json((db.applications || []).filter((item) => item.userId === userId));
+});
+
+app.post("/applications", (req, res) => {
+  const { userId, company, position, status, date, link, notes } = req.body;
+
+  if (!userId || !company || !position) {
+    return res.status(400).json({ message: "User, company and position are required." });
+  }
+
+  const application = {
+    _id: createId("application"),
+    userId,
+    company,
+    position,
+    status: status || "Applied",
+    date: date || "",
+    link: link || "",
+    notes: notes || ""
+  };
+
+  db.applications = db.applications || [];
+  db.applications.push(application);
+  saveData(db);
+
+  res.status(201).json(application);
+});
+
+app.put("/applications/:id", (req, res) => {
+  db.applications = db.applications || [];
+
+  const application = db.applications.find((item) => item._id === req.params.id);
+
+  if (!application) {
+    return res.status(404).json({ message: "Application not found." });
+  }
+
+  application.company = req.body.company ?? application.company;
+  application.position = req.body.position ?? application.position;
+  application.status = req.body.status ?? application.status;
+  application.date = req.body.date ?? application.date;
+  application.link = req.body.link ?? application.link;
+  application.notes = req.body.notes ?? application.notes;
+
+  saveData(db);
+  res.json(application);
+});
+
+app.delete("/applications/:id", (req, res) => {
+  db.applications = db.applications || [];
+
+  const before = db.applications.length;
+  db.applications = db.applications.filter((item) => item._id !== req.params.id);
+
+  if (db.applications.length === before) {
+    return res.status(404).json({ message: "Application not found." });
+  }
+
+  saveData(db);
+  res.json({ message: "Application deleted successfully." });
+});
+
+
+
+/* GOALS */
+app.get("/goals", (req, res) => {
+  const { userId } = req.query;
+  const items = db.goals || [];
+  res.json(userId ? items.filter((item) => item.userId === userId) : items);
+});
+
+app.post("/goals", (req, res) => {
+  const { userId, title, description, deadline, status } = req.body;
+
+  if (!userId || !title) {
+    return res.status(400).json({ message: "User and title are required." });
+  }
+
+  const goal = {
+    _id: createId("goal"),
+    userId,
+    title,
+    description: description || "",
+    deadline: deadline || "",
+    status: status || "Planned"
+  };
+
+  db.goals = db.goals || [];
+  db.goals.push(goal);
+  saveData(db);
+
+  res.status(201).json(goal);
+});
+
+app.put("/goals/:id", (req, res) => {
+  db.goals = db.goals || [];
+  const goal = db.goals.find((item) => item._id === req.params.id);
+
+  if (!goal) {
+    return res.status(404).json({ message: "Goal not found." });
+  }
+
+  goal.title = req.body.title ?? goal.title;
+  goal.description = req.body.description ?? goal.description;
+  goal.deadline = req.body.deadline ?? goal.deadline;
+  goal.status = req.body.status ?? goal.status;
+
+  saveData(db);
+  res.json(goal);
+});
+
+app.delete("/goals/:id", (req, res) => {
+  db.goals = db.goals || [];
+  const before = db.goals.length;
+  db.goals = db.goals.filter((item) => item._id !== req.params.id);
+
+  if (db.goals.length === before) {
+    return res.status(404).json({ message: "Goal not found." });
+  }
+
+  saveData(db);
+  res.json({ message: "Goal deleted successfully." });
+});
+
 
 const PORT = process.env.PORT || 3000;
 

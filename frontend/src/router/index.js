@@ -9,6 +9,8 @@ import Dashboard from "../views/Dashboard.vue";
 import Skills from "../views/Skills.vue";
 import Projects from "../views/Projects.vue";
 import Certificates from "../views/Certificates.vue";
+import Applications from "../views/Applications.vue";
+import Goals from "../views/Goals.vue";
 import Resume from "../views/Resume.vue";
 import Profile from "../views/Profile.vue";
 import Docs from "../views/Docs.vue";
@@ -24,6 +26,8 @@ const routes = [
   { path: "/skills", name: "Skills", component: Skills, meta: { requiresAuth: true } },
   { path: "/projects", name: "Projects", component: Projects, meta: { requiresAuth: true } },
   { path: "/certificates", name: "Certificates", component: Certificates, meta: { requiresAuth: true } },
+  { path: "/applications", name: "Applications", component: Applications, meta: { requiresAuth: true } },
+  { path: "/goals", name: "Goals", component: Goals, meta: { requiresAuth: true } },
   { path: "/resume", name: "Resume", component: Resume, meta: { requiresAuth: true } },
   { path: "/profile", name: "Profile", component: Profile, meta: { requiresAuth: true } },
   { path: "/docs", name: "Docs", component: Docs, meta: { requiresAuth: true } },

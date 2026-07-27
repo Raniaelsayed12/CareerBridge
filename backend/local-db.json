@@ -250,5 +250,81 @@
       "date": "2026-07-25",
       "link": ""
     }
+  ],
+  "applications": [
+    {
+      "_id": "application-rania-1",
+      "userId": "user-rania",
+      "company": "Digital Career Lab",
+      "position": "Web Developer Working Student",
+      "status": "Interview",
+      "date": "2026-07-22",
+      "link": "",
+      "notes": "Interview preparation in progress."
+    },
+    {
+      "_id": "application-aly-1",
+      "userId": "user-aly",
+      "company": "Startup Hub",
+      "position": "Junior Software Developer",
+      "status": "Pending",
+      "date": "2026-07-25",
+      "link": "",
+      "notes": "Waiting for feedback."
+    },
+    {
+      "_id": "application-1785160521003-f4f62e92e4dc2",
+      "userId": "user-hania",
+      "company": "Tech Solutions GmbH",
+      "position": "Frontend Developer Internship",
+      "status": "Applied",
+      "date": "2026-07-20",
+      "link": "https://example.com",
+      "notes": "Application sent with CareerBridge resume. Waiting for feedback."
+    },
+    {
+      "_id": "application-1785160592131-f8cd9478dff3d8",
+      "userId": "user-hania",
+      "company": "Digital Career Lab",
+      "position": "Web Developer Working Student",
+      "status": "Applied",
+      "date": "2026-07-27",
+      "link": "https://example.com",
+      "notes": "Interview invitation received. Preparation in progress."
+    }
+  ],
+  "goals": [
+    {
+      "_id": "goal-hania-1",
+      "userId": "user-hania",
+      "title": "Improve Vue.js skills",
+      "description": "Practice Vue Router, Pinia and component structure.",
+      "deadline": "2026-08-10",
+      "status": "In Progress"
+    },
+    {
+      "_id": "goal-rania-1",
+      "userId": "user-rania",
+      "title": "Prepare internship applications",
+      "description": "Update resume and collect project links.",
+      "deadline": "2026-08-15",
+      "status": "Planned"
+    },
+    {
+      "_id": "goal-aly-1",
+      "userId": "user-aly",
+      "title": "Finish personal portfolio",
+      "description": "Add projects, skills and contact information.",
+      "deadline": "2026-08-20",
+      "status": "Planned"
+    },
+    {
+      "_id": "goal-1785162406373-8275c1fb4aa6f",
+      "userId": "user-hania",
+      "title": "Finish personal portfolio",
+      "description": "Add projects, skills and contact information.\n",
+      "deadline": "2026-08-20",
+      "status": "Planned"
+    }
   ]
 }

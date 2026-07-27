@@ -12,6 +12,8 @@
           <RouterLink to="/skills">Skills</RouterLink>
           <RouterLink to="/projects">Projects</RouterLink>
           <RouterLink to="/certificates">Certificates</RouterLink>
+          <RouterLink to="/applications">Applications</RouterLink>
+          <RouterLink to="/goals">Goals</RouterLink>
           <RouterLink to="/resume">Resume</RouterLink>
           <RouterLink to="/docs">Docs</RouterLink>
           <RouterLink to="/profile">Profile</RouterLink>
