@@ -112,6 +112,8 @@ const userStore = useUserStore();
 const skills = ref([]);
 const projects = ref([]);
 const certificates = ref([]);
+const applications = ref([]);
+const goals = ref([]);
 
 const currentUser = computed(() => userStore.user);
 
@@ -129,24 +131,16 @@ const currentUserId = computed(() => {
 });
 
 const profileProgress = computed(() => {
-  if (currentUser.value?.role === "admin") return 0;
+  let completed = 0;
+  const total = 5;
 
-  const savedProgress = Number(currentUser.value?.profileProgress);
+  if (skills.value && skills.value.length > 0) completed++;
+  if (projects.value && projects.value.length > 0) completed++;
+  if (certificates.value && certificates.value.length > 0) completed++;
+  if (applications.value && applications.value.length > 0) completed++;
+  if (goals.value && goals.value.length > 0) completed++;
 
-  if (!Number.isNaN(savedProgress) && savedProgress >= 0) {
-    return Math.min(100, Math.max(0, savedProgress));
-  }
-
-  const fields = [
-    currentUser.value?.name || currentUser.value?.fullName,
-    currentUser.value?.email,
-    currentUser.value?.city,
-    currentUser.value?.professionalRole,
-    currentUser.value?.university,
-  ];
-
-  const filled = fields.filter(Boolean).length;
-  return Math.round((filled / fields.length) * 100);
+  return Math.round((completed / total) * 100);
 });
 
 function normalizeList(data, key) {

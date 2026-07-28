@@ -1,12 +1,6 @@
 <script setup>
-import {
-  computed,
-  ref,
-} from "vue";
-
-import {
-  useRouter,
-} from "vue-router";
+import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
 
 import Navbar from "../components/Navbar.vue/Navbar.vue";
 import api from "../services/api";
@@ -24,14 +18,11 @@ const form = ref({
 
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
-
 const isSubmitting = ref(false);
 const errorMessage = ref("");
 
 const passwordStrength = computed(() => {
-  const password =
-      form.value.password;
-
+  const password = form.value.password;
   let score = 0;
 
   if (password.length >= 6) {
@@ -50,90 +41,68 @@ const passwordStrength = computed(() => {
     score += 1;
   }
 
-  if (
-      /[^A-Za-z0-9]/.test(password)
-  ) {
+  if (/[^A-Za-z0-9]/.test(password)) {
     score += 1;
   }
 
   return score;
 });
 
-const passwordStrengthText =
-    computed(() => {
-      if (!form.value.password) {
-        return "";
-      }
+const passwordStrengthText = computed(() => {
+  if (!form.value.password) {
+    return "";
+  }
 
-      if (
-          passwordStrength.value <= 1
-      ) {
-        return "Weak";
-      }
+  if (passwordStrength.value <= 1) {
+    return "Weak";
+  }
 
-      if (
-          passwordStrength.value <= 3
-      ) {
-        return "Medium";
-      }
+  if (passwordStrength.value <= 3) {
+    return "Medium";
+  }
 
-      return "Strong";
-    });
+  return "Strong";
+});
 
-const passwordStrengthClass =
-    computed(() => {
-      if (
-          passwordStrength.value <= 1
-      ) {
-        return "weak";
-      }
+const passwordStrengthClass = computed(() => {
+  if (passwordStrength.value <= 1) {
+    return "weak";
+  }
 
-      if (
-          passwordStrength.value <= 3
-      ) {
-        return "medium";
-      }
+  if (passwordStrength.value <= 3) {
+    return "medium";
+  }
 
-      return "strong";
-    });
+  return "strong";
+});
 
-const passwordStrengthWidth =
-    computed(() => {
-      const percentage =
-          Math.min(
-              passwordStrength.value * 20,
-              100
-          );
+const passwordStrengthWidth = computed(() => {
+  const percentage = Math.min(
+    passwordStrength.value * 20,
+    100
+  );
 
-      return `${percentage}%`;
-    });
+  return `${percentage}%`;
+});
 
 function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-      email
-  );
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 function validateForm() {
-  const name =
-      form.value.name.trim();
+  const name = form.value.name.trim();
+  const email = form.value.email
+    .trim()
+    .toLowerCase();
 
-  const email =
-      form.value.email
-          .trim()
-          .toLowerCase();
-
-  const password =
-      form.value.password;
-
-  const confirmPassword =
-      form.value.confirmPassword;
+  const password = form.value.password;
+  const confirmPassword = form.value.confirmPassword;
 
   if (
-      !name ||
-      !email ||
-      !password ||
-      !confirmPassword
+    !name ||
+    !email ||
+    !password ||
+    !confirmPassword
   ) {
     return "Please complete all fields.";
   }
@@ -150,75 +119,114 @@ function validateForm() {
     return "Password must contain at least six characters.";
   }
 
-  if (
-      password !==
-      confirmPassword
-  ) {
+  if (password !== confirmPassword) {
     return "Passwords do not match.";
   }
 
   return "";
 }
 
-async function handleRegister() {
+function clearErrorMessage() {
   errorMessage.value = "";
+}
 
-  const validationError =
-      validateForm();
+async function handleRegister() {
+  clearErrorMessage();
+
+  const validationError = validateForm();
 
   if (validationError) {
-    errorMessage.value =
-        validationError;
-
+    errorMessage.value = validationError;
     return;
   }
 
+  isSubmitting.value = true;
+
   try {
-    isSubmitting.value = true;
+    const response = await api.post("/register", {
+      name: form.value.name.trim(),
 
-    const response =
-        await api.post(
-            "/register",
-            {
-              name:
-                  form.value.name.trim(),
+      email: form.value.email
+        .trim()
+        .toLowerCase(),
 
-              email:
-                  form.value.email
-                      .trim()
-                      .toLowerCase(),
+      password: form.value.password,
+    });
 
-              password:
-              form.value.password,
-            }
-        );
+    console.log(
+      "Registration response:",
+      response.data
+    );
 
+    /*
+     * Fonctionne avec ces deux formats :
+     *
+     * { user: { ... } }
+     *
+     * ou directement :
+     *
+     * { name, email, role, ... }
+     */
     const newUser =
-        response.data.user;
+      response.data?.user ??
+      response.data;
 
-    if (!newUser) {
+    if (
+      !newUser ||
+      typeof newUser !== "object" ||
+      !newUser.email
+    ) {
       throw new Error(
-          "The server did not return the registered user."
+        "The server created the account but did not return valid user data."
       );
     }
 
-    userStore.login(newUser);
+    /*
+     * Enregistre l'utilisateur dans Pinia
+     * et dans sessionStorage.
+     */
 
-    await userStore.loadStatistics();
-
-    await router.push(
-        "/dashboard"
-    );
+    /*
+     * loadStatistics() a été supprimé,
+     * car cette fonction n'existe pas
+     * dans le userStore.
+     */
+    await router.replace("/dashboard");
   } catch (error) {
     console.error(
-        "Registration error:",
-        error
+      "Registration error:",
+      error
     );
 
-    errorMessage.value =
-        error.response?.data?.message ||
+    const status =
+      error.response?.status;
+
+    const backendMessage =
+      error.response?.data?.message;
+
+    if (status === 409) {
+      errorMessage.value =
+        backendMessage ||
+        "This email address is already being used.";
+    } else if (
+      status === 400 ||
+      status === 422
+    ) {
+      errorMessage.value =
+        backendMessage ||
+        "Please check the entered information.";
+    } else if (
+      !error.response &&
+      error.request
+    ) {
+      errorMessage.value =
+        "The server cannot be reached. Please check whether the backend is running.";
+    } else {
+      errorMessage.value =
+        backendMessage ||
         error.message ||
         "The account could not be created.";
+    }
   } finally {
     isSubmitting.value = false;
   }
@@ -244,10 +252,9 @@ async function handleRegister() {
         </h1>
 
         <p>
-          Organize your skills,
-          projects, certificates and
-          professional information in
-          one modern platform.
+          Organize your skills, projects,
+          certificates and professional
+          information in one modern platform.
         </p>
 
         <div class="benefits-list">
@@ -298,10 +305,9 @@ async function handleRegister() {
       </div>
 
       <form
-          class="register-card"
-          @submit.prevent="
-          handleRegister
-        "
+        class="register-card"
+        @submit.prevent="handleRegister"
+        @input="clearErrorMessage"
       >
         <div class="register-header">
           <span class="header-label">
@@ -313,15 +319,15 @@ async function handleRegister() {
           </h2>
 
           <p>
-            Enter your information to
-            create a new account.
+            Enter your information to create
+            a new account.
           </p>
         </div>
 
         <div
-            v-if="errorMessage"
-            class="error-message"
-            role="alert"
+          v-if="errorMessage"
+          class="error-message"
+          role="alert"
         >
           <span>!</span>
 
@@ -334,13 +340,13 @@ async function handleRegister() {
           </label>
 
           <input
-              id="register-name"
-              v-model="form.name"
-              type="text"
-              placeholder="Enter your full name"
-              autocomplete="name"
-              maxlength="100"
-              :disabled="isSubmitting"
+            id="register-name"
+            v-model="form.name"
+            type="text"
+            placeholder="Enter your full name"
+            autocomplete="name"
+            maxlength="100"
+            :disabled="isSubmitting"
           />
         </div>
 
@@ -350,13 +356,13 @@ async function handleRegister() {
           </label>
 
           <input
-              id="register-email"
-              v-model="form.email"
-              type="email"
-              placeholder="name@example.com"
-              autocomplete="email"
-              maxlength="150"
-              :disabled="isSubmitting"
+            id="register-email"
+            v-model="form.email"
+            type="email"
+            placeholder="name@example.com"
+            autocomplete="email"
+            maxlength="150"
+            :disabled="isSubmitting"
           />
         </div>
 
@@ -367,38 +373,38 @@ async function handleRegister() {
 
           <div class="password-field">
             <input
-                id="register-password"
-                v-model="form.password"
-                :type="
+              id="register-password"
+              v-model="form.password"
+              :type="
                 showPassword
                   ? 'text'
                   : 'password'
               "
-                placeholder="Create a password"
-                autocomplete="new-password"
-                :disabled="isSubmitting"
+              placeholder="Create a password"
+              autocomplete="new-password"
+              :disabled="isSubmitting"
             />
 
             <button
-                class="visibility-button"
-                type="button"
-                :disabled="isSubmitting"
-                @click="
+              class="visibility-button"
+              type="button"
+              :disabled="isSubmitting"
+              @click="
                 showPassword =
                   !showPassword
               "
             >
               {{
-              showPassword
-              ? "Hide"
-              : "Show"
+                showPassword
+                  ? "Hide"
+                  : "Show"
               }}
             </button>
           </div>
 
           <div
-              v-if="form.password"
-              class="password-strength"
+            v-if="form.password"
+            class="password-strength"
           >
             <div class="strength-heading">
               <span>
@@ -406,23 +412,19 @@ async function handleRegister() {
               </span>
 
               <strong
-                  :class="
-                  passwordStrengthClass
-                "
+                :class="passwordStrengthClass"
               >
-                {{
-                passwordStrengthText
-                }}
+                {{ passwordStrengthText }}
               </strong>
             </div>
 
             <div class="strength-track">
               <div
-                  :class="[
+                :class="[
                   'strength-value',
                   passwordStrengthClass,
                 ]"
-                  :style="{
+                :style="{
                   width:
                     passwordStrengthWidth,
                 }"
@@ -438,74 +440,72 @@ async function handleRegister() {
 
           <div class="password-field">
             <input
-                id="confirm-password"
-                v-model="
-                form.confirmPassword
-              "
-                :type="
+              id="confirm-password"
+              v-model="form.confirmPassword"
+              :type="
                 showConfirmPassword
                   ? 'text'
                   : 'password'
               "
-                placeholder="Repeat your password"
-                autocomplete="new-password"
-                :disabled="isSubmitting"
+              placeholder="Repeat your password"
+              autocomplete="new-password"
+              :disabled="isSubmitting"
             />
 
             <button
-                class="visibility-button"
-                type="button"
-                :disabled="isSubmitting"
-                @click="
+              class="visibility-button"
+              type="button"
+              :disabled="isSubmitting"
+              @click="
                 showConfirmPassword =
                   !showConfirmPassword
               "
             >
               {{
-              showConfirmPassword
-              ? "Hide"
-              : "Show"
+                showConfirmPassword
+                  ? "Hide"
+                  : "Show"
               }}
             </button>
           </div>
 
           <small
-              v-if="
+            v-if="
               form.confirmPassword &&
               form.password !==
                 form.confirmPassword
             "
-              class="field-error"
+            class="field-error"
           >
             Passwords do not match.
           </small>
 
           <small
-              v-else-if="
+            v-else-if="
               form.confirmPassword &&
               form.password ===
                 form.confirmPassword
             "
-              class="field-success"
+            class="field-success"
           >
             Passwords match.
           </small>
         </div>
 
         <button
-            class="register-button"
-            type="submit"
-            :disabled="isSubmitting"
+          class="register-button"
+          type="submit"
+          :disabled="isSubmitting"
         >
           <span
-              v-if="isSubmitting"
-              class="spinner"
+            v-if="isSubmitting"
+            class="spinner"
           ></span>
 
           {{
-          isSubmitting
-          ? "Creating account..."
-          : "Create account"
+            isSubmitting
+              ? "Creating account..."
+              : "Create account"
           }}
         </button>
 
@@ -523,28 +523,27 @@ async function handleRegister() {
 
 <style scoped>
 .register-page {
-  min-height:
-      calc(100vh - 72px);
+  min-height: calc(100vh - 72px);
   padding: 50px 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   background:
-      radial-gradient(
-          circle at 10% 10%,
-          rgba(59, 130, 246, 0.17),
-          transparent 31%
-      ),
-      radial-gradient(
-          circle at 90% 90%,
-          rgba(99, 102, 241, 0.15),
-          transparent 30%
-      ),
-      #f8fafc;
+    radial-gradient(
+      circle at 10% 10%,
+      rgba(59, 130, 246, 0.17),
+      transparent 31%
+    ),
+    radial-gradient(
+      circle at 90% 90%,
+      rgba(99, 102, 241, 0.15),
+      transparent 30%
+    ),
+    #f8fafc;
   font-family:
-      Inter,
-      Arial,
-      sans-serif;
+    Inter,
+    Arial,
+    sans-serif;
 }
 
 .register-wrapper {
@@ -556,12 +555,11 @@ async function handleRegister() {
     minmax(0, 1fr)
     470px;
   background: #ffffff;
-  border:
-      1px solid #e2e8f0;
+  border: 1px solid #e2e8f0;
   border-radius: 28px;
   box-shadow:
-      0 30px 80px
-      rgba(15, 23, 42, 0.14);
+    0 30px 80px
+    rgba(15, 23, 42, 0.14);
 }
 
 .register-introduction {
@@ -573,17 +571,17 @@ async function handleRegister() {
   justify-content: center;
   color: #ffffff;
   background:
-      radial-gradient(
-          circle at 90% 15%,
-          rgba(255, 255, 255, 0.13),
-          transparent 26%
-      ),
-      linear-gradient(
-          145deg,
-          #0f172a,
-          #1e3a8a 58%,
-          #4f46e5
-      );
+    radial-gradient(
+      circle at 90% 15%,
+      rgba(255, 255, 255, 0.13),
+      transparent 26%
+    ),
+    linear-gradient(
+      145deg,
+      #0f172a,
+      #1e3a8a 58%,
+      #4f46e5
+    );
 }
 
 .register-introduction::after {
@@ -594,7 +592,7 @@ async function handleRegister() {
   height: 310px;
   content: "";
   background:
-      rgba(255, 255, 255, 0.07);
+    rgba(255, 255, 255, 0.07);
   border-radius: 50%;
 }
 
@@ -609,10 +607,10 @@ async function handleRegister() {
   justify-content: center;
   color: #ffffff;
   background:
-      rgba(255, 255, 255, 0.14);
+    rgba(255, 255, 255, 0.14);
   border:
-      1px solid
-      rgba(255, 255, 255, 0.22);
+    1px solid
+    rgba(255, 255, 255, 0.22);
   border-radius: 16px;
   font-size: 14px;
   font-weight: 900;
@@ -641,11 +639,11 @@ async function handleRegister() {
   max-width: 500px;
   margin: 0 0 20px;
   font-size:
-      clamp(
-          38px,
-          4vw,
-          53px
-      );
+    clamp(
+      38px,
+      4vw,
+      53px
+    );
   line-height: 1.07;
   letter-spacing: -1.5px;
 }
@@ -744,8 +742,7 @@ async function handleRegister() {
   gap: 9px;
   color: #b91c1c;
   background: #fef2f2;
-  border:
-      1px solid #fecaca;
+  border: 1px solid #fecaca;
   border-radius: 10px;
   font-size: 13px;
   font-weight: 700;
@@ -770,24 +767,23 @@ async function handleRegister() {
   padding: 13px 15px;
   color: #0f172a;
   background: #f8fafc;
-  border:
-      1px solid #cbd5e1;
+  border: 1px solid #cbd5e1;
   border-radius: 11px;
   outline: none;
   font-family: inherit;
   font-size: 14px;
   transition:
-      background 0.2s ease,
-      border-color 0.2s ease,
-      box-shadow 0.2s ease;
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .form-group input:focus {
   background: #ffffff;
   border-color: #2563eb;
   box-shadow:
-      0 0 0 4px
-      rgba(37, 99, 235, 0.11);
+    0 0 0 4px
+    rgba(37, 99, 235, 0.11);
 }
 
 .form-group input:disabled {
@@ -816,8 +812,7 @@ async function handleRegister() {
   font-family: inherit;
   font-size: 11px;
   font-weight: 800;
-  transform:
-      translateY(-50%);
+  transform: translateY(-50%);
 }
 
 .visibility-button:disabled {
@@ -868,8 +863,8 @@ async function handleRegister() {
   height: 100%;
   border-radius: 999px;
   transition:
-      width 0.25s ease,
-      background 0.25s ease;
+    width 0.25s ease,
+    background 0.25s ease;
 }
 
 .strength-value.weak {
@@ -907,11 +902,11 @@ async function handleRegister() {
   padding: 14px 20px;
   color: #ffffff;
   background:
-      linear-gradient(
-          135deg,
-          #2563eb,
-          #4f46e5
-      );
+    linear-gradient(
+      135deg,
+      #2563eb,
+      #4f46e5
+    );
   border: 0;
   border-radius: 12px;
   cursor: pointer;
@@ -919,17 +914,16 @@ async function handleRegister() {
   font-size: 14px;
   font-weight: 800;
   transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease,
-      opacity 0.2s ease;
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .register-button:hover:not(:disabled) {
-  transform:
-      translateY(-1px);
+  transform: translateY(-1px);
   box-shadow:
-      0 14px 28px
-      rgba(37, 99, 235, 0.25);
+    0 14px 28px
+    rgba(37, 99, 235, 0.25);
 }
 
 .register-button:disabled {
@@ -944,12 +938,12 @@ async function handleRegister() {
   display: inline-block;
   vertical-align: -2px;
   border:
-      2px solid
-      rgba(255, 255, 255, 0.45);
+    2px solid
+    rgba(255, 255, 255, 0.45);
   border-top-color: #ffffff;
   border-radius: 50%;
   animation:
-      spin 0.7s linear infinite;
+    spin 0.7s linear infinite;
 }
 
 .login-text {
@@ -971,8 +965,7 @@ async function handleRegister() {
 
 @keyframes spin {
   to {
-    transform:
-        rotate(360deg);
+    transform: rotate(360deg);
   }
 }
 
